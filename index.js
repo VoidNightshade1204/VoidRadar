@@ -31,6 +31,20 @@ document.getElementById('fileInput').addEventListener('input', function() {
     reader.readAsArrayBuffer(uploadedFile);
 })
 
+/*
+document.getElementById('fileThatWorks').addEventListener('click', function() {
+    $.ajax({
+        url: './data/' + document.getElementById('fileThatWorks').innerHTML,
+        method: 'GET',
+        xhrFields: { responseType: 'arraybuffer'}
+    }).then(function(responseData) {
+        //console.clear();
+        console.log('loaded ' + document.getElementById('fileThatWorks').innerHTML + ' file from click, reading now')
+        var l2rad = new Level2Radar(toBuffer(responseData))
+        console.log(l2rad)
+    })
+})*/
+
 //console.clear();
 
 // https://php-cors-proxy.herokuapp.com/?https://noaa-nexrad-level2.s3.amazonaws.com/2017/08/25/KCRP/KCRP20170825_235733_V06
