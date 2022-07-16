@@ -16370,12 +16370,12 @@ const { Level2Radar } = require('./nexrad-level-2-data/src');
 const { plot } = require('./nexrad-level-2-plot/src');
 
 function toBuffer(ab) {
-        const buf = Buffer.alloc(ab.byteLength);
-        const view = new Uint8Array(ab);
-        for (let i = 0; i < buf.length; ++i) {
-                buf[i] = view[i];
-        }
-        return buf;
+    const buf = Buffer.alloc(ab.byteLength);
+    const view = new Uint8Array(ab);
+    for (let i = 0; i < buf.length; ++i) {
+        buf[i] = view[i];
+    }
+    return buf;
 }
 
 document.getElementById('fileInput').addEventListener('input', function() {
@@ -16392,11 +16392,25 @@ document.getElementById('fileInput').addEventListener('input', function() {
             background: 'rgba(0, 0, 0, 0)',
             size: 500,
             cropTo: 500,
-            //dpi: 300,
+            dpi: 150,
         });
     }, false);
     reader.readAsArrayBuffer(uploadedFile);
 })
+
+/*
+document.getElementById('fileThatWorks').addEventListener('click', function() {
+    $.ajax({
+        url: './data/' + document.getElementById('fileThatWorks').innerHTML,
+        method: 'GET',
+        xhrFields: { responseType: 'arraybuffer'}
+    }).then(function(responseData) {
+        //console.clear();
+        console.log('loaded ' + document.getElementById('fileThatWorks').innerHTML + ' file from click, reading now')
+        var l2rad = new Level2Radar(toBuffer(responseData))
+        console.log(l2rad)
+    })
+})*/
 
 //console.clear();
 
@@ -16404,12 +16418,12 @@ document.getElementById('fileInput').addEventListener('input', function() {
 // https://php-cors-proxy.herokuapp.com/?https://noaa-nexrad-level2.s3.amazonaws.com/2017/08/25/KCRP/KCRP20170825_235733_V06
 // https://php-cors-proxy.herokuapp.com/?https://noaa-nexrad-level2.s3.amazonaws.com/2009/06/03/KBLX/KBLX20090603_004417_V03.gz
 /*fetch('https://php-cors-proxy.herokuapp.com/?https://noaa-nexrad-level2.s3.amazonaws.com/2017/08/25/KCRP/KCRP20170825_235733_V06')
-        .then(res => res.arrayBuffer())
-        .then(rawData => {
-                var l2rad = new Level2Radar(toBuffer(rawData))
-                console.log(l2rad)
-        })
-        .catch(err => console.error(err));*/
+    .then(res => res.arrayBuffer())
+    .then(rawData => {
+        var l2rad = new Level2Radar(toBuffer(rawData))
+        console.log(l2rad)
+    })
+    .catch(err => console.error(err));*/
 }).call(this)}).call(this,require("buffer").Buffer)
 },{"./nexrad-level-2-data/src":77,"./nexrad-level-2-plot/src":90,"buffer":11}],66:[function(require,module,exports){
 // parse message type 1
@@ -17398,8 +17412,11 @@ const decompress = (raf) => {
 	// reuse the original header if present
 	const outBuffers = [raf.buffer.slice(0, headerSize)];
 
+	var iters = 1;
 	// loop through each block and decompress it
 	positions.forEach((block) => {
+		console.log('decompressing block ' + iters);
+		iters++;
 		// extract the block from the buffer
 		const compressed = raf.buffer.slice(block.pos, block.pos + block.size);
 		if (JSON.stringify(compressed) != '{"type":"Buffer","data":[]}') {

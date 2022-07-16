@@ -60,8 +60,11 @@ const decompress = (raf) => {
 	// reuse the original header if present
 	const outBuffers = [raf.buffer.slice(0, headerSize)];
 
+	var iters = 1;
 	// loop through each block and decompress it
 	positions.forEach((block) => {
+		console.log('decompressing block ' + iters);
+		iters++;
 		// extract the block from the buffer
 		const compressed = raf.buffer.slice(block.pos, block.pos + block.size);
 		if (JSON.stringify(compressed) != '{"type":"Buffer","data":[]}') {

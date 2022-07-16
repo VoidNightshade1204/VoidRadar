@@ -25,7 +25,7 @@ document.getElementById('fileInput').addEventListener('input', function() {
             background: 'rgba(0, 0, 0, 0)',
             size: 500,
             cropTo: 500,
-            //dpi: 300,
+            dpi: 150,
         });
     }, false);
     reader.readAsArrayBuffer(uploadedFile);
