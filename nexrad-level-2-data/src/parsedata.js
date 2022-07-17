@@ -56,6 +56,9 @@ const parseData = (file, options) => {
 			}
 
 			if (!r.finished) {
+				if (recordNumber % 200 == 0) {
+					console.log('reading record ' + recordNumber);
+				}
 				if (r.message_type === 31) {
 				// found a message 31 type, update the offset using an actual (from search) size if provided
 					const messageSize = r.actual_size ?? r.message_size;
@@ -79,6 +82,7 @@ const parseData = (file, options) => {
 			}
 		} while (!r.finished);
 	}
+    document.getElementById('spinnerParent').style.display = 'none';
 
 	// sort and group the scans by elevation asc
 	return {

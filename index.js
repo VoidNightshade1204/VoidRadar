@@ -14,23 +14,55 @@ function toBuffer(ab) {
 document.getElementById('fileInput').addEventListener('input', function() {
     document.getElementById('spinnerParent').style.display = 'block';
     //console.log(URL.createObjectURL(document.getElementById("fileInput").files[0]));
-    var uploadedFile = this.files[0];
-    const reader = new FileReader();
+    setTimeout(function() {
+        var uploadedFile = document.getElementById('fileInput').files[0];
+        const reader = new FileReader();
 
-    reader.addEventListener("load", function () {
-        console.log('file uploaded, parsing now');
-        var l2rad = new Level2Radar(toBuffer(this.result))
-        console.log(l2rad)
-        const level2Plot = plot(l2rad, 'REF', {
-            elevations: 1,
-            background: 'rgba(0, 0, 0, 0)',
-            //size: 500,
-            //cropTo: 500,
-            dpi: $('#userDPI').val(),
-        });
-        console.log('dpi set to ' + $('#userDPI').val())
-    }, false);
-    reader.readAsArrayBuffer(uploadedFile);
+        reader.addEventListener("load", function () {
+            console.log('file uploaded, parsing now');
+            var l2rad = new Level2Radar(toBuffer(this.result))
+            //console.log(l2rad)
+            //var blob = new Blob([JSON.stringify(l2rad)], {type: "text/plain"});
+            //var url = window.URL.createObjectURL(blob);
+            //document.getElementById('decodedRadarDataURL').innerHTML = url;
+            document.getElementById('plotRef').style.display = 'inline';
+            document.getElementById('plotVel').style.display = 'inline';
+
+            document.getElementById('plotRef').addEventListener('click', function() {
+                document.getElementById('spinnerParent').style.display = 'block';
+                console.log('plot reflectivity data button clicked');
+                const level2Plot = plot(l2rad, 'REF', {
+                    elevations: 1,
+                    background: 'rgba(0, 0, 0, 0)',
+                    //size: 500,
+                    //cropTo: 500,
+                    dpi: $('#userDPI').val(),
+                });
+                console.log('dpi set to ' + $('#userDPI').val())
+            })
+            document.getElementById('plotVel').addEventListener('click', function() {
+                document.getElementById('spinnerParent').style.display = 'block';
+                console.log('plot velocity data button clicked');
+                const level2Plot = plot(l2rad, 'VEL', {
+                    elevations: 2,
+                    background: 'rgba(0, 0, 0, 0)',
+                    //size: 500,
+                    //cropTo: 500,
+                    dpi: $('#userDPI').val(),
+                });
+                console.log('dpi set to ' + $('#userDPI').val())
+            })
+            /*const level2Plot = plot(l2rad, 'REF', {
+                elevations: 1,
+                background: 'rgba(0, 0, 0, 0)',
+                //size: 500,
+                //cropTo: 500,
+                dpi: $('#userDPI').val(),
+            });
+            console.log('dpi set to ' + $('#userDPI').val())*/
+        }, false);
+        reader.readAsArrayBuffer(uploadedFile);
+    }, 300)
 })
 
 /*
