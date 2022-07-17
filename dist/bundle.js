@@ -16379,6 +16379,7 @@ function toBuffer(ab) {
 }
 
 document.getElementById('fileInput').addEventListener('input', function() {
+    document.getElementById('spinnerParent').style.display = 'block';
     //console.log(URL.createObjectURL(document.getElementById("fileInput").files[0]));
     var uploadedFile = this.files[0];
     const reader = new FileReader();
@@ -18104,6 +18105,8 @@ const draw = (data, _options) => {
 			ctx.stroke();
 		});
 	});
+
+    document.getElementById('spinnerParent').style.display = 'none';
 
 	if (!options.palettize) {
 	// return the palette and canvas

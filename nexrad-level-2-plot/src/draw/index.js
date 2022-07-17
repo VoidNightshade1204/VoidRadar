@@ -181,6 +181,8 @@ const draw = (data, _options) => {
 		});
 	});
 
+    document.getElementById('spinnerParent').style.display = 'none';
+
 	if (!options.palettize) {
 	// return the palette and canvas
 		return {
