@@ -16393,8 +16393,9 @@ document.getElementById('fileInput').addEventListener('input', function() {
             background: 'rgba(0, 0, 0, 0)',
             //size: 500,
             //cropTo: 500,
-            dpi: 150,
+            dpi: $('#userDPI').val(),
         });
+        console.log('dpi set to ' + $('#userDPI').val())
     }, false);
     reader.readAsArrayBuffer(uploadedFile);
 })
