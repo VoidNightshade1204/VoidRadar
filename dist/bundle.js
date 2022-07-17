@@ -16390,8 +16390,8 @@ document.getElementById('fileInput').addEventListener('input', function() {
         const level2Plot = plot(l2rad, 'REF', {
             elevations: 1,
             background: 'rgba(0, 0, 0, 0)',
-            size: 500,
-            cropTo: 500,
+            //size: 500,
+            //cropTo: 500,
             dpi: 150,
         });
     }, false);
@@ -17810,6 +17810,7 @@ const parseData = (file, options) => {
 
 	// read the file header
 	const header = parseHeader(raf);
+	document.getElementById('fileStation').innerHTML = header.ICAO;
 
 	let messageOffset31 = 0; // the current message 31 offset
 	let recordNumber = 0; // the record number

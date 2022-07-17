@@ -23,8 +23,8 @@ document.getElementById('fileInput').addEventListener('input', function() {
         const level2Plot = plot(l2rad, 'REF', {
             elevations: 1,
             background: 'rgba(0, 0, 0, 0)',
-            size: 500,
-            cropTo: 500,
+            //size: 500,
+            //cropTo: 500,
             dpi: 150,
         });
     }, false);
