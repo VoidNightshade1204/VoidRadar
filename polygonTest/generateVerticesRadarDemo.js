@@ -15,6 +15,7 @@ onmessage=function(oEvent) {
   var inv = 180.0/3.141592654;
   var re = 6371000.0;
   var phi = radians(oEvent.data[1]);
+  console.log(oEvent)
   var h0 = 0.0;
   
   function calculatePosition(az, range) {
@@ -35,11 +36,24 @@ onmessage=function(oEvent) {
         my = (180. - (180. / 3.141592654 * Math.log(Math.tan(3.141592654 / 4. + lat * 3.141592654 / 360.)))) / 360.; 
         //console.log(mx,my);
         return {
-          x:mx,
-          y:my
+          x:lon,
+          y:lat
         }
 
   }
+
+  var featuresArr = [];
+	function pushPoint(lng, lat) {
+		featuresArr.push({
+			"type": "Feature",
+			"geometry": { "type": "Point",
+				"coordinates": [lng, lat]
+			},
+			"properties": {
+				"value": 12.0,
+			}
+		},);
+	}
 
   //function to process file
   function reqListener() {
@@ -82,6 +96,9 @@ onmessage=function(oEvent) {
         var br = calculatePosition(rightAz, bottomR);
         var tr = calculatePosition(rightAz, topR);
 
+        //console.log(bl)
+        pushPoint(bl.x, bl.y)
+
         output.push(
           bl.x,//leftAz,
           bl.y,//bottomR,
@@ -104,7 +121,17 @@ onmessage=function(oEvent) {
     var typedOutput = new Float32Array(output);
     var colorOutput = new Float32Array(colors);
     var indexOutput = new Int32Array(indices);
-    postMessage({"data":typedOutput.buffer,"indices":indexOutput.buffer,"colors":colorOutput.buffer},[typedOutput.buffer,indexOutput.buffer,colorOutput.buffer]);
+    var geojsonParentTemplate = {
+      "type": "FeatureCollection",
+      "features": featuresArr
+    }
+    postMessage({
+      "data":typedOutput.buffer,
+      "indices":indexOutput.buffer,
+      "colors":colorOutput.buffer,
+      "geojson":geojsonParentTemplate
+    },
+    [typedOutput.buffer,indexOutput.buffer,colorOutput.buffer]);
   }
 
   //get file from server

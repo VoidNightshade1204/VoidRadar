@@ -18,16 +18,16 @@ function onload() {
     container:'map',
     attributionControl:false,
     zoom:3,
-    maxZoom:14,
+    maxZoom:25,
     minZoom:3,
   //overlaying custom made mapboxGL map
 //    style: 'mapbox://styles/quadweather/cjsgo4h6905rg1fmcimx6j9dr'
-    style: 'mapbox://styles/quadweather/ckftuk99o0lar1at0siprao95',
+    style: 'mapbox://styles/mapbox/bright-v9',
     antialias:true,
     zoom:9,
     center:[settings.mlon, settings.mlat],
-    pitch:70.,
-    bearing:315
+    //pitch:70.,
+    //bearing:315
   });
   map.addControl(new mapboxgl.AttributionControl(),'top-right');
   map.addControl(new mapboxgl.NavigationControl(),'top-left');
@@ -166,10 +166,25 @@ function onload() {
     var data = new Float32Array(oEvent.data.data);
     var indices = new Int32Array(oEvent.data.indices);
     var colors = new Float32Array(oEvent.data.colors);
+    var returnedGeojson = oEvent.data.geojson;
     pageState.positions = data;
     pageState.indices = indices;
     pageState.colors = colors;
-    map.addLayer(layer,'land-structure-line');
+    console.log(returnedGeojson)
+    map.addLayer({
+      'id': 'radar',
+      'type': 'circle',
+      'source': {
+        type: 'geojson',
+          // Use a URL for the value for the `data` property.
+        data: returnedGeojson
+      },
+      'paint': {
+        'circle-radius': 2,
+        'circle-color': 'black'
+      }
+    });
+    //map.addLayer(layer);
   }
   function doneResizing() {
     document.body.height=window.innerHeight;

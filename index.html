@@ -130,7 +130,7 @@
         //  console.log(data);
         //})
     </script>
-    <script src="polygonTest/demo-radar-script.js"></script> -->
+    <script src="./polygonTest/demo-radar-script.js"></script> -->
 
     <script>
         mapboxgl.accessToken = 'pk.eyJ1Ijoic3RlZXBhdHRpY3N0YWlycyIsImEiOiJjbDNvaGFod2EwbXluM2pwZTJiMDYzYjh5In0.J_HeH00ry0tbLmGmTy4z5w';
@@ -155,20 +155,20 @@
                 var coord2 = stationBbox.minLng;
                 var coord3 = stationBbox.maxLat;
                 var coord4 = stationBbox.maxLng;
-                map.addLayer({
-                    id: 'canvas-layer',
-                    type: 'raster',
-                    source: {
-                        type: 'canvas',
-                        canvas: 'theCanvas',
-                        coordinates: [
-                            [coord2, coord3],
-                            [coord4, coord3],
-                            [coord4, coord1],
-                            [coord2, coord1]
-                        ],
-                    }
-                });
+                //map.addLayer({
+                //    id: 'canvas-layer',
+                //    type: 'raster',
+                //    source: {
+                //        type: 'canvas',
+                //        canvas: 'theCanvas',
+                //        coordinates: [
+                //            [coord2, coord3],
+                //            [coord4, coord3],
+                //            [coord4, coord1],
+                //            [coord2, coord1]
+                //        ],
+                //    }
+                //});
                 //new mapboxgl.Marker()
                 //    .setLngLat([stationLng, stationLat])
                 //    .addTo(map);
