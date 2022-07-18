@@ -153,6 +153,20 @@ const draw = (data, _options) => {
 	const indexedProduct = indexProduct(downSampledProduct, palette);
 	const rrlEncoded = rrle(indexedProduct, resolution);
 
+	var featuresArr = [];
+	function pushPoint(lng, lat) {
+		featuresArr.push({
+			"type": "Feature",
+			"geometry": { "type": "Point",
+				"coordinates": [lng, lat]
+			},
+			"properties": {
+				"value": 12.0,
+			}
+		},);
+	}
+
+	var valueArr = [];
 	// loop through data
 	rrlEncoded.forEach((radial) => {
 		// calculate plotting parameters
@@ -172,13 +186,44 @@ const draw = (data, _options) => {
 				// rrle encoded
 				ctx.strokeStyle = palette.lookupRgba[bin.value];
 				ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle + resolution * (bin.count - 1));
+				//pushPoint(startAngle, endAngle + resolution * (bin.count - 1))
 			} else {
 				// plain data
 				ctx.strokeStyle = palette.lookupRgba[bin];
 				ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle);
+				pushPoint(startAngle, endAngle)
 			}
 			ctx.stroke();
 		});
+	});
+	console.log(valueArr)
+	//console.log(featuresArr)
+	var geojsonParentTemplate = {
+		"type": "FeatureCollection",
+		"features": featuresArr
+	}
+	var blob = new Blob([JSON.stringify(geojsonParentTemplate)], {type: "text/plain"});
+    var url = window.URL.createObjectURL(blob);
+	const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    // the filename you want
+    a.download = 'sus.geojson';
+    document.body.appendChild(a);
+    //a.click();
+
+	map.addLayer({
+		'id': 'radar',
+		'type': 'circle',
+		'source': {
+			type: 'geojson',
+		    // Use a URL for the value for the `data` property.
+			data: geojsonParentTemplate
+		},
+		'paint': {
+			'circle-radius': 1,
+			'circle-color': 'black'
+		}
 	});
 
     document.getElementById('spinnerParent').style.display = 'none';
