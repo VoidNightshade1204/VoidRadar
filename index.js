@@ -26,7 +26,7 @@ document.getElementById('fileInput').addEventListener('input', function() {
             //var url = window.URL.createObjectURL(blob);
             //document.getElementById('decodedRadarDataURL').innerHTML = url;
             document.getElementById('plotRef').style.display = 'inline';
-            document.getElementById('plotVel').style.display = 'inline';
+            //document.getElementById('plotVel').style.display = 'inline';
 
             document.getElementById('plotRef').addEventListener('click', function() {
                 document.getElementById('spinnerParent').style.display = 'block';
