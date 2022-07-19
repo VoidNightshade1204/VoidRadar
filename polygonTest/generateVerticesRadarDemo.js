@@ -2,7 +2,7 @@ onmessage=function(oEvent) {
   var url = oEvent.data[0];
 
   //250/2
-  var gateRes = 150;
+  var gateRes = 460;
   if (url == "../data/radar/KTLX_sub.json") {
     gateRes = 1000/2;
   }
