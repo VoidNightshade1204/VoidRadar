@@ -168,6 +168,25 @@
             center: [-98.5606744, 36.8281576],
             //projection: 'equirectangular',
         });
+        var phpProxy = 'https://php-cors-proxy.herokuapp.com/?';
+        map.on('load', function() {
+            /*map.addLayer({
+                'id': `wms-test-layer`,
+                'type': 'raster',
+                'source': {
+                    'type': 'raster',
+                    // use the tiles option to specify a WMS tile source URL
+                    // https://docs.mapbox.com/mapbox-gl-js/style-spec/sources/
+                    'tiles': [
+                        `${phpProxy}https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/ridge::JAX-N0B-0/{z}/{x}/{y}.png`
+                        //'https://img.nj.gov/imagerywms/Natural2015?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=Natural2015'
+                        //'https://opengeo.ncep.noaa.gov/geoserver/klwx/klwx_bref_raw/ows?&service=WMS&request=GetMap&layers=&styles=&format=image/png&transparent=true&version=1.1.1&SERVICE=WMS&LAYERS=klwx_bref_raw&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}'
+                        //https://opengeo.ncep.noaa.gov/geoserver/klwx/klwx_bref_raw/ows?&service=WMS&request=GetMap&layers=&styles=&format=image/png&transparent=true&version=1.1.1&SERVICE=WMS&LAYERS=klwx_bref_raw&width=256&height=256&srs=EPSG:3857&bbox=-20037508.342789244,0,-10018754.171394622,10018754.17139462
+                    ],
+                    'tileSize': 256
+                },
+            });*/
+        })
 
         // radius of wsr-88d scan in km
         var radius = 460;
