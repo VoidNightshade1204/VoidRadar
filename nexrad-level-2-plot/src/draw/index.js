@@ -313,7 +313,16 @@ const draw = (data, _options) => {
     //a.click();*/
 
 	//testHello('yeet')
-	drawRadarShape(url);
+	var shtation = document.getElementById('fileStation').innerHTML;
+    $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
+        var statLat = data[shtation][1];
+        var statLng = data[shtation][2];
+		drawRadarShape(url, statLat, statLng);
+
+        //new mapboxgl.Marker()
+        //    .setLngLat([stationLng, stationLat])
+        //    .addTo(map);
+    });
 
 	/*const val0 = ['==', ['get', 'value'], 0];
 	const val1 = ['==', ['get', 'value'], 1];

@@ -1,12 +1,9 @@
-function drawRadarShape(jsonObj) {
+function drawRadarShape(jsonObj, lati, lngi) {
   var settings = {};
-  settings["lat"]=35.0;
-  settings["lon"]=-101.72;
-  settings["mlat"]=34.95;
-  settings["mlon"]=-101.75;
-  settings["rlat"]=35.2333;
-  settings["rlon"]=-101.709;
-  settings["phi"]=0.483395;
+  settings["rlat"] = lati;
+  settings["rlon"] = lngi;
+  // phi is elevation
+  settings["phi"] = 0.483395;
   settings["base"] = jsonObj;
 
 
