@@ -1,4 +1,4 @@
-function onload() {
+function drawRadarShape(jsonObj) {
   var settings = {};
   settings["lat"]=35.0;
   settings["lon"]=-101.72;
@@ -7,42 +7,29 @@ function onload() {
   settings["rlat"]=35.2333;
   settings["rlon"]=-101.709;
   settings["phi"]=0.483395;
-  settings["base"] = "./polygonTest/KAMA_sub.json";
+  settings["base"] = jsonObj;
 
-
-  //set up mapbox map
-  mapboxgl.accessToken=
-    "pk.eyJ1IjoicXVhZHdlYXRoZXIiLCJhIjoiY2pzZTI0cXFjMDEyMTQzbnQ2MXYxMzd2YSJ9.kHgQu2YL36SZUgpXMlfaFg";
-
-  var map=window.map=new mapboxgl.Map({
-    container:'map',
-    attributionControl:false,
-    zoom:3,
-    maxZoom:25,
-    minZoom:3,
-  //overlaying custom made mapboxGL map
-//    style: 'mapbox://styles/quadweather/cjsgo4h6905rg1fmcimx6j9dr'
-    style: 'mapbox://styles/mapbox/bright-v9',
-    antialias:true,
-    zoom:9,
-    center:[settings.mlon, settings.mlat],
-    //pitch:70.,
-    //bearing:315
-  });
-  map.addControl(new mapboxgl.AttributionControl(),'top-right');
-  map.addControl(new mapboxgl.NavigationControl(),'top-left');
 
   function createTexture(gl) {
-    var colors = {"refc0":['rgba(59,59,59,1)', //0
-          'rgba(59,59,59,1)', //10
-          'rgba(0,151,189,1)', //20
-          'rgba(21,166,2,1)',   //30
-          'rgba(250,208,0,1)',  //40
-          'rgba(240,124,18,1)', //50
-          'rgba(214,18,0,1)', //60
-          'rgba(201,92,255,1)', //70
-        ]}
-    var values = {"refc0":[0,10,17.5,25,35,50,60,70]}
+    var colors = {"refc0":[
+      '#8a8a8a',
+      '#04e9e7',
+      '#019ff4',
+      '#0300f4',
+      '#02fd02',
+      '#01c501',
+      '#008e00',
+      '#fdf802',
+      '#e5bc00',
+      '#fd9500',
+      '#fd0000',
+      '#d40000',
+      '#bc0000',
+      '#f800fd',
+      '#9854c6',
+      '#fdfdfd'
+    ]}
+    var values = {"refc0":[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]}
     var colors=colors["refc0"];
     var levs=values["refc0"];
     var colortcanvas=document.getElementById("texturecolorbar");
@@ -70,10 +57,29 @@ function onload() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   }
 
-  map.on("load", function() {
-    //map.addLayer(layer3d);
-    myWorker.postMessage([settings["base"],settings["phi"],settings["rlat"],settings["rlon"]]);
-  })
+  function dataStore() {
+     return {
+       positions:null,
+       indices:null,
+       colors:null
+     }
+  }
+
+  var pageState = dataStore();
+
+  var myWorker = new Worker('./polygonTest/generateVerticesRadarDemo.js');
+  myWorker.onmessage=function(oEvent) {
+    var data = new Float32Array(oEvent.data.data);
+    var indices = new Int32Array(oEvent.data.indices);
+    var colors = new Float32Array(oEvent.data.colors);
+    var returnedGeojson = oEvent.data.geojson;
+    pageState.positions = data;
+    pageState.indices = indices;
+    pageState.colors = colors;
+    map.addLayer(layer);
+  }
+
+  myWorker.postMessage([settings["base"],settings["phi"],settings["rlat"],settings["rlon"]]);
 
   //compile shaders
   var vertexSource = document.getElementById('vertexShader').textContent;
@@ -150,52 +156,4 @@ function onload() {
 
     }//end render
   }
-
-  function dataStore() {
-     return {
-       positions:null,
-       indices:null,
-       colors:null
-     }
-  }
-
-  var pageState = dataStore();
-
-  var myWorker = new Worker('./polygonTest/generateVerticesRadarDemo.js');
-  myWorker.onmessage=function(oEvent) {
-    var data = new Float32Array(oEvent.data.data);
-    var indices = new Int32Array(oEvent.data.indices);
-    var colors = new Float32Array(oEvent.data.colors);
-    var returnedGeojson = oEvent.data.geojson;
-    pageState.positions = data;
-    pageState.indices = indices;
-    pageState.colors = colors;
-    console.log(returnedGeojson)
-    map.addLayer({
-      'id': 'radar',
-      'type': 'circle',
-      'source': {
-        type: 'geojson',
-          // Use a URL for the value for the `data` property.
-        data: returnedGeojson
-      },
-      'paint': {
-        'circle-radius': 2,
-        'circle-color': 'black'
-      }
-    });
-    //map.addLayer(layer);
-  }
-  function doneResizing() {
-    document.body.height=window.innerHeight;
-    window.scrollTo(0,0);
-    map.resize();
-  }
-  var resizeId;
-  window.addEventListener('resize',function() {
-    clearTimeout(resizeId);
-    resizeId=setTimeout(doneResizing,300);
-  });
 }
-
-window.onload = onload();

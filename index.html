@@ -94,8 +94,35 @@
     <div id="messageDisplay"></div>
     <br><br><br>
     <canvas id="theCanvas" style="display: none"></canvas>
+    <canvas id="texturecolorbar" class="texturecolorbar"></canvas>
+    <script type="x-shader/x-vertex" id="vertexShader">
+        //x: azimuth
+        //y: range
+        //z: value
+        attribute vec2 aPosition;
+        attribute float aColor;
+        uniform mat4 u_matrix;
+        varying float color;
+
+        void main() {
+            color = aColor;
+            gl_Position = u_matrix * vec4(aPosition.x,aPosition.y,0.0,1.0);
+        }
+    </script>
+    <script type="x-shader/x-fragment" id="fragmentShader">
+        precision mediump float;
+        varying float color;
+        uniform sampler2D u_texture;
+        void main() {
+            //gl_FragColor = vec4(0.0,color/60.0,0.0,1.0);
+            float calcolor = (color)/(70.0);
+            gl_FragColor = texture2D(u_texture,vec2(min(max(calcolor,0.0),1.0),0.0));
+            //gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+        }
+    </script>
     <script src="utils.js"></script>
     <script src="./dist/bundle.js"></script>
+    <script src="./polygonTest/demo-radar-script.js"></script>
 
     <div id="map"></div>
 
@@ -139,7 +166,7 @@
             style: 'mapbox://styles/mapbox/bright-v9',
             zoom: 3,
             center: [-98.5606744, 36.8281576],
-            projection: 'equirectangular',
+            //projection: 'equirectangular',
         });
 
         // radius of wsr-88d scan in km
@@ -174,6 +201,9 @@
                 //    .addTo(map);
             });
         });
+        function testHello(text) {
+            console.log(text)
+        }
     </script>
 </body>
 </html>

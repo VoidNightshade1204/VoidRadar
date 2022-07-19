@@ -1,8 +1,9 @@
 onmessage=function(oEvent) {
   var url = oEvent.data[0];
 
-  var gateRes = 250/2;
-  if (url == "KTLX_sub.json") {
+  //250/2
+  var gateRes = 150;
+  if (url == "../data/radar/KTLX_sub.json") {
     gateRes = 1000/2;
   }
 
@@ -15,7 +16,6 @@ onmessage=function(oEvent) {
   var inv = 180.0/3.141592654;
   var re = 6371000.0;
   var phi = radians(oEvent.data[1]);
-  console.log(oEvent)
   var h0 = 0.0;
   
   function calculatePosition(az, range) {
@@ -36,24 +36,11 @@ onmessage=function(oEvent) {
         my = (180. - (180. / 3.141592654 * Math.log(Math.tan(3.141592654 / 4. + lat * 3.141592654 / 360.)))) / 360.; 
         //console.log(mx,my);
         return {
-          x:lon,
-          y:lat
+          x:mx,
+          y:my
         }
 
   }
-
-  var featuresArr = [];
-	function pushPoint(lng, lat) {
-		featuresArr.push({
-			"type": "Feature",
-			"geometry": { "type": "Point",
-				"coordinates": [lng, lat]
-			},
-			"properties": {
-				"value": 12.0,
-			}
-		},);
-	}
 
   //function to process file
   function reqListener() {
@@ -63,10 +50,10 @@ onmessage=function(oEvent) {
     var min = azs[0];
     var max = azs[azs.length-1];
 
-    for (var key in json) {
+    for (var key in json.radials) {
       if (key == "azimuths") continue;
       key = +key;
-      var values = json[key];
+      var values = json.radials[key];
       var az = azs[key];
       var leftAz, rightAz, bottomR, topR;
 
@@ -86,9 +73,9 @@ onmessage=function(oEvent) {
       }
 
       //loop through radar range gates
-      for (var i=0; i<values.length; i+=2) {
-        bottomR = values[i]-gateRes;
-        topR = values[i] + gateRes;
+      for (var i=0; i<values.length; i++) {
+        bottomR = values[i]*100 - gateRes;
+        topR = values[i]*100 + gateRes;
 
         var bl = calculatePosition(leftAz, bottomR);
         //console.log(bl, bl.x);
@@ -96,24 +83,24 @@ onmessage=function(oEvent) {
         var br = calculatePosition(rightAz, bottomR);
         var tr = calculatePosition(rightAz, topR);
 
-        //console.log(bl)
-        pushPoint(bl.x, bl.y)
-
         output.push(
           bl.x,//leftAz,
           bl.y,//bottomR,
+
           tl.x,//leftAz,
           tl.y,//topR,
+
           br.x,//rightAz,
           br.y,//bottomR,
           br.x,//rightAz,
           br.y,//bottomR,
+
           tl.x,//leftAz,
           tl.y,//topR,
           tr.x,//rightAz,
           tr.y//topR
         )
-        var colorVal = values[i+1];
+        var colorVal = json.values[key][i];
         colors.push(colorVal, colorVal, colorVal, colorVal, colorVal, colorVal);
       }
       
@@ -121,23 +108,13 @@ onmessage=function(oEvent) {
     var typedOutput = new Float32Array(output);
     var colorOutput = new Float32Array(colors);
     var indexOutput = new Int32Array(indices);
-    var geojsonParentTemplate = {
-      "type": "FeatureCollection",
-      "features": featuresArr
-    }
-    postMessage({
-      "data":typedOutput.buffer,
-      "indices":indexOutput.buffer,
-      "colors":colorOutput.buffer,
-      "geojson":geojsonParentTemplate
-    },
-    [typedOutput.buffer,indexOutput.buffer,colorOutput.buffer]);
+    postMessage({"data":typedOutput.buffer,"indices":indexOutput.buffer,"colors":colorOutput.buffer},[typedOutput.buffer,indexOutput.buffer,colorOutput.buffer]);
   }
 
   //get file from server
   var oReq = new XMLHttpRequest();
   oReq.addEventListener("load", reqListener);
-  oReq.open("GET", "/"+url);
+  oReq.open("GET", url);
   oReq.send();
 
   var output = [];

@@ -302,22 +302,20 @@ const draw = (data, _options) => {
 		"type": "FeatureCollection",
 		"features": featuresArr
 	}
-	var blob = new Blob([JSON.stringify(geojsonParentTemplate)], {type: "text/plain"});
+	var blob = new Blob([JSON.stringify(json)], {type: "text/plain"});
     var url = window.URL.createObjectURL(blob);
-	const a = document.createElement('a');
+	/*const a = document.createElement('a');
     a.style.display = 'none';
     a.href = url;
     // the filename you want
     a.download = 'sus.geojson';
     document.body.appendChild(a);
-    //a.click();
+    //a.click();*/
 
-	console.log(geojsonParentTemplate);
-	compVals.sort();
-	compVals.reverse();
-	console.log(compVals);
+	//testHello('yeet')
+	drawRadarShape(url);
 
-	const val0 = ['==', ['get', 'value'], 0];
+	/*const val0 = ['==', ['get', 'value'], 0];
 	const val1 = ['==', ['get', 'value'], 1];
 	const val2 = ['==', ['get', 'value'], 2];
 	const val3 = ['==', ['get', 'value'], 3];
@@ -398,7 +396,7 @@ const draw = (data, _options) => {
 					colors[19]
 				]
 		}
-	});
+	});*/
 
     document.getElementById('spinnerParent').style.display = 'none';
 
