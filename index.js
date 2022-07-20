@@ -57,16 +57,17 @@ document.getElementById('fileInput').addEventListener('input', function() {
             showPlotBtn();
             //document.getElementById('plotRef').style.display = 'inline';
             //document.getElementById('plotVel').style.display = 'inline';
+            document.getElementById('fileInput').style.display = 'none';
 
             document.getElementById('radarInfoDiv').style.display = 'inline';
 
+            document.getElementById('radFileName').innerHTML = uploadedFile.name;
+
             var theFileStation = l2rad.header.ICAO;
             document.getElementById('radStation').innerHTML = theFileStation;
-            document.getElementById('radStationParent').style.display = 'inline';
 
             var theFileVCP = l2rad.vcp.record.pattern_number;
             document.getElementById('radVCP').innerHTML = theFileVCP;
-            document.getElementById('radVCPParent').style.display = 'inline';
 
             var theFileDate = l2rad.header.modified_julian_date;
             var theFileTime = l2rad.header.milliseconds;
@@ -80,7 +81,6 @@ document.getElementById('fileInput').addEventListener('input', function() {
             var finalRadarDateTime = printFancyTime(fileDateObj, "UTC");
 
             document.getElementById('radDate').innerHTML = finalRadarDateTime;
-            document.getElementById('radDateParent').style.display = 'inline';
 
             $('.reflPlotButton').on('click', function() {
                 console.log('plot reflectivity data button clicked');
