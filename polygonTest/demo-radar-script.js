@@ -1,4 +1,4 @@
-function drawRadarShape(jsonObj, lati, lngi) {
+function drawRadarShape(jsonObj, lati, lngi, shouldFilter) {
   var settings = {};
   settings["rlat"] = lati;
   settings["rlon"] = lngi;
@@ -24,13 +24,32 @@ function drawRadarShape(jsonObj, lati, lngi) {
     color: 95 1 32 32
     */
     // https://github.com/Unidata/MetPy/blob/main/src/metpy/plots/colortable_files/NWSReflectivityExpanded.tbl
-    var colors = {"refc0":[
-      "#646464",
-      '#ccffff',
-      '#cc99cc',
-      '#996699',
-      '#663366',
-      '#999966',
+    var colors = {"refc0":[]}
+    if (!shouldFilter) {
+      // if the user doesnt want to filter low values,
+      // push the normal colors
+      colors["refc0"].push(
+        "#646464",
+        '#ccffff',
+        '#cc99cc',
+        '#996699',
+        '#663366',
+        '#999966',
+      )
+    } else if (shouldFilter) {
+      // if the user DOES want to filter low values,
+      // push transparent colors in their place
+      colors["refc0"].push(
+        "#00000000",
+        "#00000000",
+        "#00000000",
+        "#00000000",
+        "#00000000",
+        "#00000000",
+      )
+    }
+    // push the rest of the normal values
+    colors["refc0"].push(
       '#646464',
       '#04e9e7',
       '#019ff4',
@@ -47,7 +66,7 @@ function drawRadarShape(jsonObj, lati, lngi) {
       '#f800fd',
       '#9854c6',
       '#fdfdfd'
-    ]}
+    )
     var values = {"refc0":[
       -30, -25, -20, -15, -10, -5, 0,
       5, 10, 15, 20, 25, 30, 35, 40,

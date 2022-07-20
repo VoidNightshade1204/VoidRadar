@@ -239,7 +239,7 @@ const draw = (data, _options) => {
     $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
         var statLat = data[shtation][1];
         var statLng = data[shtation][2];
-		drawRadarShape(url, statLat, statLng);
+		drawRadarShape(url, statLat, statLng, true);
 
         //new mapboxgl.Marker()
         //    .setLngLat([stationLng, stationLat])
