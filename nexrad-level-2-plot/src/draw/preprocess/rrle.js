@@ -44,7 +44,7 @@ const findTotalMatches = (radials, startI, binIdx, resolutionThreshold) => {
 	return count;
 };
 
-const rrle = (radials, resolutionRad) => {
+const rrle = (radials, resolutionRad, shouldNullValues) => {
 	// calculate the nominal angle to the next radial plus 20% to easily account for floating point inaccuracies
 	const resolutionThreshold = resolutionRad * 180 / Math.PI * 1.2;
 	// sort the radials by azimuth, 0 > 360
@@ -56,18 +56,20 @@ const rrle = (radials, resolutionRad) => {
 		// get this radial
 		const radial = sorted[i];
 
-		// look at each bin on the radial
-		radial.moment_data.forEach((bin, binIdx) => {
-			if (radials[i].moment_data[binIdx] === null) return;
-			const totalMatches = findTotalMatches(radials, i, binIdx, resolutionThreshold);
-			// if a total match was found update the bin data and null out the remaining bins in the run
-			if (!totalMatches) return;
-			radial.moment_data[binIdx] = { value: bin, count: totalMatches };
-			const loopEnd = i + totalMatches - 1;
-			for (let clearI = i + 1; clearI <= loopEnd; clearI += 1) {
-				sorted[clearI].moment_data[binIdx] = null;
-			}
-		});
+		if (shouldNullValues) {
+			// look at each bin on the radial
+			radial.moment_data.forEach((bin, binIdx) => {
+				if (radials[i].moment_data[binIdx] === null) return;
+				const totalMatches = findTotalMatches(radials, i, binIdx, resolutionThreshold);
+				// if a total match was found update the bin data and null out the remaining bins in the run
+				if (!totalMatches) return;
+				radial.moment_data[binIdx] = { value: bin, count: totalMatches };
+				const loopEnd = i + totalMatches - 1;
+				for (let clearI = i + 1; clearI <= loopEnd; clearI += 1) {
+					sorted[clearI].moment_data[binIdx] = null;
+				}
+			});
+		}
 	}
 
 	return radials;

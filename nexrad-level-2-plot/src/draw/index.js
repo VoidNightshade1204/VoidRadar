@@ -151,7 +151,7 @@ const draw = (data, _options) => {
 	const filteredProduct = filterProduct(headers, dataName);
 	const downSampledProduct = downSample(filteredProduct, scale, resolution, options, palette);
 	const indexedProduct = indexProduct(downSampledProduct, palette);
-	const rrlEncoded = rrle(indexedProduct, resolution);
+	const rrlEncoded = rrle(indexedProduct, resolution, false);
 
 	var featuresArr = [];
 	function pushPoint(lng1, lat1, lng2, lat2, lng3, lat3, lng4, lat4, value) {
@@ -180,7 +180,6 @@ const draw = (data, _options) => {
 		'values': [],
 		'azimuths': [],
 	};
-	var compVals = [];
 	// loop through data
 	rrlEncoded.forEach((radial) => {
 		arr = [];
@@ -193,115 +192,37 @@ const draw = (data, _options) => {
 		const startAngle = radial.azimuth * (Math.PI / 180) - halfResolution * 1.1;
 		const endAngle = radial.azimuth * (Math.PI / 180) + halfResolution * 1.1;
 
+		//console.log(radial)
 		// plot each bin
 		radial.moment_data.forEach((bin, idx) => {
-			if (bin === null) return;
-
-			//console.log(radial.azimuth)
+			if (bin === null)  return;
 
 			ctx.beginPath();
 			// different methods for rrle encoded or not
 			if (bin.count) {
 				// rrle encoded
-				ctx.strokeStyle = palette.lookupRgba[bin.value];
-				ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle + resolution * (bin.count - 1));
-				//arr.push(((idx + deadZone) * gateSizeScaling) * 260)
+				//ctx.strokeStyle = palette.lookupRgba[bin.value];
+				//ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle + resolution * (bin.count - 1));
 				arr.push((idx + deadZone) * gateSizeScaling)
 				valArr.push(bin.value)
-				compVals.push(bin.value)
-				//pushPoint(startAngle, endAngle + resolution * (bin.count - 1))
 			} else {
 				// plain data
-				ctx.strokeStyle = palette.lookupRgba[bin];
-				ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle);
+				//ctx.strokeStyle = palette.lookupRgba[bin];
+				//ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle);
 				arr.push((idx + deadZone) * gateSizeScaling)
 				valArr.push(bin)
-				compVals.push(bin)
 			}
 			ctx.stroke();
 		});
 		json.radials.push(arr)
 		json.values.push(valArr)
 	});
-	function radians(deg) {
-		return (3.141592654/180.)*deg;
-	}
-	var inv = 180.0/3.141592654;
-	var re = 6371000.0;
-	var phi = radians(0.483395)
-	var radarLat = radians(35.33305);
-	var radarLon = radians(-97.27775);
-	var h0 = 0.0;
-	function calculatePosition(az, range) {
-        var mathaz = radians(90.0 - az);
-        var h = Math.sqrt(Math.pow(range,2.0)+Math.pow(((4./3.)*re+h0),2.0)+2.*range*((4./3.)*re+h0)*Math.sin(phi))-(4./3.)*re;
-        var ca = Math.acos((Math.pow(range,2.0)-Math.pow(re,2.0)-Math.pow(re+h,2.0))/(-2.0*re*(re+h)));
-        var xcart = (ca*re)*Math.cos(mathaz);
-        var ycart = (ca*re)*Math.sin(mathaz);
-        //convert to latitude longitude
-        var rho = Math.sqrt(Math.pow(xcart,2.0)+Math.pow(ycart,2.0));
-        var c = rho/re;
-        var lat = Math.asin(Math.cos(c)*Math.sin(radarLat)+(ycart*Math.sin(c)*Math.cos(radarLat))/(rho))*inv;
-        lon = (radarLon + Math.atan((xcart*Math.sin(c))/(rho*Math.cos(radarLat)*Math.cos(c)-ycart*Math.sin(radarLat)*Math.sin(c))))*inv;
-
-        //console.log(lat, lon)
-
-        mx = (180.0 + lon)/360.0;
-        my = (180. - (180. / 3.141592654 * Math.log(Math.tan(3.141592654 / 4. + lat * 3.141592654 / 360.)))) / 360.; 
-        //console.log(mx,my);
-        return {
-			x:lon,
-			y:lat
-        }
-
-	}
-	var gateRes = gateSizeScaling;
-	var azs = json.azimuths;
-    var min = azs[0];
-    var max = azs[azs.length-1];
-
-    for (var key in json.radials) {
-		if (key == "azimuths") continue;
-		key = +key;
-		var values = json.radials[key];
-		var az = azs[key];
-		var leftAz, rightAz, bottomR, topR;
-
-		//case when first az
-		if (key == 0) {
-			//case when crossing 0
-			leftAz = (min + 360 + max)/2;
-			rightAz = (az+azs[key+1])/2;
-		} else if (key == azs.length-1) {
-			//case when crossing 0 the other way
-			leftAz = (az + azs[key-1])/2;
-			rightAz = (min+360+max)/2; 
-		} else {
-			//case when nothing to worry about
-			leftAz = (az + azs[key-1])/2;
-			rightAz = (az + azs[key+1])/2;
-		}
-
-		//loop through radar range gates
-		for (var i=0; i<values.length; i+=2) {
-			bottomR = values[i]-gateRes;
-			topR = values[i] + gateRes;
-
-			var bl = calculatePosition(leftAz, bottomR);
-			//console.log(bl, bl.x);
-			var tl = calculatePosition(leftAz, topR);
-			var br = calculatePosition(rightAz, bottomR);
-			var tr = calculatePosition(rightAz, topR);
-
-			pushPoint(bl.x, bl.y, tl.x, tl.y, tr.x, tr.y, br.x, br.y, json.values[key][i]);
-		}
-	}
 	//console.log(valueArr)
 	//console.log(featuresArr)
-	var geojsonParentTemplate = {
-		"type": "FeatureCollection",
-		"features": featuresArr
-	}
+	//var geojsonParentTemplate = {
+	//	"type": "FeatureCollection",
+	//	"features": featuresArr
+	//}
 	var blob = new Blob([JSON.stringify(json)], {type: "text/plain"});
     var url = window.URL.createObjectURL(blob);
 	/*const a = document.createElement('a');
@@ -323,89 +244,6 @@ const draw = (data, _options) => {
         //    .setLngLat([stationLng, stationLat])
         //    .addTo(map);
     });
-
-	/*const val0 = ['==', ['get', 'value'], 0];
-	const val1 = ['==', ['get', 'value'], 1];
-	const val2 = ['==', ['get', 'value'], 2];
-	const val3 = ['==', ['get', 'value'], 3];
-	const val4 = ['==', ['get', 'value'], 4];
-	const val5 = ['==', ['get', 'value'], 5];
-	const val6 = ['==', ['get', 'value'], 6];
-	const val7 = ['==', ['get', 'value'], 7];
-	const val8 = ['==', ['get', 'value'], 8];
-	const val9 = ['==', ['get', 'value'], 9];
-    //const val1 = ['all', ['>=', ['get', 'value'], -30], ['<', ['get', 'value'], -25]];
-    //const val2 = ['all', ['>=', ['get', 'value'], -25], ['<', ['get', 'value'], -20]];
-    //const val3 = ['all', ['>=', ['get', 'value'], -20], ['<', ['get', 'value'], -15]];
-    //const val4 = ['all', ['>=', ['get', 'value'], -15], ['<', ['get', 'value'], -10]];
-    //const val5 = ['all', ['>=', ['get', 'value'], -10], ['<', ['get', 'value'], -5]];
-    //const val6 = ['all', ['>=', ['get', 'value'], -5], ['<', ['get', 'value'], 0]];
-    //const val7 = ['all', ['>=', ['get', 'value'], 0], ['<', ['get', 'value'], 5]];
-    //const val8 = ['all', ['>=', ['get', 'value'], 5], ['<', ['get', 'value'], 10]];
-    //const val9 = ['all', ['>=', ['get', 'value'], 10], ['<', ['get', 'value'], 15]];
-    //const val10 = ['all', ['>=', ['get', 'value'], 15], ['<', ['get', 'value'], 20]];
-    //const val11 = ['all', ['>=', ['get', 'value'], 20], ['<', ['get', 'value'], 25]];
-    //const val12 = ['all', ['>=', ['get', 'value'], 25], ['<', ['get', 'value'], 30]];
-    //const val13 = ['all', ['>=', ['get', 'value'], 30], ['<', ['get', 'value'], 35]];
-    //const val14 = ['all', ['>=', ['get', 'value'], 35], ['<', ['get', 'value'], 40]];
-    //const val15 = ['all', ['>=', ['get', 'value'], 40], ['<', ['get', 'value'], 45]];
-    //const val16 = ['all', ['>=', ['get', 'value'], 45], ['<', ['get', 'value'], 50]];
-    //const val17 = ['all', ['>=', ['get', 'value'], 50], ['<', ['get', 'value'], 55]];
-    //const val18 = ['all', ['>=', ['get', 'value'], 55], ['<', ['get', 'value'], 60]];
-    //const val19 = ['all', ['>=', ['get', 'value'], 60], ['<', ['get', 'value'], 65]];
-    //const val20 = ['all', ['>=', ['get', 'value'], 65], ['<', ['get', 'value'], 70]];
-    //const val21 = ['all', ['>=', ['get', 'value'], 70], ['<', ['get', 'value'], 75]];
-    //const val22 = ['>=', ['get', 'value'], 75];
-    const colors = [
-		'#ccffff',
-		'#cc99cc',
-		'#996699',
-		'#663366',
-		'#999966',
-		'#646464',
-		'#04e9e7',
-		'#019ff4',
-		'#0300f4',
-		'#02fd02',
-		'#01c501',
-		'#008e00',
-		'#fdf802',
-		'#e5bc00',
-		'#fd9500',
-		'#fd0000',
-		'#d40000',
-		'#bc0000',
-		'#f800fd',
-		'#9854c6',
-		'#fdfdfd'
-    ];
-
-	map.addLayer({
-		'id': 'radar',
-		'type': 'fill',
-		'source': {
-			type: 'geojson',
-		    // Use a URL for the value for the `data` property.
-			data: geojsonParentTemplate
-		},
-		'paint': {
-			'fill-color': [
-				'case',
-					val0, colors[6],
-					val1, colors[7],
-					val2, colors[8],
-					val3, colors[9],
-					val4, colors[10],
-					val5, colors[11],
-					val6, colors[12],
-					val7, colors[13],
-					val8, colors[14],
-					val9, colors[15],
-					//'#FF009A'
-					colors[19]
-				]
-		}
-	});*/
 
     document.getElementById('spinnerParent').style.display = 'none';
 
