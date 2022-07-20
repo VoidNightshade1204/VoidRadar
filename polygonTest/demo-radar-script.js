@@ -8,8 +8,30 @@ function drawRadarShape(jsonObj, lati, lngi) {
 
 
   function createTexture(gl) {
+    /*
+    color: 0 0 0 0
+    color: 10 67 97 162 106 208 228
+    color: 18 111 214 232 53 213 91
+    color: 22 17 213 24 9 94 9
+    color: 35 29 104 9 234 210 4 
+    color: 40 255 226 0 255 128 0
+    color: 50 255 0 0 113 0 0
+    color: 60 255 255 255 255 146 255
+    color: 65 255 117 255 225 11 227
+    color: 70 178 0 255 99 0 214
+    color: 75 5 236 240 1 32 32
+    color: 85 1 32 32
+    color: 95 1 32 32
+    */
+    // https://github.com/Unidata/MetPy/blob/main/src/metpy/plots/colortable_files/NWSReflectivityExpanded.tbl
     var colors = {"refc0":[
-      '#8a8a8a',
+      "#646464",
+      '#ccffff',
+      '#cc99cc',
+      '#996699',
+      '#663366',
+      '#999966',
+      '#646464',
       '#04e9e7',
       '#019ff4',
       '#0300f4',
@@ -26,7 +48,11 @@ function drawRadarShape(jsonObj, lati, lngi) {
       '#9854c6',
       '#fdfdfd'
     ]}
-    var values = {"refc0":[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]}
+    var values = {"refc0":[
+      -30, -25, -20, -15, -10, -5, 0,
+      5, 10, 15, 20, 25, 30, 35, 40,
+      45, 50, 55, 60, 65, 70, 75
+    ]}
     var colors=colors["refc0"];
     var levs=values["refc0"];
     var colortcanvas=document.getElementById("texturecolorbar");
@@ -35,8 +61,8 @@ function drawRadarShape(jsonObj, lati, lngi) {
     var ctxt = colortcanvas.getContext('2d');
     ctxt.clearRect(0,0,colortcanvas.width,colortcanvas.height); 
     var grdt=ctxt.createLinearGradient(0,0,1200,0);
-    var cmax=70;
-    var cmin=0;
+    var cmax=values.refc0[values.refc0.length-1];
+    var cmin=values.refc0[0];
     var clen=colors.length;
 
     for (var i=0;i<clen;++i) {

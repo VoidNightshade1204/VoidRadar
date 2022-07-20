@@ -151,7 +151,8 @@ const draw = (data, _options) => {
 	const filteredProduct = filterProduct(headers, dataName);
 	const downSampledProduct = downSample(filteredProduct, scale, resolution, options, palette);
 	const indexedProduct = indexProduct(downSampledProduct, palette);
-	const rrlEncoded = rrle(indexedProduct, resolution, false);
+	// indexedProduct is the original, but it modifies the gate values
+	const rrlEncoded = rrle(filteredProduct, resolution, false);
 
 	var featuresArr = [];
 	function pushPoint(lng1, lat1, lng2, lat2, lng3, lat3, lng4, lat4, value) {
