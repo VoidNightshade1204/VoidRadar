@@ -2,10 +2,11 @@ onmessage=function(oEvent) {
   var url = oEvent.data[0];
 
   //250/2
-  var gateRes = 1000;
-  if (url == "../data/radar/KTLX_sub.json") {
-    gateRes = 1000/2;
-  }
+  //1000/2
+  //var gateRes = 125;
+  //var multiplier = gateRes*2;
+  var gateRes = 125;
+  var multiplier = gateRes*2;
 
   function radians(deg) {
     return (3.141592654/180.)*deg;
@@ -65,7 +66,7 @@ onmessage=function(oEvent) {
       } else if (key == azs.length-1) {
         //case when crossing 0 the other way
         leftAz = (az + azs[key-1])/2;
-        rightAz = (min+360+max)/2; 
+        rightAz = (min+360+max)/2;
       } else {
         //case when nothing to worry about
         leftAz = (az + azs[key-1])/2;
@@ -74,7 +75,6 @@ onmessage=function(oEvent) {
 
       //loop through radar range gates
       for (var i=0; i<values.length; i++) {
-        var multiplier = 250;
         bottomR = values[i]*multiplier - gateRes;
         topR = values[i]*multiplier + gateRes;
 

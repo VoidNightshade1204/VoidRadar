@@ -79,8 +79,29 @@ function drawRadarShape(jsonObj, lati, lngi) {
   myWorker.postMessage([settings["base"],settings["phi"],settings["rlat"],settings["rlon"]]);
 
   //compile shaders
-  var vertexSource = document.getElementById('vertexShader').textContent;
-  var fragmentSource = document.getElementById('fragmentShader').textContent;
+  var vertexSource = `
+    //x: azimuth
+    //y: range
+    //z: value
+    attribute vec2 aPosition;
+    attribute float aColor;
+    uniform mat4 u_matrix;
+    varying float color;
+
+    void main() {
+        color = aColor;
+        gl_Position = u_matrix * vec4(aPosition.x,aPosition.y,0.0,1.0);
+    }`;
+  var fragmentSource = `
+    precision mediump float;
+    varying float color;
+    uniform sampler2D u_texture;
+    void main() {
+        //gl_FragColor = vec4(0.0,color/60.0,0.0,1.0);
+        float calcolor = (color)/(70.0);
+        gl_FragColor = texture2D(u_texture,vec2(min(max(calcolor,0.0),1.0),0.0));
+        //gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+    }`
   var masterGl;
   var layer = {
     id:"baseReflectivity",
