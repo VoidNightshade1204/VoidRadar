@@ -8,7 +8,8 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Oleo+Script&display=swap" rel="stylesheet">
+    <!-- https://cdnjs.com/libraries/font-awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
     <style>
         body {
@@ -18,7 +19,7 @@
         #map {
             position: absolute;
             bottom: 0;
-            height: 85%;
+            height: 100%;
             width: 100%;
         }
         .false-anchor {
@@ -28,6 +29,34 @@
         }
         .false-anchor:hover {
             color:rgb(0, 0, 131) !important;
+        }
+        
+        .icon-black {
+            color:rgb(0, 0, 0);
+        }
+        .icon-selected {
+            color:rgb(0, 132, 255);
+        }
+
+        .mapboxgl-ctrl-top-center {
+            position: relative !important;
+            left: 0;
+            right: 0;
+            top: 10px;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .mapboxgl-ctrl-bottom-center {
+            position: absolute !important;
+            left: 0;
+            right: 0;
+            bottom: 15px;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         #spinnerParent {
@@ -85,7 +114,7 @@
     <br>
     <a id="fileThatDoesnt" class="false-anchor">KLWX20220623_014344_V06</a>
     <br> -->
-    <input id="fileInput" type="file"/>
+    <!-- <input id="fileInput" type="file"/> -->
     <br>
     <button id="plotRef" style="display: none">Ref</button>
     <button id="plotVel" style="display: none">Vel</button>
@@ -93,9 +122,6 @@
     <br><br><br>
     <canvas id="theCanvas" style="display: none"></canvas>
     <canvas id="texturecolorbar" class="texturecolorbar"></canvas>
-    <script src="utils.js"></script>
-    <script src="./dist/bundle.js"></script>
-    <script src="./polygonTest/demo-radar-script.js"></script>
 
     <div id="map"></div>
 
@@ -161,6 +187,94 @@
             });*/
         })
 
+        // https://github.com/mapbox/mapbox-gl-js/issues/3039#issuecomment-401964567
+        function registerControlPosition(map, positionName) {
+            if (map._controlPositions[positionName]) {
+                return;
+            }
+            var positionContainer = document.createElement('div');
+            positionContainer.className = `mapboxgl-ctrl-${positionName}`;
+            map._controlContainer.appendChild(positionContainer);
+            map._controlPositions[positionName] = positionContainer;
+        }
+        registerControlPosition(map, 'top-center');
+        registerControlPosition(map, 'bottom-center');
+        registerControlPosition(map, 'center');
+
+        class infoControl {
+            onAdd(map) {
+                this._map = map;
+                this._container = document.createElement('div');
+                this._container.innerHTML = `
+                    <div id='infoContainer' style='
+                    text-align: center;
+                    width: auto;
+                    height: auto;
+                    padding: 5px 10px;
+                    /* line-height: 25px; */
+                    background-color: white;
+                    border: 1px solid black;
+                    border-radius: 5px;
+                    '>
+                        <input id="fileInput" type="file"/>
+                        <div id='radarInfoDiv' style='display: none'>
+                            <br>
+                            <div id='radStationParent' style='display: none'><b>Station: </b><a id='radStation'></a></div>
+                            <br>
+                            <div id='radVCPParent' style='display: none'><b>VCP: </b><a id='radVCP'></a></div>
+                        </div>
+                    </div>`
+                this._container.addEventListener('click', function() {
+                    console.log('sus')
+                })
+                return this._container;
+            }
+
+            onRemove() {
+                this._container.parentNode.removeChild(this._container);
+                this._map = undefined;
+            }
+        }
+        var theInfoControl = new infoControl
+        map.addControl(theInfoControl, 'top-center');
+
+        function showPlotBtn() {
+            class reflPlotControl {
+                onAdd(map) {
+                    this._map = map;
+                    this._container = document.createElement('div');
+                    this._container.innerHTML = `
+                        <div class="mapboxgl-control-container" style="margin-top: 100%;">
+                            <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
+                                <button class="mapboxgl-ctrl-fullscreen" type="button" aria-label="Globe Toggle">
+                                    <span class="fa fa-hurricane icon-black" id="reflPlotThing" aria-hidden="true" title="Globe Toggle"></span>
+                                </button>
+                            </div>
+                        </div>`
+                    $(this._container).addClass('reflPlotButton');
+                    this._container.addEventListener('click', function() {
+                        if (!$('#reflPlotThing').hasClass('icon-selected')) {
+                            $('#reflPlotThing').addClass('icon-selected');
+                            $('#reflPlotThing').removeClass('icon-black');
+                        }/* else if ($('#plotThing').hasClass('icon-selected')) {
+                            $('#plotThing').removeClass('icon-selected');
+                            $('#plotThing').addClass('icon-black');
+                            map.removeLayer('baseReflectivity');
+                            map.removeSource('baseReflectivity');
+                        }*/
+                    })
+                    return this._container;
+                }
+
+                onRemove() {
+                    this._container.parentNode.removeChild(this._container);
+                    this._map = undefined;
+                }
+            }
+            var theReflPlotControl = new reflPlotControl;
+            map.addControl(theReflPlotControl, 'top-left');
+        }
+
         // radius of wsr-88d scan in km
         var radius = 460;
         $('#fileStation').on('DOMSubtreeModified', function() {
@@ -202,5 +316,8 @@
             console.log(text)
         }
     </script>
+    <script src="utils.js"></script>
+    <script src="./dist/bundle.js"></script>
+    <script src="./polygonTest/demo-radar-script.js"></script>
 </body>
 </html>

@@ -16388,13 +16388,34 @@ document.getElementById('fileInput').addEventListener('input', function() {
         reader.addEventListener("load", function () {
             console.log('file uploaded, parsing now');
             var l2rad = new Level2Radar(toBuffer(this.result))
-            //console.log(l2rad)
+            console.log(l2rad)
             //var blob = new Blob([JSON.stringify(l2rad)], {type: "text/plain"});
             //var url = window.URL.createObjectURL(blob);
             //document.getElementById('decodedRadarDataURL').innerHTML = url;
-            document.getElementById('plotRef').style.display = 'inline';
+            showPlotBtn();
+            //document.getElementById('plotRef').style.display = 'inline';
             //document.getElementById('plotVel').style.display = 'inline';
 
+            document.getElementById('radarInfoDiv').style.display = 'inline';
+
+            var theFileStation = l2rad.header.ICAO;
+            document.getElementById('radStation').innerHTML = theFileStation;
+            document.getElementById('radStationParent').style.display = 'inline';
+
+            var theFileVCP = l2rad.vcp.record.pattern_number;
+            document.getElementById('radVCP').innerHTML = theFileVCP;
+            document.getElementById('radVCPParent').style.display = 'inline';
+
+            $('.reflPlotButton').on('click', function() {
+                console.log('plot reflectivity data button clicked');
+                const level2Plot = plot(l2rad, 'REF', {
+                    elevations: 1,
+                    background: 'rgba(0, 0, 0, 0)',
+                    //size: 500,
+                    //cropTo: 500,
+                    dpi: $('#userDPI').val(),
+                });
+            })
             document.getElementById('plotRef').addEventListener('click', function() {
                 document.getElementById('spinnerParent').style.display = 'block';
                 console.log('plot reflectivity data button clicked');
