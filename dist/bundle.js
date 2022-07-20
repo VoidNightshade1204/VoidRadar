@@ -16378,6 +16378,35 @@ function toBuffer(ab) {
     return buf;
 }
 
+function printFancyTime(dateObj, tz) {
+    return dateObj.toLocaleDateString(undefined, {timeZone: tz}) + " " + dateObj.toLocaleTimeString(undefined, {timeZone: tz}) + ` ${tz}`;
+}
+Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+function msToTime(s) {
+    // Pad to 2 or 3 digits, default is 2
+    function pad(n, z) {
+        z = z || 2;
+        return ('00' + n).slice(-z);
+    }
+    var ms = s % 1000;
+    s = (s - ms) / 1000;
+    var secs = s % 60;
+    s = (s - secs) / 60;
+    var mins = s % 60;
+    var hrs = (s - mins) / 60;
+    return {
+        'hours': pad(hrs),
+        'minutes': pad(mins),
+        'seconds': pad(secs),
+        'milliseconds': pad(ms, 3),
+    }
+    //return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+}
+
 document.getElementById('fileInput').addEventListener('input', function() {
     document.getElementById('spinnerParent').style.display = 'block';
     //console.log(URL.createObjectURL(document.getElementById("fileInput").files[0]));
@@ -16405,6 +16434,20 @@ document.getElementById('fileInput').addEventListener('input', function() {
             var theFileVCP = l2rad.vcp.record.pattern_number;
             document.getElementById('radVCP').innerHTML = theFileVCP;
             document.getElementById('radVCPParent').style.display = 'inline';
+
+            var theFileDate = l2rad.header.modified_julian_date;
+            var theFileTime = l2rad.header.milliseconds;
+            var fileDateObj = new Date(0).addDays(theFileDate);
+            var fileHours = msToTime(theFileTime).hours;
+            var fileMinutes = msToTime(theFileTime).minutes;
+            var fileSeconds = msToTime(theFileTime).seconds;
+            fileDateObj.setUTCHours(fileHours);
+            fileDateObj.setUTCMinutes(fileMinutes);
+            fileDateObj.setUTCSeconds(fileSeconds);
+            var finalRadarDateTime = printFancyTime(fileDateObj, "UTC");
+
+            document.getElementById('radDate').innerHTML = finalRadarDateTime;
+            document.getElementById('radDateParent').style.display = 'inline';
 
             $('.reflPlotButton').on('click', function() {
                 console.log('plot reflectivity data button clicked');
