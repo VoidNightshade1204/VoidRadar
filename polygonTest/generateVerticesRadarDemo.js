@@ -5,8 +5,20 @@ onmessage=function(oEvent) {
   //1000/2
   //var gateRes = 125;
   //var multiplier = gateRes*2;
-  var gateRes = 125;
-  var multiplier = gateRes*2;
+  var radVersion = oEvent.data[4];
+
+  var gateRes;
+  var multiplier;
+  // different gate resolutions for hi-res vs non hi-res data
+  if (radVersion == "06") {
+    gateRes = 125;
+    multiplier = gateRes*2;
+  } else if (radVersion == "01") {
+    gateRes = 2000;
+    multiplier = gateRes*8;
+  }
+
+  console.log(gateRes, multiplier)
 
   function radians(deg) {
     return (3.141592654/180.)*deg;

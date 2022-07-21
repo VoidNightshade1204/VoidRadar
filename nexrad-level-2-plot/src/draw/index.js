@@ -94,7 +94,7 @@ const draw = (data, _options) => {
 	// this calculation scales the plot accordingly to the nominal 0.25km so all generated plots are at the same scale
 	const rawGateSize = data?.data?.[options.elevation]?.[0]?.record?.reflect?.gate_size ?? 0.25;
 	const realGateSize = rawGateSize !== 0.3 ? rawGateSize : rawGateSize / 2;
-	const gateSizeScaling = 0.25 / realGateSize;
+	var gateSizeScaling = 0.25 / realGateSize;
 
 	// calculate crop, adjust if necessary
 	const cropTo = Math.min(options.size, options.cropTo);
@@ -180,15 +180,24 @@ const draw = (data, _options) => {
 		'radials': [],
 		'values': [],
 		'azimuths': [],
+		'version': [],
 	};
 	// loop through data
-	const gateScale = rrlEncoded[0].gate_size / 0.25;
+	if (data.header.version == "01") {
+		gateSizeScaling = rrlEncoded[0].gate_size * 0.25;
+	}
 	rrlEncoded.forEach((radial) => {
 		arr = [];
 		valArr = [];
 		json.azimuths.push(radial.azimuth)
 		// calculate plotting parameters
-		const deadZone = radial.first_gate / radial.gate_size / scale;
+
+		var deadZone;
+		if (data.header.version == "01") {
+			deadZone = radial.first_gate / radial.gate_size / scale * gateSizeScaling;
+		} else {
+			deadZone = radial.first_gate / radial.gate_size / scale;
+		}
 
 		// 10% is added to the arc to ensure that each arc bleeds into the next just slightly to avoid radial empty spaces at further distances
 		const startAngle = radial.azimuth * (Math.PI / 180) - halfResolution * 1.1;
@@ -223,6 +232,7 @@ const draw = (data, _options) => {
 	//	"type": "FeatureCollection",
 	//	"features": featuresArr
 	//}
+	json.version.push(data.header.version);
 	var blob = new Blob([JSON.stringify(json)], {type: "text/plain"});
     var url = window.URL.createObjectURL(blob);
 	/*const a = document.createElement('a');
@@ -238,7 +248,7 @@ const draw = (data, _options) => {
     $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
         var statLat = data[shtation][1];
         var statLng = data[shtation][2];
-		drawRadarShape(url, statLat, statLng, true);
+		drawRadarShape(url, statLat, statLng, !$('#shouldLowFilter').prop("checked"));
 
         //new mapboxgl.Marker()
         //    .setLngLat([stationLng, stationLat])

@@ -121,7 +121,22 @@ function drawRadarShape(jsonObj, lati, lngi, shouldFilter) {
     map.addLayer(layer);
   }
 
-  myWorker.postMessage([settings["base"],settings["phi"],settings["rlat"],settings["rlon"]]);
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var vers = JSON.parse(this.responseText).version[0];
+
+        myWorker.postMessage([
+          settings["base"],
+          settings["phi"],
+          settings["rlat"],
+          settings["rlon"],
+          vers
+        ]);
+      }
+  };
+  xhttp.open("GET", jsonObj, true);
+  xhttp.send();
 
   //compile shaders
   var vertexSource = `

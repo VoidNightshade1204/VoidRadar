@@ -40,6 +40,10 @@ function msToTime(s) {
     }
     //return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
 }
+function round(value, precision) {
+    var multiplier = Math.pow(10, precision || 0);
+    return Math.round(value * multiplier) / multiplier;
+}
 document.getElementById('fileInput').addEventListener('input', function() {
     // Create the event
     var event = new CustomEvent("loadFile", { "detail": document.getElementById('fileInput').files[0] });
@@ -71,11 +75,11 @@ document.addEventListener('loadFile', function(event) {
                 // 1, 3, and 4 are safe
                 if (document.getElementById('fileVersion').innerHTML == "06") {
                     if (elevAngles[key][1] != 2) {
-                        document.getElementById('elevInput').add(new Option(elevAngles[key][0], elevs[key]));
+                        document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
                     }
                 } else {
                     if (elevAngles[key][1] == 1) {
-                        document.getElementById('elevInput').add(new Option(elevAngles[key][0], elevs[key]));
+                        document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
                     }
                 }
             }
@@ -124,6 +128,15 @@ document.addEventListener('loadFile', function(event) {
                 elevations: parseInt($('#elevInput').val()),
             });
             $('#elevInput').on('change', function() {
+                if ($('#reflPlotThing').hasClass('icon-selected')) {
+                    removeMapLayer('baseReflectivity');
+                    $("#settingsDialog").dialog('close');
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                }
+            })
+            $('#shouldLowFilter').on('change', function() {
                 if ($('#reflPlotThing').hasClass('icon-selected')) {
                     removeMapLayer('baseReflectivity');
                     $("#settingsDialog").dialog('close');
