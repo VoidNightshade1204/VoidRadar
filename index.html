@@ -113,6 +113,7 @@
         <div class="spinner"></div>
     </div>
     <div id="fileStation" style="display: none"></div>
+    <div id="fileVersion" style="display: none"></div>
     <div id="decodedRadarDataURL" style="display: none"></div>
     <!-- <a id="fileThatWorks" class="false-anchor">KTLX20130520_200356_V06.gz</a>
     <br>
@@ -367,7 +368,10 @@
                             });
                             xhr.send();
                         }
-                        loadFileObject('data/KTLX20130520_200356_V06.gz', 'KTLX20130520_200356_V06.gz');
+                        // KLIX20050829_061516.gz
+                        // KTLX20130520_200356_V06.gz
+                        var fileToLoad = 'KTLX20130520_200356_V06.gz';
+                        loadFileObject('data/' + fileToLoad, fileToLoad);
                     } else if ($('#testFileThing').hasClass('icon-selected')) {
                         $('#testFileThing').removeClass('icon-selected');
                         $('#testFileThing').addClass('icon-black');

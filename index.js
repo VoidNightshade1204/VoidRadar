@@ -59,15 +59,24 @@ document.addEventListener('loadFile', function(event) {
             console.log('file uploaded, parsing now');
             var l2rad = new Level2Radar(toBuffer(this.result))
             console.log(l2rad)
+            var theFileVersion = l2rad.header.version;
+            document.getElementById('fileVersion').innerHTML = theFileVersion;
 
             var elevs = l2rad.listElevations();
             var elevAngles = l2rad.listElevations('angle', l2rad);
+            console.log(elevs)
             console.log(elevAngles)
             for (var key in elevAngles) {
                 // I believe waveform_type == 2 means that ref data is not in that sweep
                 // 1, 3, and 4 are safe
-                if (elevAngles[key][1] != 2) {
-                    document.getElementById('elevInput').add(new Option(elevAngles[key][0], elevs[key]));
+                if (document.getElementById('fileVersion').innerHTML == "06") {
+                    if (elevAngles[key][1] != 2) {
+                        document.getElementById('elevInput').add(new Option(elevAngles[key][0], elevs[key]));
+                    }
+                } else {
+                    if (elevAngles[key][1] == 1) {
+                        document.getElementById('elevInput').add(new Option(elevAngles[key][0], elevs[key]));
+                    }
                 }
             }
             //var blob = new Blob([JSON.stringify(l2rad)], {type: "text/plain"});

@@ -283,10 +283,25 @@ class Level2Radar {
 		if (angleOrNum == undefined || angleOrNum == "num") {
 			return Object.keys(this.data).map((key) => +key);
 		} else if (angleOrNum == "angle") {
-			var elevAngleArr = [];
-			for (var key in radObj.vcp.record.elevations) {
-				var base = radObj.vcp.record.elevations[key]
-				elevAngleArr.push([base.elevation_angle, base.waveform_type]);
+			if (radObj.header.version == "06") {
+				console.log('hi-res data');
+				var elevAngleArr = [];
+				for (var key in radObj.vcp.record.elevations) {
+					var base = radObj.vcp.record.elevations[key]
+					elevAngleArr.push([base.elevation_angle, base.waveform_type]);
+				}
+			} else if (radObj.header.version == "01") {
+				console.log('non hi-res data');
+				// elevation angles are stored in a different place for non hi-res data
+				var elevAngleArr = [];
+				for (var key in radObj.data) {
+					var base = radObj.data[key];
+					var yn = 0;
+					if (base[0].record.reflect) {
+						yn = 1;
+					}
+					elevAngleArr.push([base[0].record.elevation_angle, yn]);
+				}
 			}
 			return elevAngleArr;
 		}

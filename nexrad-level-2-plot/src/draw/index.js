@@ -150,7 +150,7 @@ const draw = (data, _options) => {
 	// pre-processing
 	const filteredProduct = filterProduct(headers, dataName);
 	const downSampledProduct = downSample(filteredProduct, scale, resolution, options, palette);
-	const indexedProduct = indexProduct(downSampledProduct, palette);
+	//const indexedProduct = indexProduct(downSampledProduct, palette);
 	// indexedProduct is the original, but it modifies the gate values
 	const rrlEncoded = rrle(filteredProduct, resolution, false);
 
@@ -182,6 +182,7 @@ const draw = (data, _options) => {
 		'azimuths': [],
 	};
 	// loop through data
+	const gateScale = rrlEncoded[0].gate_size / 0.25;
 	rrlEncoded.forEach((radial) => {
 		arr = [];
 		valArr = [];
@@ -192,13 +193,11 @@ const draw = (data, _options) => {
 		// 10% is added to the arc to ensure that each arc bleeds into the next just slightly to avoid radial empty spaces at further distances
 		const startAngle = radial.azimuth * (Math.PI / 180) - halfResolution * 1.1;
 		const endAngle = radial.azimuth * (Math.PI / 180) + halfResolution * 1.1;
-
-		//console.log(radial)
 		// plot each bin
 		radial.moment_data.forEach((bin, idx) => {
 			if (bin === null)  return;
 
-			ctx.beginPath();
+			//ctx.beginPath();
 			// different methods for rrle encoded or not
 			if (bin.count) {
 				// rrle encoded
@@ -213,7 +212,7 @@ const draw = (data, _options) => {
 				arr.push((idx + deadZone) * gateSizeScaling)
 				valArr.push(bin)
 			}
-			ctx.stroke();
+			//ctx.stroke();
 		});
 		json.radials.push(arr)
 		json.values.push(valArr)

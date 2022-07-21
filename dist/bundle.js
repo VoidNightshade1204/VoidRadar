@@ -16426,15 +16426,24 @@ document.addEventListener('loadFile', function(event) {
             console.log('file uploaded, parsing now');
             var l2rad = new Level2Radar(toBuffer(this.result))
             console.log(l2rad)
+            var theFileVersion = l2rad.header.version;
+            document.getElementById('fileVersion').innerHTML = theFileVersion;
 
             var elevs = l2rad.listElevations();
             var elevAngles = l2rad.listElevations('angle', l2rad);
+            console.log(elevs)
             console.log(elevAngles)
             for (var key in elevAngles) {
                 // I believe waveform_type == 2 means that ref data is not in that sweep
                 // 1, 3, and 4 are safe
-                if (elevAngles[key][1] != 2) {
-                    document.getElementById('elevInput').add(new Option(elevAngles[key][0], elevs[key]));
+                if (document.getElementById('fileVersion').innerHTML == "06") {
+                    if (elevAngles[key][1] != 2) {
+                        document.getElementById('elevInput').add(new Option(elevAngles[key][0], elevs[key]));
+                    }
+                } else {
+                    if (elevAngles[key][1] == 1) {
+                        document.getElementById('elevInput').add(new Option(elevAngles[key][0], elevs[key]));
+                    }
                 }
             }
             //var blob = new Blob([JSON.stringify(l2rad)], {type: "text/plain"});
@@ -17851,10 +17860,25 @@ class Level2Radar {
 		if (angleOrNum == undefined || angleOrNum == "num") {
 			return Object.keys(this.data).map((key) => +key);
 		} else if (angleOrNum == "angle") {
-			var elevAngleArr = [];
-			for (var key in radObj.vcp.record.elevations) {
-				var base = radObj.vcp.record.elevations[key]
-				elevAngleArr.push([base.elevation_angle, base.waveform_type]);
+			if (radObj.header.version == "06") {
+				console.log('hi-res data');
+				var elevAngleArr = [];
+				for (var key in radObj.vcp.record.elevations) {
+					var base = radObj.vcp.record.elevations[key]
+					elevAngleArr.push([base.elevation_angle, base.waveform_type]);
+				}
+			} else if (radObj.header.version == "01") {
+				console.log('non hi-res data');
+				// elevation angles are stored in a different place for non hi-res data
+				var elevAngleArr = [];
+				for (var key in radObj.data) {
+					var base = radObj.data[key];
+					var yn = 0;
+					if (base[0].record.reflect) {
+						yn = 1;
+					}
+					elevAngleArr.push([base[0].record.elevation_angle, yn]);
+				}
 			}
 			return elevAngleArr;
 		}
@@ -18201,7 +18225,7 @@ const draw = (data, _options) => {
 	// pre-processing
 	const filteredProduct = filterProduct(headers, dataName);
 	const downSampledProduct = downSample(filteredProduct, scale, resolution, options, palette);
-	const indexedProduct = indexProduct(downSampledProduct, palette);
+	//const indexedProduct = indexProduct(downSampledProduct, palette);
 	// indexedProduct is the original, but it modifies the gate values
 	const rrlEncoded = rrle(filteredProduct, resolution, false);
 
@@ -18233,6 +18257,7 @@ const draw = (data, _options) => {
 		'azimuths': [],
 	};
 	// loop through data
+	const gateScale = rrlEncoded[0].gate_size / 0.25;
 	rrlEncoded.forEach((radial) => {
 		arr = [];
 		valArr = [];
@@ -18243,13 +18268,11 @@ const draw = (data, _options) => {
 		// 10% is added to the arc to ensure that each arc bleeds into the next just slightly to avoid radial empty spaces at further distances
 		const startAngle = radial.azimuth * (Math.PI / 180) - halfResolution * 1.1;
 		const endAngle = radial.azimuth * (Math.PI / 180) + halfResolution * 1.1;
-
-		//console.log(radial)
 		// plot each bin
 		radial.moment_data.forEach((bin, idx) => {
 			if (bin === null)  return;
 
-			ctx.beginPath();
+			//ctx.beginPath();
 			// different methods for rrle encoded or not
 			if (bin.count) {
 				// rrle encoded
@@ -18264,7 +18287,7 @@ const draw = (data, _options) => {
 				arr.push((idx + deadZone) * gateSizeScaling)
 				valArr.push(bin)
 			}
-			ctx.stroke();
+			//ctx.stroke();
 		});
 		json.radials.push(arr)
 		json.values.push(valArr)
@@ -18653,7 +18676,27 @@ module.exports = downSample;
 
 const filterProduct = (data, product) => data.map((header) => {
 	// get correct data
-	const thisRadial = header[product];
+	let thisRadial = header[product];
+
+	// special case for non-hi-res data
+	// re-formats data to expected format
+	if (!thisRadial.moment_data && thisRadial) {
+		thisRadial = {
+			...header,
+			moment_data: header[product],
+		};
+
+		if (product === 'refelect') {
+			thisRadial.gate_size = header.surveillance_range_sample_interval;
+			thisRadial.gate_count = header.number_of_surveillance_bins;
+		} else {
+			thisRadial.gate_size = header.doppler_range_sample_interval;
+			thisRadial.gate_count = header.number_of_doppler_bins;
+		}
+
+		thisRadial.first_gate = 2;
+	}
+
 	// skip if this radial isn't found
 	if (thisRadial === undefined) return false;
 	thisRadial.azimuth = header.azimuth;
