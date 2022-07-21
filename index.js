@@ -73,7 +73,7 @@ document.addEventListener('loadFile', function(event) {
             for (var key in elevAngles) {
                 // I believe waveform_type == 2 means that ref data is not in that sweep
                 // 1, 3, and 4 are safe
-                if (document.getElementById('fileVersion').innerHTML == "06") {
+                if (theFileVersion == "06") {
                     if (elevAngles[key][1] != 2) {
                         document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
                     }
@@ -98,7 +98,12 @@ document.addEventListener('loadFile', function(event) {
             var theFileStation = l2rad.header.ICAO;
             document.getElementById('radStation').innerHTML = theFileStation;
 
-            var theFileVCP = l2rad.vcp.record.pattern_number;
+            var theFileVCP;
+            if (theFileVersion == "06") {
+                theFileVCP = l2rad.vcp.record.pattern_number;
+            } else {
+                theFileVCP = l2rad.data[1][0].record.vcp;
+            }
             document.getElementById('radVCP').innerHTML = theFileVCP;
 
             var theFileDate = l2rad.header.modified_julian_date;
