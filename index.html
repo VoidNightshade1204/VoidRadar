@@ -6,8 +6,12 @@
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+    <link href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css" rel="stylesheet">
+
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+
     <!-- https://cdnjs.com/libraries/font-awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
@@ -18,8 +22,8 @@
         }
         #map {
             position: absolute;
+            top: 0;
             bottom: 0;
-            height: 100%;
             width: 100%;
         }
         .false-anchor {
@@ -118,10 +122,20 @@
     <br>
     <button id="plotRef" style="display: none">Ref</button>
     <button id="plotVel" style="display: none">Vel</button>
-    <div id="messageDisplay"></div>
+    <div id="messageDisplay" style="display: none"></div>
     <br><br><br>
     <canvas id="theCanvas" style="display: none"></canvas>
-    <canvas id="texturecolorbar" class="texturecolorbar"></canvas>
+    <canvas id="texturecolorbar" class="texturecolorbar" style="display: none"></canvas>
+
+    <div id="settingsDialog" style="display: none">
+        <div><b>Elevation:</b></div>
+        <select id="elevInput">
+            <!-- <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="17">17</option> -->
+        </select>
+    </div>
 
     <div id="map"></div>
 
@@ -256,12 +270,11 @@
                         if (!$('#reflPlotThing').hasClass('icon-selected')) {
                             $('#reflPlotThing').addClass('icon-selected');
                             $('#reflPlotThing').removeClass('icon-black');
-                        }/* else if ($('#plotThing').hasClass('icon-selected')) {
-                            $('#plotThing').removeClass('icon-selected');
-                            $('#plotThing').addClass('icon-black');
-                            map.removeLayer('baseReflectivity');
-                            map.removeSource('baseReflectivity');
-                        }*/
+                        } else if ($('#reflPlotThing').hasClass('icon-selected')) {
+                            $('#reflPlotThing').removeClass('icon-selected');
+                            $('#reflPlotThing').addClass('icon-black');
+                            removeMapLayer('baseReflectivity');
+                        }
                     })
                     return this._container;
                 }
@@ -274,6 +287,53 @@
             var theReflPlotControl = new reflPlotControl;
             map.addControl(theReflPlotControl, 'top-left');
         }
+        class settingsControl {
+            onAdd(map) {
+                this._map = map;
+                this._container = document.createElement('div');
+                this._container.innerHTML = `
+                    <div class="mapboxgl-control-container" style="margin-top: 100%;">
+                        <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
+                            <button class="mapboxgl-ctrl-fullscreen" type="button" aria-label="Globe Toggle">
+                                <span class="fa fa-gear icon-black" id="settingsThing" aria-hidden="true" title="Globe Toggle"></span>
+                            </button>
+                        </div>
+                    </div>`
+                this._container.addEventListener('click', function() {
+                    if (!$('#settingsThing').hasClass('icon-selected')) {
+                        $('#settingsThing').addClass('icon-selected');
+                        $('#settingsThing').removeClass('icon-black');
+                        $("#settingsDialog").dialog({
+                            modal: true,
+                            // https://stackoverflow.com/a/30624445/18758797
+                            open: function () {
+                                $(this).parent().css({
+                                    position: 'absolute',
+                                    top: 10,
+                                    maxHeight: '70vh',
+                                    overflow: 'scroll'
+                                });
+                            },
+                            close: function () {
+                                $('#settingsThing').removeClass('icon-selected');
+                                $('#settingsThing').addClass('icon-black');
+                            }
+                        });
+                    } else if ($('#settingsThing').hasClass('icon-selected')) {
+                        $('#settingsThing').removeClass('icon-selected');
+                        $('#settingsThing').addClass('icon-black');
+                    }
+                })
+                return this._container;
+            }
+
+            onRemove() {
+                this._container.parentNode.removeChild(this._container);
+                this._map = undefined;
+            }
+        }
+        var theSettingsControl = new settingsControl;
+        map.addControl(theSettingsControl, 'top-right');
 
         // radius of wsr-88d scan in km
         var radius = 460;
@@ -314,6 +374,14 @@
         });
         function testHello(text) {
             console.log(text)
+        }
+        function removeMapLayer(layername) {
+            if (map.getLayer(layername)) {
+                map.removeLayer(layername);
+            }
+            if (map.getSource(layername)) {
+                map.removeSource(layername);
+            }
         }
     </script>
     <script src="utils.js"></script>

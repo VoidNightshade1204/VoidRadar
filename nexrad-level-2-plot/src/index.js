@@ -1,4 +1,5 @@
 const { draw, canvas } = require('./draw');
+const { keys } = require('./draw/palettes/hexlookup');
 const { writePngToFile } = require('./utils/file');
 /**
  * Plot level 2 data

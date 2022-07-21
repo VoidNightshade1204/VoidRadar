@@ -100,11 +100,11 @@ function drawRadarShape(jsonObj, lati, lngi, shouldFilter) {
   }
 
   function dataStore() {
-     return {
-       positions:null,
-       indices:null,
-       colors:null
-     }
+    return {
+      positions:null,
+      indices:null,
+      colors:null
+    }
   }
 
   var pageState = dataStore();
@@ -163,12 +163,10 @@ function drawRadarShape(jsonObj, lati, lngi, shouldFilter) {
       gl.shaderSource(vertexShader, vertexSource);
       gl.compileShader(vertexShader);
       var compilationLog = gl.getShaderInfoLog(vertexShader);
-      console.log('Shader compiler log: ' + compilationLog);
       var fragmentShader=gl.createShader(gl.FRAGMENT_SHADER);
       gl.shaderSource(fragmentShader, fragmentSource);
       gl.compileShader(fragmentShader);
       var compilationLog = gl.getShaderInfoLog(fragmentShader);
-      console.log('Shader compiler log: ' + compilationLog);
       this.program = gl.createProgram();
       gl.attachShader(this.program, vertexShader);
       gl.attachShader(this.program, fragmentShader);

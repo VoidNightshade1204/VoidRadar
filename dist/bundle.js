@@ -16368,6 +16368,7 @@ module.exports = function whichTypedArray(value) {
 //const fetch = require('node-fetch');
 const { Level2Radar } = require('./nexrad-level-2-data/src');
 const { plot } = require('./nexrad-level-2-plot/src');
+const { map } = require('./nexrad-level-2-plot/src/draw/palettes/hexlookup');
 
 function toBuffer(ab) {
     const buf = Buffer.alloc(ab.byteLength);
@@ -16418,6 +16419,17 @@ document.getElementById('fileInput').addEventListener('input', function() {
             console.log('file uploaded, parsing now');
             var l2rad = new Level2Radar(toBuffer(this.result))
             console.log(l2rad)
+
+            var elevs = l2rad.listElevations();
+            var elevAngles = l2rad.listElevations('angle', l2rad);
+            console.log(elevAngles)
+            for (var key in elevAngles) {
+                // I believe waveform_type == 2 means that ref data is not in that sweep
+                // 1, 3, and 4 are safe
+                if (elevAngles[key][1] != 2) {
+                    document.getElementById('elevInput').add(new Option(elevAngles[key][0], elevs[key]));
+                }
+            }
             //var blob = new Blob([JSON.stringify(l2rad)], {type: "text/plain"});
             //var url = window.URL.createObjectURL(blob);
             //document.getElementById('decodedRadarDataURL').innerHTML = url;
@@ -16450,38 +16462,21 @@ document.getElementById('fileInput').addEventListener('input', function() {
             document.getElementById('radDate').innerHTML = finalRadarDateTime;
 
             $('.reflPlotButton').on('click', function() {
-                console.log('plot reflectivity data button clicked');
-                const level2Plot = plot(l2rad, 'REF', {
-                    elevations: 1,
-                    background: 'rgba(0, 0, 0, 0)',
-                    //size: 500,
-                    //cropTo: 500,
-                    dpi: $('#userDPI').val(),
-                });
+                if ($('#reflPlotThing').hasClass('icon-selected')) {
+                    console.log('plot reflectivity data button clicked');
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                }
             })
-            document.getElementById('plotRef').addEventListener('click', function() {
-                document.getElementById('spinnerParent').style.display = 'block';
-                console.log('plot reflectivity data button clicked');
-                const level2Plot = plot(l2rad, 'REF', {
-                    elevations: 1,
-                    background: 'rgba(0, 0, 0, 0)',
-                    //size: 500,
-                    //cropTo: 500,
-                    dpi: $('#userDPI').val(),
-                });
-                console.log('dpi set to ' + $('#userDPI').val())
-            })
-            document.getElementById('plotVel').addEventListener('click', function() {
-                document.getElementById('spinnerParent').style.display = 'block';
-                console.log('plot velocity data button clicked');
-                const level2Plot = plot(l2rad, 'VEL', {
-                    elevations: 2,
-                    background: 'rgba(0, 0, 0, 0)',
-                    //size: 500,
-                    //cropTo: 500,
-                    dpi: $('#userDPI').val(),
-                });
-                console.log('dpi set to ' + $('#userDPI').val())
+            $('#elevInput').on('change', function() {
+                if ($('#reflPlotThing').hasClass('icon-selected')) {
+                    removeMapLayer('baseReflectivity');
+                    $("#settingsDialog").dialog('close');
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                }
             })
             /*const level2Plot = plot(l2rad, 'REF', {
                 elevations: 1,
@@ -16523,7 +16518,7 @@ document.getElementById('fileThatWorks').addEventListener('click', function() {
     })
     .catch(err => console.error(err));*/
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"./nexrad-level-2-data/src":77,"./nexrad-level-2-plot/src":90,"buffer":11}],66:[function(require,module,exports){
+},{"./nexrad-level-2-data/src":77,"./nexrad-level-2-plot/src":90,"./nexrad-level-2-plot/src/draw/palettes/hexlookup":81,"buffer":11}],66:[function(require,module,exports){
 // parse message type 1
 module.exports = (raf, message, options) => {
 	// record starting offset
@@ -17836,10 +17831,21 @@ class Level2Radar {
 	 * List all available elevations
 	 *
 	 * @category Metadata
+	 * @param  {string} angleOrNum Whether to return the elevation angles, or numbers representing their total amount.
+	 * @param  {Level2Radar} radObj The radar object returned from nexrad-level-2-data. Only used when retrieving elevation angle numbers.
 	 * @returns {number[]}
 	 */
-	listElevations() {
-		return Object.keys(this.data).map((key) => +key);
+	listElevations(angleOrNum, radObj) {
+		if (angleOrNum == undefined || angleOrNum == "num") {
+			return Object.keys(this.data).map((key) => +key);
+		} else if (angleOrNum == "angle") {
+			var elevAngleArr = [];
+			for (var key in radObj.vcp.record.elevations) {
+				var base = radObj.vcp.record.elevations[key]
+				elevAngleArr.push([base.elevation_angle, base.waveform_type]);
+			}
+			return elevAngleArr;
+		}
 	}
 
 	_checkData() {
@@ -18745,6 +18751,7 @@ module.exports = rrle;
 
 },{}],90:[function(require,module,exports){
 const { draw, canvas } = require('./draw');
+const { keys } = require('./draw/palettes/hexlookup');
 const { writePngToFile } = require('./utils/file');
 /**
  * Plot level 2 data
@@ -18809,7 +18816,7 @@ module.exports = {
 	canvas,
 };
 
-},{"./draw":80,"./utils/file":91}],91:[function(require,module,exports){
+},{"./draw":80,"./draw/palettes/hexlookup":81,"./utils/file":91}],91:[function(require,module,exports){
 const fs = require('fs');
 // write a canvas to a Png file
 /**

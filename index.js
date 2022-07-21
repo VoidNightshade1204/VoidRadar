@@ -1,6 +1,7 @@
 //const fetch = require('node-fetch');
 const { Level2Radar } = require('./nexrad-level-2-data/src');
 const { plot } = require('./nexrad-level-2-plot/src');
+const { map } = require('./nexrad-level-2-plot/src/draw/palettes/hexlookup');
 
 function toBuffer(ab) {
     const buf = Buffer.alloc(ab.byteLength);
@@ -51,6 +52,17 @@ document.getElementById('fileInput').addEventListener('input', function() {
             console.log('file uploaded, parsing now');
             var l2rad = new Level2Radar(toBuffer(this.result))
             console.log(l2rad)
+
+            var elevs = l2rad.listElevations();
+            var elevAngles = l2rad.listElevations('angle', l2rad);
+            console.log(elevAngles)
+            for (var key in elevAngles) {
+                // I believe waveform_type == 2 means that ref data is not in that sweep
+                // 1, 3, and 4 are safe
+                if (elevAngles[key][1] != 2) {
+                    document.getElementById('elevInput').add(new Option(elevAngles[key][0], elevs[key]));
+                }
+            }
             //var blob = new Blob([JSON.stringify(l2rad)], {type: "text/plain"});
             //var url = window.URL.createObjectURL(blob);
             //document.getElementById('decodedRadarDataURL').innerHTML = url;
@@ -83,38 +95,21 @@ document.getElementById('fileInput').addEventListener('input', function() {
             document.getElementById('radDate').innerHTML = finalRadarDateTime;
 
             $('.reflPlotButton').on('click', function() {
-                console.log('plot reflectivity data button clicked');
-                const level2Plot = plot(l2rad, 'REF', {
-                    elevations: 1,
-                    background: 'rgba(0, 0, 0, 0)',
-                    //size: 500,
-                    //cropTo: 500,
-                    dpi: $('#userDPI').val(),
-                });
+                if ($('#reflPlotThing').hasClass('icon-selected')) {
+                    console.log('plot reflectivity data button clicked');
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                }
             })
-            document.getElementById('plotRef').addEventListener('click', function() {
-                document.getElementById('spinnerParent').style.display = 'block';
-                console.log('plot reflectivity data button clicked');
-                const level2Plot = plot(l2rad, 'REF', {
-                    elevations: 1,
-                    background: 'rgba(0, 0, 0, 0)',
-                    //size: 500,
-                    //cropTo: 500,
-                    dpi: $('#userDPI').val(),
-                });
-                console.log('dpi set to ' + $('#userDPI').val())
-            })
-            document.getElementById('plotVel').addEventListener('click', function() {
-                document.getElementById('spinnerParent').style.display = 'block';
-                console.log('plot velocity data button clicked');
-                const level2Plot = plot(l2rad, 'VEL', {
-                    elevations: 2,
-                    background: 'rgba(0, 0, 0, 0)',
-                    //size: 500,
-                    //cropTo: 500,
-                    dpi: $('#userDPI').val(),
-                });
-                console.log('dpi set to ' + $('#userDPI').val())
+            $('#elevInput').on('change', function() {
+                if ($('#reflPlotThing').hasClass('icon-selected')) {
+                    removeMapLayer('baseReflectivity');
+                    $("#settingsDialog").dialog('close');
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                }
             })
             /*const level2Plot = plot(l2rad, 'REF', {
                 elevations: 1,

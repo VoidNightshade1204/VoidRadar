@@ -275,10 +275,21 @@ class Level2Radar {
 	 * List all available elevations
 	 *
 	 * @category Metadata
+	 * @param  {string} angleOrNum Whether to return the elevation angles, or numbers representing their total amount.
+	 * @param  {Level2Radar} radObj The radar object returned from nexrad-level-2-data. Only used when retrieving elevation angle numbers.
 	 * @returns {number[]}
 	 */
-	listElevations() {
-		return Object.keys(this.data).map((key) => +key);
+	listElevations(angleOrNum, radObj) {
+		if (angleOrNum == undefined || angleOrNum == "num") {
+			return Object.keys(this.data).map((key) => +key);
+		} else if (angleOrNum == "angle") {
+			var elevAngleArr = [];
+			for (var key in radObj.vcp.record.elevations) {
+				var base = radObj.vcp.record.elevations[key]
+				elevAngleArr.push([base.elevation_angle, base.waveform_type]);
+			}
+			return elevAngleArr;
+		}
 	}
 
 	_checkData() {
