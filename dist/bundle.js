@@ -16476,6 +16476,11 @@ document.addEventListener('loadFile', function(event) {
                     });
                 }
             })
+            $('.reflPlotButton').trigger('click');
+            console.log('initial reflectivity plot');
+            const level2Plot = plot(l2rad, 'REF', {
+                elevations: parseInt($('#elevInput').val()),
+            });
             $('#elevInput').on('change', function() {
                 if ($('#reflPlotThing').hasClass('icon-selected')) {
                     removeMapLayer('baseReflectivity');
