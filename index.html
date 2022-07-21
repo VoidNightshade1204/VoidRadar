@@ -287,6 +287,7 @@
             var theReflPlotControl = new reflPlotControl;
             map.addControl(theReflPlotControl, 'top-left');
         }
+
         class settingsControl {
             onAdd(map) {
                 this._map = map;
@@ -335,6 +336,54 @@
         var theSettingsControl = new settingsControl;
         map.addControl(theSettingsControl, 'top-right');
 
+        class testFileControl {
+            onAdd(map) {
+                this._map = map;
+                this._container = document.createElement('div');
+                this._container.innerHTML = `
+                    <div class="mapboxgl-control-container" style="margin-top: 100%;">
+                        <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
+                            <button class="mapboxgl-ctrl-fullscreen" type="button" aria-label="Globe Toggle">
+                                <span class="fa fa-flask-vial icon-black" id="testFileThing" aria-hidden="true" title="Globe Toggle"></span>
+                            </button>
+                        </div>
+                    </div>`
+                this._container.addEventListener('click', function() {
+                    if (!$('#testFileThing').hasClass('icon-selected')) {
+                        $('#testFileThing').addClass('icon-selected');
+                        $('#testFileThing').removeClass('icon-black');
+                        var xhr = new XMLHttpRequest();
+                        function loadFileObject(path, name, callback) {
+                            xhr.open("GET", path);
+                            xhr.responseType = "blob";
+                            xhr.addEventListener('load', function() {
+                                var blob = xhr.response;
+                                blob.lastModifiedDate = new Date();
+                                blob.name = name;
+                                // Create the event
+                                var event = new CustomEvent("loadFile", { "detail": blob });
+                                // Dispatch/Trigger/Fire the event
+                                document.dispatchEvent(event);
+                            });
+                            xhr.send();
+                        }
+                        loadFileObject('data/KTLX20130520_200356_V06.gz', 'KTLX20130520_200356_V06.gz');
+                    } else if ($('#testFileThing').hasClass('icon-selected')) {
+                        $('#testFileThing').removeClass('icon-selected');
+                        $('#testFileThing').addClass('icon-black');
+                    }
+                })
+                return this._container;
+            }
+
+            onRemove() {
+                this._container.parentNode.removeChild(this._container);
+                this._map = undefined;
+            }
+        }
+        var theTestFileControl = new testFileControl;
+        map.addControl(theTestFileControl, 'top-right');
+
         // radius of wsr-88d scan in km
         var radius = 460;
         $('#fileStation').on('DOMSubtreeModified', function() {
@@ -381,6 +430,11 @@
             }
             if (map.getSource(layername)) {
                 map.removeSource(layername);
+            }
+        }
+        function removeTestFileControl() {
+            if (map.hasControl(theTestFileControl)) {
+                map.removeControl(theTestFileControl);
             }
         }
     </script>

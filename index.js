@@ -40,12 +40,19 @@ function msToTime(s) {
     }
     //return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
 }
-
 document.getElementById('fileInput').addEventListener('input', function() {
+    // Create the event
+    var event = new CustomEvent("loadFile", { "detail": document.getElementById('fileInput').files[0] });
+    // Dispatch/Trigger/Fire the event
+    document.dispatchEvent(event);
+})
+
+document.addEventListener('loadFile', function(event) {
     document.getElementById('spinnerParent').style.display = 'block';
+    removeTestFileControl();
     //console.log(URL.createObjectURL(document.getElementById("fileInput").files[0]));
     setTimeout(function() {
-        var uploadedFile = document.getElementById('fileInput').files[0];
+        var uploadedFile = event.detail;
         const reader = new FileReader();
 
         reader.addEventListener("load", function () {
