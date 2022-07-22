@@ -16435,8 +16435,6 @@ document.addEventListener('loadFile', function(event) {
 
             var elevs = l2rad.listElevations();
             var elevAngles = l2rad.listElevations('angle', l2rad);
-            console.log(elevs)
-            console.log(elevAngles)
             for (var key in elevAngles) {
                 // I believe waveform_type == 2 means that ref data is not in that sweep
                 // 1, 3, and 4 are safe
@@ -16499,6 +16497,20 @@ document.addEventListener('loadFile', function(event) {
             const level2Plot = plot(l2rad, 'REF', {
                 elevations: parseInt($('#elevInput').val()),
             });
+            $('#productInput').on('change', function() {
+                removeMapLayer('baseReflectivity');
+                if ($('#productInput').val() == 'REF') {
+                    document.getElementById('extraStuff').style.display = 'inline';
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                } else if ($('#productInput').val() == 'VEL') {
+                    document.getElementById('extraStuff').style.display = 'none';
+                    const level2Plot = plot(l2rad, 'VEL', {
+                        elevations: 2,
+                    });
+                }
+            })
             $('#elevInput').on('change', function() {
                 if ($('#reflPlotThing').hasClass('icon-selected')) {
                     removeMapLayer('baseReflectivity');
@@ -18279,6 +18291,12 @@ const draw = (data, _options) => {
 	if (data.header.version == "01") {
 		gateSizeScaling = rrlEncoded[0].gate_size * 0.25;
 	}
+	var adder;
+	if (options.product == "REF") {
+		adder = 0;
+	} else if (options.product == "VEL") {
+		adder = 30;
+	}
 	rrlEncoded.forEach((radial) => {
 		arr = [];
 		valArr = [];
@@ -18306,19 +18324,20 @@ const draw = (data, _options) => {
 				//ctx.strokeStyle = palette.lookupRgba[bin.value];
 				//ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle + resolution * (bin.count - 1));
 				arr.push((idx + deadZone) * gateSizeScaling)
-				valArr.push(bin.value)
+				valArr.push(bin.value + adder)
 			} else {
 				// plain data
 				//ctx.strokeStyle = palette.lookupRgba[bin];
 				//ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle);
 				arr.push((idx + deadZone) * gateSizeScaling)
-				valArr.push(bin)
+				valArr.push(bin + adder)
 			}
 			//ctx.stroke();
 		});
 		json.radials.push(arr)
 		json.values.push(valArr)
 	});
+	//console.log(Math.min(...[...new Set(c)]), Math.max(...[...new Set(c)]))
 	//console.log(valueArr)
 	//console.log(featuresArr)
 	//var geojsonParentTemplate = {
@@ -18341,7 +18360,7 @@ const draw = (data, _options) => {
     $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
         var statLat = data[shtation][1];
         var statLng = data[shtation][2];
-		drawRadarShape(url, statLat, statLng, !$('#shouldLowFilter').prop("checked"));
+		drawRadarShape(url, statLat, statLng, options.product, !$('#shouldLowFilter').prop("checked"));
 
         //new mapboxgl.Marker()
         //    .setLngLat([stationLng, stationLat])

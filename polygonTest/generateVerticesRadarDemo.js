@@ -116,7 +116,6 @@ onmessage=function(oEvent) {
         var colorVal = json.values[key][i];
         colors.push(colorVal, colorVal, colorVal, colorVal, colorVal, colorVal);
       }
-      
     }
     var typedOutput = new Float32Array(output);
     var colorOutput = new Float32Array(colors);

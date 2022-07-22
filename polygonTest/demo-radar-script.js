@@ -1,4 +1,4 @@
-function drawRadarShape(jsonObj, lati, lngi, shouldFilter) {
+function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
   var settings = {};
   settings["rlat"] = lati;
   settings["rlon"] = lngi;
@@ -9,79 +9,103 @@ function drawRadarShape(jsonObj, lati, lngi, shouldFilter) {
 
   function createTexture(gl) {
     /*
-    color: 0 0 0 0
-    color: 10 67 97 162 106 208 228
-    color: 18 111 214 232 53 213 91
-    color: 22 17 213 24 9 94 9
-    color: 35 29 104 9 234 210 4 
-    color: 40 255 226 0 255 128 0
-    color: 50 255 0 0 113 0 0
-    color: 60 255 255 255 255 146 255
-    color: 65 255 117 255 225 11 227
-    color: 70 178 0 255 99 0 214
-    color: 75 5 236 240 1 32 32
-    color: 85 1 32 32
-    color: 95 1 32 32
+    color: -120 0 0 155
+    color: -50 0 255 255
+    color: -10 0 102 0
+    color: 0 128 128 128 
+    color: 10 96 13 23
+    color: 30 200 0 0
+    color: 60 255 255 0
+    color: 120 120 60 0
     */
     // https://github.com/Unidata/MetPy/blob/main/src/metpy/plots/colortable_files/NWSReflectivityExpanded.tbl
-    var colors = {"refc0":[]}
-    if (!shouldFilter) {
-      // if the user doesnt want to filter low values,
-      // push the normal colors
-      colors["refc0"].push(
-        "#646464",
-        '#ccffff',
-        '#cc99cc',
-        '#996699',
-        '#663366',
-        '#999966',
+    var colors = {"ref":[]}
+    var values = {"ref":[]}
+    if (produc == "REF") {
+      if (!shouldFilter) {
+        // if the user doesnt want to filter low values,
+        // push the normal colors
+        colors["ref"].push(
+          "#646464",
+          '#ccffff',
+          '#cc99cc',
+          '#996699',
+          '#663366',
+          '#999966',
+        )
+      } else if (shouldFilter) {
+        // if the user DOES want to filter low values,
+        // push transparent colors in their place
+        colors["ref"].push(
+          "#00000000",
+          "#00000000",
+          "#00000000",
+          "#00000000",
+          "#00000000",
+          "#00000000",
+        )
+      }
+      // push the rest of the normal values
+      colors["ref"].push(
+        '#646464',
+        '#04e9e7',
+        '#019ff4',
+        '#0300f4',
+        '#02fd02',
+        '#01c501',
+        '#008e00',
+        '#fdf802',
+        '#e5bc00',
+        '#fd9500',
+        '#fd0000',
+        '#d40000',
+        '#bc0000',
+        '#f800fd',
+        '#9854c6',
+        '#fdfdfd'
       )
-    } else if (shouldFilter) {
-      // if the user DOES want to filter low values,
-      // push transparent colors in their place
-      colors["refc0"].push(
-        "#00000000",
-        "#00000000",
-        "#00000000",
-        "#00000000",
-        "#00000000",
-        "#00000000",
+      values["ref"].push(
+        -30, -25, -20, -15, -10, -5, 0,
+        5, 10, 15, 20, 25, 30, 35, 40,
+        45, 50, 55, 60, 65, 70, 75
+      )
+    } else if (produc == "VEL") {
+      console.log('velocity??')
+      colors["ref"].push(
+        //"#ffffff",
+        //"#FC52FF",
+        //"#871FFF",
+        //"#0011CC",
+        //"#0088CC",
+        "#B3F0FF",
+  
+        "#42FF42",
+        "#009402",
+        "#A3A3A3",
+        "#8A0000",
+        "#FF5269",
+  
+        "#FFB3E0",
+        //"#FFF1C2",
+        //"#FF9214",
+        //"#B85C00",
+        //"#572100",
+        //"#000000"
+      )
+      values["ref"].push(
+        -50, -30, -10, -5, 10, 20, 50
       )
     }
-    // push the rest of the normal values
-    colors["refc0"].push(
-      '#646464',
-      '#04e9e7',
-      '#019ff4',
-      '#0300f4',
-      '#02fd02',
-      '#01c501',
-      '#008e00',
-      '#fdf802',
-      '#e5bc00',
-      '#fd9500',
-      '#fd0000',
-      '#d40000',
-      '#bc0000',
-      '#f800fd',
-      '#9854c6',
-      '#fdfdfd'
-    )
-    var values = {"refc0":[
-      -30, -25, -20, -15, -10, -5, 0,
-      5, 10, 15, 20, 25, 30, 35, 40,
-      45, 50, 55, 60, 65, 70, 75
-    ]}
-    var colors=colors["refc0"];
-    var levs=values["refc0"];
+    var colors=colors["ref"];
+    var levs=values["ref"];
     var colortcanvas=document.getElementById("texturecolorbar");
     colortcanvas.width=1200;
     colortcanvas.height=1;
     var ctxt = colortcanvas.getContext('2d');
     ctxt.clearRect(0,0,colortcanvas.width,colortcanvas.height); 
     var grdt=ctxt.createLinearGradient(0,0,1200,0);
-    var cmax=values.refc0[values.refc0.length-1];
-    var cmin=values.refc0[0];
+    var cmax=levs[levs.length-1];
+    var cmin=levs[0];
     var clen=colors.length;
 
     for (var i=0;i<clen;++i) {
@@ -118,6 +142,7 @@ function drawRadarShape(jsonObj, lati, lngi, shouldFilter) {
     pageState.positions = data;
     pageState.indices = indices;
     pageState.colors = colors;
+    //console.log(Math.max(...[...new Set(colors)]))
     map.addLayer(layer);
   }
 

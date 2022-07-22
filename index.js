@@ -68,8 +68,6 @@ document.addEventListener('loadFile', function(event) {
 
             var elevs = l2rad.listElevations();
             var elevAngles = l2rad.listElevations('angle', l2rad);
-            console.log(elevs)
-            console.log(elevAngles)
             for (var key in elevAngles) {
                 // I believe waveform_type == 2 means that ref data is not in that sweep
                 // 1, 3, and 4 are safe
@@ -132,6 +130,20 @@ document.addEventListener('loadFile', function(event) {
             const level2Plot = plot(l2rad, 'REF', {
                 elevations: parseInt($('#elevInput').val()),
             });
+            $('#productInput').on('change', function() {
+                removeMapLayer('baseReflectivity');
+                if ($('#productInput').val() == 'REF') {
+                    document.getElementById('extraStuff').style.display = 'inline';
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                } else if ($('#productInput').val() == 'VEL') {
+                    document.getElementById('extraStuff').style.display = 'none';
+                    const level2Plot = plot(l2rad, 'VEL', {
+                        elevations: 2,
+                    });
+                }
+            })
             $('#elevInput').on('change', function() {
                 if ($('#reflPlotThing').hasClass('icon-selected')) {
                     removeMapLayer('baseReflectivity');

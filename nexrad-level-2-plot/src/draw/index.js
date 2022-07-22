@@ -186,6 +186,12 @@ const draw = (data, _options) => {
 	if (data.header.version == "01") {
 		gateSizeScaling = rrlEncoded[0].gate_size * 0.25;
 	}
+	var adder;
+	if (options.product == "REF") {
+		adder = 0;
+	} else if (options.product == "VEL") {
+		adder = 30;
+	}
 	rrlEncoded.forEach((radial) => {
 		arr = [];
 		valArr = [];
@@ -213,19 +219,20 @@ const draw = (data, _options) => {
 				//ctx.strokeStyle = palette.lookupRgba[bin.value];
 				//ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle + resolution * (bin.count - 1));
 				arr.push((idx + deadZone) * gateSizeScaling)
-				valArr.push(bin.value)
+				valArr.push(bin.value + adder)
 			} else {
 				// plain data
 				//ctx.strokeStyle = palette.lookupRgba[bin];
 				//ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle);
 				arr.push((idx + deadZone) * gateSizeScaling)
-				valArr.push(bin)
+				valArr.push(bin + adder)
 			}
 			//ctx.stroke();
 		});
 		json.radials.push(arr)
 		json.values.push(valArr)
 	});
+	//console.log(Math.min(...[...new Set(c)]), Math.max(...[...new Set(c)]))
 	//console.log(valueArr)
 	//console.log(featuresArr)
 	//var geojsonParentTemplate = {
@@ -248,7 +255,7 @@ const draw = (data, _options) => {
     $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
         var statLat = data[shtation][1];
         var statLng = data[shtation][2];
-		drawRadarShape(url, statLat, statLng, !$('#shouldLowFilter').prop("checked"));
+		drawRadarShape(url, statLat, statLng, options.product, !$('#shouldLowFilter').prop("checked"));
 
         //new mapboxgl.Marker()
         //    .setLngLat([stationLng, stationLat])
