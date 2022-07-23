@@ -1,4 +1,6 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+
+},{}],2:[function(require,module,exports){
 (function (global){(function (){
 'use strict';
 
@@ -508,7 +510,7 @@ var objectKeys = Object.keys || function (obj) {
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"object-assign":30,"util/":4}],2:[function(require,module,exports){
+},{"object-assign":30,"util/":5}],3:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -533,14 +535,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 (function (process,global){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1130,7 +1132,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":3,"_process":42,"inherits":2}],5:[function(require,module,exports){
+},{"./support/isBuffer":4,"_process":42,"inherits":3}],6:[function(require,module,exports){
 (function (global){(function (){
 'use strict';
 
@@ -1161,7 +1163,7 @@ module.exports = function availableTypedArrays() {
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -1313,9 +1315,9 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],7:[function(require,module,exports){
-
 },{}],8:[function(require,module,exports){
+arguments[4][1][0].apply(exports,arguments)
+},{"dup":1}],9:[function(require,module,exports){
 (function (process,Buffer){(function (){
 'use strict';
 /* eslint camelcase: "off" */
@@ -1727,7 +1729,7 @@ Zlib.prototype._reset = function () {
 
 exports.Zlib = Zlib;
 }).call(this)}).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":42,"assert":1,"buffer":11,"pako/lib/zlib/constants":33,"pako/lib/zlib/deflate.js":35,"pako/lib/zlib/inflate.js":37,"pako/lib/zlib/zstream":41}],9:[function(require,module,exports){
+},{"_process":42,"assert":2,"buffer":11,"pako/lib/zlib/constants":33,"pako/lib/zlib/deflate.js":35,"pako/lib/zlib/inflate.js":37,"pako/lib/zlib/zstream":41}],10:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -2339,9 +2341,7 @@ util.inherits(DeflateRaw, Zlib);
 util.inherits(InflateRaw, Zlib);
 util.inherits(Unzip, Zlib);
 }).call(this)}).call(this,require('_process'))
-},{"./binding":8,"_process":42,"assert":1,"buffer":11,"stream":44,"util":63}],10:[function(require,module,exports){
-arguments[4][7][0].apply(exports,arguments)
-},{"dup":7}],11:[function(require,module,exports){
+},{"./binding":9,"_process":42,"assert":2,"buffer":11,"stream":44,"util":63}],11:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * The buffer module from node.js, for the browser.
@@ -4122,7 +4122,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"base64-js":6,"buffer":11,"ieee754":24}],12:[function(require,module,exports){
+},{"base64-js":7,"buffer":11,"ieee754":24}],12:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('get-intrinsic');
@@ -5571,7 +5571,7 @@ module.exports = function isTypedArray(value) {
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"available-typed-arrays":5,"call-bind/callBound":12,"es-abstract/helpers/getOwnPropertyDescriptor":14,"for-each":16,"has-tostringtag/shams":22}],30:[function(require,module,exports){
+},{"available-typed-arrays":6,"call-bind/callBound":12,"es-abstract/helpers/getOwnPropertyDescriptor":14,"for-each":16,"has-tostringtag/shams":22}],30:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -13209,7 +13209,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../errors":45,"./_stream_duplex":46,"./internal/streams/async_iterator":51,"./internal/streams/buffer_list":52,"./internal/streams/destroy":53,"./internal/streams/from":55,"./internal/streams/state":57,"./internal/streams/stream":58,"_process":42,"buffer":11,"events":15,"inherits":25,"string_decoder/":59,"util":7}],49:[function(require,module,exports){
+},{"../errors":45,"./_stream_duplex":46,"./internal/streams/async_iterator":51,"./internal/streams/buffer_list":52,"./internal/streams/destroy":53,"./internal/streams/from":55,"./internal/streams/state":57,"./internal/streams/stream":58,"_process":42,"buffer":11,"events":15,"inherits":25,"string_decoder/":59,"util":8}],49:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -14532,7 +14532,7 @@ function () {
 
   return BufferList;
 }();
-},{"buffer":11,"util":7}],53:[function(require,module,exports){
+},{"buffer":11,"util":8}],53:[function(require,module,exports){
 (function (process){(function (){
 'use strict'; // undocumented cb() API, needed for core, not for public API
 
@@ -15248,8 +15248,8 @@ function config (name) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],61:[function(require,module,exports){
-arguments[4][3][0].apply(exports,arguments)
-},{"dup":3}],62:[function(require,module,exports){
+arguments[4][4][0].apply(exports,arguments)
+},{"dup":4}],62:[function(require,module,exports){
 // Currently in sync with Node.js lib/internal/util/types.js
 // https://github.com/nodejs/node/commit/112cc7c27551254aa2b17098fb774867f05ed0d9
 
@@ -16363,7 +16363,7 @@ module.exports = function whichTypedArray(value) {
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"available-typed-arrays":5,"call-bind/callBound":12,"es-abstract/helpers/getOwnPropertyDescriptor":14,"for-each":16,"has-tostringtag/shams":22,"is-typed-array":29}],65:[function(require,module,exports){
+},{"available-typed-arrays":6,"call-bind/callBound":12,"es-abstract/helpers/getOwnPropertyDescriptor":14,"for-each":16,"has-tostringtag/shams":22,"is-typed-array":29}],65:[function(require,module,exports){
 //const fetch = require('node-fetch');
 const { Level2Radar } = require('./nexrad-level-2-data/src');
 const { plot } = require('./nexrad-level-2-plot/src');
@@ -16432,10 +16432,69 @@ document.addEventListener('loadFile', function(event) {
                     document.getElementById('radFileName').innerHTML = uploadedFile.name;
                     document.getElementById('radVCP').innerHTML = theFileVCP;
                     document.getElementById('radDate').innerHTML = finalRadarDateTime;
+                } else if (ev.data.hasOwnProperty('objectTest')) {
+                    console.log('ready')
+                    function reattachMethods(serialized,originalclass) {
+                        serialized.__proto__ = originalclass.prototype;
+                        return serialized;
+                    }
+                    var l2rad = reattachMethods(ev.data.objectTest, Level2Radar);
+                    $('.reflPlotButton').on('click', function() {
+                        if ($('#reflPlotThing').hasClass('icon-selected')) {
+                            console.log('plot reflectivity data button clicked');
+                            const level2Plot = plot(l2rad, 'REF', {
+                                elevations: parseInt($('#elevInput').val()),
+                                inWebWorker: false,
+                                lowFilterRef: $('#shouldLowFilter').prop('checked'),
+                            });
+                        }
+                    })
+                    $('.reflPlotButton').trigger('click');
+                    $('#productInput').on('change', function() {
+                        removeMapLayer('baseReflectivity');
+                        if ($('#productInput').val() == 'REF') {
+                            document.getElementById('extraStuff').style.display = 'inline';
+                            const level2Plot = plot(l2rad, 'REF', {
+                                elevations: parseInt($('#elevInput').val()),
+                                inWebWorker: false,
+                                lowFilterRef: $('#shouldLowFilter').prop('checked'),
+                            });
+                        } else if ($('#productInput').val() == 'VEL') {
+                            document.getElementById('extraStuff').style.display = 'none';
+                            const level2Plot = plot(l2rad, 'VEL', {
+                                elevations: 2,
+                                inWebWorker: false
+                            });
+                        }
+                    })
+                    $('#elevInput').on('change', function() {
+                        if ($('#reflPlotThing').hasClass('icon-selected')) {
+                            removeMapLayer('baseReflectivity');
+                            $("#settingsDialog").dialog('close');
+                            const level2Plot = plot(l2rad, 'REF', {
+                                elevations: parseInt($('#elevInput').val()),
+                                inWebWorker: false,
+                                lowFilterRef: $('#shouldLowFilter').prop('checked'),
+                            });
+                        }
+                    })
+                    $('#shouldLowFilter').on('change', function() {
+                        if ($('#reflPlotThing').hasClass('icon-selected')) {
+                            removeMapLayer('baseReflectivity');
+                            $("#settingsDialog").dialog('close');
+                            const level2Plot = plot(l2rad, 'REF', {
+                                elevations: parseInt($('#elevInput').val()),
+                                inWebWorker: false,
+                                lowFilterRef: $('#shouldLowFilter').prop('checked'),
+                            });
+                        }
+                    })
                 }
             });
 
-            w.postMessage(this.result);
+            w.postMessage({
+                'initial': this.result
+            });
         }, false);
         reader.readAsArrayBuffer(uploadedFile);
     }, 300)
@@ -17501,7 +17560,7 @@ module.exports = (raf) => {
 	return new RandomAccessFile(data, BIG_ENDIAN);
 };
 
-},{"./classes/RandomAccessFile":72,"zlib":9}],77:[function(require,module,exports){
+},{"./classes/RandomAccessFile":72,"zlib":10}],77:[function(require,module,exports){
 (function (Buffer){(function (){
 const parseData = require('./parsedata');
 const combineData = require('./combinedata');
@@ -18223,6 +18282,12 @@ const draw = (data, _options) => {
     //a.click();*/
 
 	//testHello('yeet')
+	var shouldFilter;
+	if (options.lowFilterRef == undefined || options.lowFilterRef == false) {
+		shouldFilter = true;
+	} else if (options.lowFilterRef == true) {
+		shouldFilter = false;
+	}
 	var shtation = data.header.ICAO;
     var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
@@ -18230,10 +18295,13 @@ const draw = (data, _options) => {
 			var data = JSON.parse(this.responseText);
 			var statLat = data[shtation][1];
 			var statLng = data[shtation][2];
-			//drawRadarShape(url, statLat, statLng, options.product, true);
-			self.postMessage({
-				'parsedData': [url, statLat, statLng, options.product, true]
-			})
+			if (options.inWebWorker) {
+				self.postMessage({
+					'parsedData': [url, statLat, statLng, options.product, shouldFilter]
+				})
+			} else if (!options.inWebWorker) {
+				drawRadarShape(url, statLat, statLng, options.product, shouldFilter);
+			}
 
 			//new mapboxgl.Marker()
 			//    .setLngLat([stationLng, stationLat])
@@ -18827,7 +18895,7 @@ module.exports = {
 	writePngToFile,
 };
 
-},{"fs":10}],92:[function(require,module,exports){
+},{"fs":1}],92:[function(require,module,exports){
 /* globals document, ImageData */
 
 const parseFont = require('./lib/parse-font')
@@ -19986,90 +20054,53 @@ function msToTime(s) {
 
 module.exports = function (self) {
     self.addEventListener('message',function (ev) {
-        var fileBuffer = ev.data;
-    
-        var l2rad = new Level2Radar(toBuffer(fileBuffer))
-        console.log(l2rad)
-        console.log('initial reflectivity plot');
-        var theFileVersion = l2rad.header.version;
-        self.postMessage({
-            'fileVersion': theFileVersion
-        })
+        if (ev.data.hasOwnProperty('initial')) {
+            var fileBuffer = ev.data.initial;
 
-        var elevs = l2rad.listElevations();
-        var elevAngles = l2rad.listElevations('angle', l2rad);
+            var l2rad = new Level2Radar(toBuffer(fileBuffer))
+            console.log(l2rad)
+            console.log('initial reflectivity plot');
+            var theFileVersion = l2rad.header.version;
+            self.postMessage({
+                'fileVersion': theFileVersion
+            })
 
-        var theFileVCP;
-        if (theFileVersion == "06") {
-            theFileVCP = l2rad.vcp.record.pattern_number;
-        } else {
-            theFileVCP = l2rad.data[1][0].record.vcp;
+            var elevs = l2rad.listElevations();
+            var elevAngles = l2rad.listElevations('angle', l2rad);
+
+            var theFileVCP;
+            if (theFileVersion == "06") {
+                theFileVCP = l2rad.vcp.record.pattern_number;
+            } else {
+                theFileVCP = l2rad.data[1][0].record.vcp;
+            }
+
+            var theFileDate = l2rad.header.modified_julian_date;
+            var theFileTime = l2rad.header.milliseconds;
+            var fileDateObj = new Date(0).addDays(theFileDate);
+            var fileHours = msToTime(theFileTime).hours;
+            var fileMinutes = msToTime(theFileTime).minutes;
+            var fileSeconds = msToTime(theFileTime).seconds;
+            fileDateObj.setUTCHours(fileHours);
+            fileDateObj.setUTCMinutes(fileMinutes);
+            fileDateObj.setUTCSeconds(fileSeconds);
+            var finalRadarDateTime = printFancyTime(fileDateObj, "UTC");
+
+            self.postMessage({
+                'elevationList': [elevs, elevAngles, theFileVCP, finalRadarDateTime]
+            })
+
+            console.log('initial reflectivity plot');
+            const level2Plot = plot(l2rad, 'REF', {
+                elevations: 1,
+                inWebWorker: true,
+                lowFilterRef: false,
+            });
+
+            self.postMessage({
+                'objectTest': JSON.parse(JSON.stringify(l2rad))
+            })
         }
-
-        var theFileDate = l2rad.header.modified_julian_date;
-        var theFileTime = l2rad.header.milliseconds;
-        var fileDateObj = new Date(0).addDays(theFileDate);
-        var fileHours = msToTime(theFileTime).hours;
-        var fileMinutes = msToTime(theFileTime).minutes;
-        var fileSeconds = msToTime(theFileTime).seconds;
-        fileDateObj.setUTCHours(fileHours);
-        fileDateObj.setUTCMinutes(fileMinutes);
-        fileDateObj.setUTCSeconds(fileSeconds);
-        var finalRadarDateTime = printFancyTime(fileDateObj, "UTC");
-
-        self.postMessage({
-            'elevationList': [elevs, elevAngles, theFileVCP, finalRadarDateTime]
-        })
-
-        const level2Plot = plot(l2rad, 'REF', {
-            elevations: 1,
-        });
-
-        /*$('.reflPlotButton').on('click', function() {
-            if ($('#reflPlotThing').hasClass('icon-selected')) {
-                console.log('plot reflectivity data button clicked');
-                const level2Plot = plot(l2rad, 'REF', {
-                    elevations: parseInt($('#elevInput').val()),
-                });
-            }
-        })
-        $('.reflPlotButton').trigger('click');
-        console.log('initial reflectivity plot');
-        const level2Plot = plot(l2rad, 'REF', {
-            elevations: parseInt($('#elevInput').val()),
-        });
-        $('#productInput').on('change', function() {
-            removeMapLayer('baseReflectivity');
-            if ($('#productInput').val() == 'REF') {
-                document.getElementById('extraStuff').style.display = 'inline';
-                const level2Plot = plot(l2rad, 'REF', {
-                    elevations: parseInt($('#elevInput').val()),
-                });
-            } else if ($('#productInput').val() == 'VEL') {
-                document.getElementById('extraStuff').style.display = 'none';
-                const level2Plot = plot(l2rad, 'VEL', {
-                    elevations: 2,
-                });
-            }
-        })
-        $('#elevInput').on('change', function() {
-            if ($('#reflPlotThing').hasClass('icon-selected')) {
-                removeMapLayer('baseReflectivity');
-                $("#settingsDialog").dialog('close');
-                const level2Plot = plot(l2rad, 'REF', {
-                    elevations: parseInt($('#elevInput').val()),
-                });
-            }
-        })
-        $('#shouldLowFilter').on('change', function() {
-            if ($('#reflPlotThing').hasClass('icon-selected')) {
-                removeMapLayer('baseReflectivity');
-                $("#settingsDialog").dialog('close');
-                const level2Plot = plot(l2rad, 'REF', {
-                    elevations: parseInt($('#elevInput').val()),
-                });
-            }
-        })*/
     });
 };
 }).call(this)}).call(this,require("buffer").Buffer)

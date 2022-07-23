@@ -40,89 +40,52 @@ function msToTime(s) {
 
 module.exports = function (self) {
     self.addEventListener('message',function (ev) {
-        var fileBuffer = ev.data;
-    
-        var l2rad = new Level2Radar(toBuffer(fileBuffer))
-        console.log(l2rad)
-        console.log('initial reflectivity plot');
-        var theFileVersion = l2rad.header.version;
-        self.postMessage({
-            'fileVersion': theFileVersion
-        })
+        if (ev.data.hasOwnProperty('initial')) {
+            var fileBuffer = ev.data.initial;
 
-        var elevs = l2rad.listElevations();
-        var elevAngles = l2rad.listElevations('angle', l2rad);
+            var l2rad = new Level2Radar(toBuffer(fileBuffer))
+            console.log(l2rad)
+            console.log('initial reflectivity plot');
+            var theFileVersion = l2rad.header.version;
+            self.postMessage({
+                'fileVersion': theFileVersion
+            })
 
-        var theFileVCP;
-        if (theFileVersion == "06") {
-            theFileVCP = l2rad.vcp.record.pattern_number;
-        } else {
-            theFileVCP = l2rad.data[1][0].record.vcp;
+            var elevs = l2rad.listElevations();
+            var elevAngles = l2rad.listElevations('angle', l2rad);
+
+            var theFileVCP;
+            if (theFileVersion == "06") {
+                theFileVCP = l2rad.vcp.record.pattern_number;
+            } else {
+                theFileVCP = l2rad.data[1][0].record.vcp;
+            }
+
+            var theFileDate = l2rad.header.modified_julian_date;
+            var theFileTime = l2rad.header.milliseconds;
+            var fileDateObj = new Date(0).addDays(theFileDate);
+            var fileHours = msToTime(theFileTime).hours;
+            var fileMinutes = msToTime(theFileTime).minutes;
+            var fileSeconds = msToTime(theFileTime).seconds;
+            fileDateObj.setUTCHours(fileHours);
+            fileDateObj.setUTCMinutes(fileMinutes);
+            fileDateObj.setUTCSeconds(fileSeconds);
+            var finalRadarDateTime = printFancyTime(fileDateObj, "UTC");
+
+            self.postMessage({
+                'elevationList': [elevs, elevAngles, theFileVCP, finalRadarDateTime]
+            })
+
+            console.log('initial reflectivity plot');
+            const level2Plot = plot(l2rad, 'REF', {
+                elevations: 1,
+                inWebWorker: true,
+                lowFilterRef: false,
+            });
+
+            self.postMessage({
+                'objectTest': JSON.parse(JSON.stringify(l2rad))
+            })
         }
-
-        var theFileDate = l2rad.header.modified_julian_date;
-        var theFileTime = l2rad.header.milliseconds;
-        var fileDateObj = new Date(0).addDays(theFileDate);
-        var fileHours = msToTime(theFileTime).hours;
-        var fileMinutes = msToTime(theFileTime).minutes;
-        var fileSeconds = msToTime(theFileTime).seconds;
-        fileDateObj.setUTCHours(fileHours);
-        fileDateObj.setUTCMinutes(fileMinutes);
-        fileDateObj.setUTCSeconds(fileSeconds);
-        var finalRadarDateTime = printFancyTime(fileDateObj, "UTC");
-
-        self.postMessage({
-            'elevationList': [elevs, elevAngles, theFileVCP, finalRadarDateTime]
-        })
-
-        const level2Plot = plot(l2rad, 'REF', {
-            elevations: 1,
-        });
-
-        /*$('.reflPlotButton').on('click', function() {
-            if ($('#reflPlotThing').hasClass('icon-selected')) {
-                console.log('plot reflectivity data button clicked');
-                const level2Plot = plot(l2rad, 'REF', {
-                    elevations: parseInt($('#elevInput').val()),
-                });
-            }
-        })
-        $('.reflPlotButton').trigger('click');
-        console.log('initial reflectivity plot');
-        const level2Plot = plot(l2rad, 'REF', {
-            elevations: parseInt($('#elevInput').val()),
-        });
-        $('#productInput').on('change', function() {
-            removeMapLayer('baseReflectivity');
-            if ($('#productInput').val() == 'REF') {
-                document.getElementById('extraStuff').style.display = 'inline';
-                const level2Plot = plot(l2rad, 'REF', {
-                    elevations: parseInt($('#elevInput').val()),
-                });
-            } else if ($('#productInput').val() == 'VEL') {
-                document.getElementById('extraStuff').style.display = 'none';
-                const level2Plot = plot(l2rad, 'VEL', {
-                    elevations: 2,
-                });
-            }
-        })
-        $('#elevInput').on('change', function() {
-            if ($('#reflPlotThing').hasClass('icon-selected')) {
-                removeMapLayer('baseReflectivity');
-                $("#settingsDialog").dialog('close');
-                const level2Plot = plot(l2rad, 'REF', {
-                    elevations: parseInt($('#elevInput').val()),
-                });
-            }
-        })
-        $('#shouldLowFilter').on('change', function() {
-            if ($('#reflPlotThing').hasClass('icon-selected')) {
-                removeMapLayer('baseReflectivity');
-                $("#settingsDialog").dialog('close');
-                const level2Plot = plot(l2rad, 'REF', {
-                    elevations: parseInt($('#elevInput').val()),
-                });
-            }
-        })*/
     });
 };

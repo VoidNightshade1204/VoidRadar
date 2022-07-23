@@ -218,6 +218,12 @@ const draw = (data, _options) => {
     //a.click();*/
 
 	//testHello('yeet')
+	var shouldFilter;
+	if (options.lowFilterRef == undefined || options.lowFilterRef == false) {
+		shouldFilter = true;
+	} else if (options.lowFilterRef == true) {
+		shouldFilter = false;
+	}
 	var shtation = data.header.ICAO;
     var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
@@ -225,10 +231,13 @@ const draw = (data, _options) => {
 			var data = JSON.parse(this.responseText);
 			var statLat = data[shtation][1];
 			var statLng = data[shtation][2];
-			//drawRadarShape(url, statLat, statLng, options.product, true);
-			self.postMessage({
-				'parsedData': [url, statLat, statLng, options.product, true]
-			})
+			if (options.inWebWorker) {
+				self.postMessage({
+					'parsedData': [url, statLat, statLng, options.product, shouldFilter]
+				})
+			} else if (!options.inWebWorker) {
+				drawRadarShape(url, statLat, statLng, options.product, shouldFilter);
+			}
 
 			//new mapboxgl.Marker()
 			//    .setLngLat([stationLng, stationLat])
