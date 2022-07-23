@@ -233,6 +233,17 @@
             }
             return obj;
         }
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+
+            var k = 1024;
+            var dm = decimals < 0 ? 0 : decimals;
+            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+            var i = Math.floor(Math.log(bytes) / Math.log(k));
+
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
 
         mapboxgl.accessToken = 'pk.eyJ1Ijoic3RlZXBhdHRpY3N0YWlycyIsImEiOiJjbDNvaGFod2EwbXluM2pwZTJiMDYzYjh5In0.J_HeH00ry0tbLmGmTy4z5w';
         const map = new mapboxgl.Map({
@@ -275,6 +286,14 @@
                 // Dispatch/Trigger/Fire the event
                 document.dispatchEvent(event);
             });
+            xhr.onprogress = (event) => {
+                // event.loaded returns how many bytes are downloaded
+                // event.total returns the total number of bytes
+                // event.total is only available if server sends `Content-Length` header
+                //console.log(`%c Downloaded ${formatBytes(event.loaded)} of ${formatBytes(event.total)}`, 'color: #bada55');
+                //var complete = (event.loaded / event.total * 50 | 0);
+                console.log(formatBytes(event.loaded))
+            }
             xhr.send();
         }
 
