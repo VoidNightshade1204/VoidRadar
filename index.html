@@ -147,6 +147,11 @@
             <option value="REF" selected>Reflectivity</option>
             <option value="VEL">Velocity</option>
         </select>
+        <br><br>
+        <div><b>Station:</b></div>
+        <input id="userStation" value="KLWX">
+
+        <input style="display:none" autofocus>
     </div>
 
     <div id="map"></div>
@@ -185,6 +190,50 @@
     <script src="./polygonTest/demo-radar-script.js"></script> -->
 
     <script>
+        function xmlToJson(xml) {
+            if (typeof xml == "string") {
+                parser = new DOMParser();
+                xml = parser.parseFromString(xml, "text/xml");
+            }
+            // Create the return object
+            var obj = {};
+            // console.log(xml.nodeType, xml.nodeName );
+            if (xml.nodeType == 1) { // element
+                // do attributes
+                if (xml.attributes.length > 0) {
+                obj["@attributes"] = {};
+                    for (var j = 0; j < xml.attributes.length; j++) {
+                        var attribute = xml.attributes.item(j);
+                        obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+                    }
+                }
+            } 
+            else if (xml.nodeType == 3 || 
+                     xml.nodeType == 4) { // text and cdata section
+                obj = xml.nodeValue
+            }
+            // do children
+            if (xml.hasChildNodes()) {
+                for(var i = 0; i < xml.childNodes.length; i++) {
+                    var item = xml.childNodes.item(i);
+                    var nodeName = item.nodeName;
+                    if (typeof(obj[nodeName]) == "undefined") {
+                        obj[nodeName] = xmlToJson(item);
+                    } else {
+                        if (typeof(obj[nodeName].length) == "undefined") {
+                            var old = obj[nodeName];
+                            obj[nodeName] = [];
+                            obj[nodeName].push(old);
+                        }
+                        if (typeof(obj[nodeName]) === 'object') {
+                            obj[nodeName].push(xmlToJson(item));
+                        }
+                    }
+                }
+            }
+            return obj;
+        }
+
         mapboxgl.accessToken = 'pk.eyJ1Ijoic3RlZXBhdHRpY3N0YWlycyIsImEiOiJjbDNvaGFod2EwbXluM2pwZTJiMDYzYjh5In0.J_HeH00ry0tbLmGmTy4z5w';
         const map = new mapboxgl.Map({
             container: 'map',
@@ -212,6 +261,22 @@
                 },
             });*/
         })
+
+        function loadFileObject(path, name, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", path);
+            xhr.responseType = "blob";
+            xhr.addEventListener('load', function() {
+                var blob = xhr.response;
+                blob.lastModifiedDate = new Date();
+                blob.name = name;
+                // Create the event
+                var event = new CustomEvent("loadFile", { "detail": blob });
+                // Dispatch/Trigger/Fire the event
+                document.dispatchEvent(event);
+            });
+            xhr.send();
+        }
 
         // https://github.com/mapbox/mapbox-gl-js/issues/3039#issuecomment-401964567
         function registerControlPosition(map, positionName) {
@@ -364,21 +429,6 @@
                     if (!$('#testFileThing').hasClass('icon-selected')) {
                         $('#testFileThing').addClass('icon-selected');
                         $('#testFileThing').removeClass('icon-black');
-                        var xhr = new XMLHttpRequest();
-                        function loadFileObject(path, name, callback) {
-                            xhr.open("GET", path);
-                            xhr.responseType = "blob";
-                            xhr.addEventListener('load', function() {
-                                var blob = xhr.response;
-                                blob.lastModifiedDate = new Date();
-                                blob.name = name;
-                                // Create the event
-                                var event = new CustomEvent("loadFile", { "detail": blob });
-                                // Dispatch/Trigger/Fire the event
-                                document.dispatchEvent(event);
-                            });
-                            xhr.send();
-                        }
                         // KLIX20050829_061516.gz
                         // KTLX20130520_200356_V06.gz
                         var fileToLoad = 'KTLX20130520_200356_V06.gz';
@@ -398,6 +448,65 @@
         }
         var theTestFileControl = new testFileControl;
         map.addControl(theTestFileControl, 'top-right');
+
+        function getLatestFile(sta, callbck) {
+            var curTime = new Date();
+            var year = curTime.getUTCFullYear();
+            var month = curTime.getUTCMonth() + 1;
+            month = "0" + month;
+            var day = curTime.getUTCDate();
+            var stationToGet = sta.toUpperCase().replace(/ /g, '')
+            var fullURL = "https://noaa-nexrad-level2.s3.amazonaws.com/?list-type=2&delimiter=%2F&prefix=" + year + "%2F" + month + "%2F" + day + "%2F" + stationToGet + "%2F"
+            //console.log(fullURL)
+            $.get(phpProxy + fullURL, function (data) {
+                var dataToWorkWith = JSON.stringify(xmlToJson(data)).replace(/#/g, 'HASH')
+                dataToWorkWith = JSON.parse(dataToWorkWith)
+                //console.log(dataToWorkWith)
+                var filenameKey = dataToWorkWith.ListBucketResult.Contents
+                var latestFileName = filenameKey[filenameKey.length - 1].Key.HASHtext.slice(16);
+                if (latestFileName.includes('MDM')) {
+                    latestFileName = filenameKey[filenameKey.length - 2].Key.HASHtext.slice(16);
+                }
+                callbck(latestFileName, year, month, day, stationToGet);
+            })
+        }
+
+        class curFileControl {
+            onAdd(map) {
+                this._map = map;
+                this._container = document.createElement('div');
+                this._container.innerHTML = `
+                    <div class="mapboxgl-control-container" style="margin-top: 100%;">
+                        <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
+                            <button class="mapboxgl-ctrl-fullscreen" type="button" aria-label="Globe Toggle">
+                                <span class="fa fa-clock icon-black" id="curFileThing" aria-hidden="true" title="Globe Toggle"></span>
+                            </button>
+                        </div>
+                    </div>`
+                this._container.addEventListener('click', function() {
+                    if (!$('#curFileThing').hasClass('icon-selected')) {
+                        $('#curFileThing').addClass('icon-selected');
+                        $('#curFileThing').removeClass('icon-black');
+                        getLatestFile($('#userStation').val(), function(fileName, y, m, d, s) {
+                            var individualFileURL = `https://noaa-nexrad-level2.s3.amazonaws.com/${y}/${m}/${d}/${s}/${fileName}`
+                            console.log(phpProxy + individualFileURL)
+                            loadFileObject(phpProxy + individualFileURL, fileName);
+                        });
+                    } else if ($('#curFileThing').hasClass('icon-selected')) {
+                        $('#curFileThing').removeClass('icon-selected');
+                        $('#curFileThing').addClass('icon-black');
+                    }
+                })
+                return this._container;
+            }
+
+            onRemove() {
+                this._container.parentNode.removeChild(this._container);
+                this._map = undefined;
+            }
+        }
+        var theCurFileControl = new curFileControl;
+        map.addControl(theCurFileControl, 'top-right');
 
         // radius of wsr-88d scan in km
         var radius = 460;
@@ -450,6 +559,9 @@
         function removeTestFileControl() {
             if (map.hasControl(theTestFileControl)) {
                 map.removeControl(theTestFileControl);
+            }
+            if (map.hasControl(theCurFileControl)) {
+                map.removeControl(theCurFileControl);
             }
         }
     </script>
