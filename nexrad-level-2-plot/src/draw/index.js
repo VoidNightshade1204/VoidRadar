@@ -57,19 +57,6 @@ const DEFAULT_OPTIONS = {
 	dpi: 96,
 };
 
-function setDPI(canvas, dpi) {
-    // Set up CSS size.
-    canvas.style.width = canvas.style.width || canvas.width + 'px';
-    canvas.style.height = canvas.style.height || canvas.height + 'px';
-
-    // Resize canvas and scale future draws.
-    var scaleFactor = dpi / 96;
-    canvas.width = Math.ceil(canvas.width * scaleFactor);
-    canvas.height = Math.ceil(canvas.height * scaleFactor);
-    var ctx = canvas.getContext('2d');
-    ctx.scale(scaleFactor, scaleFactor);
-}
-
 const draw = (data, _options) => {
 	// combine options with defaults
 	const options = {
@@ -99,26 +86,6 @@ const draw = (data, _options) => {
 	// calculate crop, adjust if necessary
 	const cropTo = Math.min(options.size, options.cropTo);
 	if (options.cropTo < 1) throw new Error('Provide options.cropTo > 0');
-
-	// create the canvas and context
-	const canvas = document.getElementById('theCanvas');
-	const ctx = canvas.getContext('2d', { alpha: options.alpha });
-	ctx.canvas.width = cropTo;
-	ctx.canvas.height = cropTo;
-	ctx.antialias = options.antialias;
-	ctx.imageSmoothingEnabled = options.imageSmoothingEnabled;
-
-	setDPI(canvas, options.dpi);
-
-	// fill background with black
-	ctx.fillStyle = options.background;
-	ctx.fillRect(0, 0, cropTo, cropTo);
-
-	// canvas settings
-	ctx.imageSmoothingEnabled = true;
-	ctx.lineWidth = options.lineWidth / gateSizeScaling;
-	ctx.translate(cropTo / 2, cropTo / 2);
-	ctx.rotate(-Math.PI / 2);
 
 	// get the palette
 	const palette = palettes[options.product];
@@ -241,7 +208,7 @@ const draw = (data, _options) => {
 	//}
 	json.version.push(data.header.version);
 	var blob = new Blob([JSON.stringify(json)], {type: "text/plain"});
-    var url = window.URL.createObjectURL(blob);
+    var url = URL.createObjectURL(blob);
 	/*const a = document.createElement('a');
     a.style.display = 'none';
     a.href = url;
@@ -251,20 +218,29 @@ const draw = (data, _options) => {
     //a.click();*/
 
 	//testHello('yeet')
-	var shtation = document.getElementById('fileStation').innerHTML;
-    $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
-        var statLat = data[shtation][1];
-        var statLng = data[shtation][2];
-		drawRadarShape(url, statLat, statLng, options.product, !$('#shouldLowFilter').prop("checked"));
+	var shtation = data.header.ICAO;
+    var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var data = JSON.parse(this.responseText);
+			var statLat = data[shtation][1];
+			var statLng = data[shtation][2];
+			//drawRadarShape(url, statLat, statLng, options.product, true);
+			self.postMessage({
+				'parsedData': [url, statLat, statLng, options.product, true]
+			})
 
-        //new mapboxgl.Marker()
-        //    .setLngLat([stationLng, stationLat])
-        //    .addTo(map);
-    });
+			//new mapboxgl.Marker()
+			//    .setLngLat([stationLng, stationLat])
+			//    .addTo(map);
+		}
+	};
+	xhr.open("GET", 'https://steepatticstairs.github.io/weather/json/radarStations.json', true);
+	xhr.send();
 
-    document.getElementById('spinnerParent').style.display = 'none';
+    //document.getElementById('spinnerParent').style.display = 'none';
 
-	if (!options.palettize) {
+	/*if (!options.palettize) {
 	// return the palette and canvas
 		return {
 			canvas,
@@ -278,7 +254,7 @@ const draw = (data, _options) => {
 	return {
 		canvas: palettized,
 		palette: palette.getPalette(),
-	};
+	};*/
 };
 
 module.exports = {

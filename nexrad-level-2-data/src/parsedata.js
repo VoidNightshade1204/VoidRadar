@@ -31,7 +31,9 @@ const parseData = (file, options) => {
 
 	// read the file header
 	const header = parseHeader(raf);
-	document.getElementById('fileStation').innerHTML = header.ICAO;
+	self.postMessage({
+		'fileStation': header.ICAO
+	})
 
 	let messageOffset31 = 0; // the current message 31 offset
 	let recordNumber = 0; // the record number
@@ -82,7 +84,7 @@ const parseData = (file, options) => {
 			}
 		} while (!r.finished);
 	}
-    document.getElementById('spinnerParent').style.display = 'none';
+    //document.getElementById('spinnerParent').style.display = 'none';
 
 	// sort and group the scans by elevation asc
 	return {
