@@ -77,7 +77,7 @@ module.exports = function (self) {
 
         const level2Plot = plot(l2rad, 'REF', {
             elevations: 1,
-        });.
+        });
 
         /*$('.reflPlotButton').on('click', function() {
             if ($('#reflPlotThing').hasClass('icon-selected')) {
