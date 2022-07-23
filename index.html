@@ -129,29 +129,32 @@
     <canvas id="texturecolorbar" class="texturecolorbar" style="display: none"></canvas>
 
     <div id="settingsDialog" style="display: none">
-        <div id="extraStuff">
-            <div><b>Elevation:</b></div>
-            <select id="elevInput">
-                <!-- <option value="1" selected>1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="17">17</option> -->
+        <div id="settingsLoading">Loading...</div>
+        <div id="fullSettingsContents" style="display: none">
+            <div id="extraStuff">
+                <div><b>Elevation:</b></div>
+                <select id="elevInput">
+                    <!-- <option value="1" selected>1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="17">17</option> -->
+                </select>
+                <br><br>
+                <input type="checkbox" id="shouldLowFilter">
+                <label for="shouldLowFilter">Low Filter</label>
+                <br><br>
+            </div>
+            <div><b>Product:</b></div>
+            <select id="productInput">
+                <option value="REF" selected>Reflectivity</option>
+                <option value="VEL">Velocity</option>
             </select>
-            <br><br>
-            <input type="checkbox" id="shouldLowFilter">
-            <label for="shouldLowFilter">Low Filter</label>
-            <br><br>
+
+            <input style="display:none" autofocus>
         </div>
-        <div><b>Product:</b></div>
-        <select id="productInput">
-            <option value="REF" selected>Reflectivity</option>
-            <option value="VEL">Velocity</option>
-        </select>
         <br><br>
         <div><b>Station:</b></div>
         <input id="userStation" value="KLWX">
-
-        <input style="display:none" autofocus>
     </div>
 
     <div id="map"></div>
@@ -469,6 +472,7 @@
         map.addControl(theTestFileControl, 'top-right');
 
         function getLatestFile(sta, callbck) {
+            console.log('loading latest file...')
             var curTime = new Date();
             var year = curTime.getUTCFullYear();
             var month = curTime.getUTCMonth() + 1;

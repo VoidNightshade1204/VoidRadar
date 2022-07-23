@@ -83,9 +83,21 @@ module.exports = function (self) {
                 lowFilterRef: false,
             });
 
-            self.postMessage({
-                'objectTest': JSON.parse(JSON.stringify(l2rad))
-            })
+            setTimeout(function() {
+                console.log('starting')
+                async function stringifyParse() {
+                    self.postMessage({
+                        'objectTest': JSON.parse(JSON.stringify(l2rad))
+                    })
+                }
+                stringifyParse()
+                    .then(function() {
+                        console.log('done');
+                        self.postMessage({
+                            'doneStringifyParse': true
+                        })
+                    })
+            }, 500)
         }
     });
 };

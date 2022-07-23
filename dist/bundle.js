@@ -16406,7 +16406,6 @@ document.addEventListener('loadFile', function(event) {
                     drawRadarShape(url, statLat, statLng, radProd, lowFilter);
                 } else if (ev.data.hasOwnProperty('fileVersion')) {
                     document.getElementById('fileVersion').innerHTML = ev.data.fileVersion;
-                    console.log(document.getElementById('fileVersion').innerHTML)
                 } else if (ev.data.hasOwnProperty('elevationList')) {
                     var elevs = ev.data.elevationList[0]
                     var elevAngles = ev.data.elevationList[1]
@@ -16433,7 +16432,6 @@ document.addEventListener('loadFile', function(event) {
                     document.getElementById('radVCP').innerHTML = theFileVCP;
                     document.getElementById('radDate').innerHTML = finalRadarDateTime;
                 } else if (ev.data.hasOwnProperty('objectTest')) {
-                    console.log('ready')
                     function reattachMethods(serialized,originalclass) {
                         serialized.__proto__ = originalclass.prototype;
                         return serialized;
@@ -16489,6 +16487,9 @@ document.addEventListener('loadFile', function(event) {
                             });
                         }
                     })
+                } else if (ev.data.hasOwnProperty('doneStringifyParse')) {
+                    document.getElementById('settingsLoading').style.display = 'none';
+                    document.getElementById('fullSettingsContents').style.display = 'inline';
                 }
             });
 
@@ -20097,9 +20098,21 @@ module.exports = function (self) {
                 lowFilterRef: false,
             });
 
-            self.postMessage({
-                'objectTest': JSON.parse(JSON.stringify(l2rad))
-            })
+            setTimeout(function() {
+                console.log('starting')
+                async function stringifyParse() {
+                    self.postMessage({
+                        'objectTest': JSON.parse(JSON.stringify(l2rad))
+                    })
+                }
+                stringifyParse()
+                    .then(function() {
+                        console.log('done');
+                        self.postMessage({
+                            'doneStringifyParse': true
+                        })
+                    })
+            }, 500)
         }
     });
 };
