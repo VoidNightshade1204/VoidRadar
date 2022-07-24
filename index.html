@@ -64,6 +64,17 @@
             justify-content: center;
         }
 
+        #messageBox {
+            width: auto;
+            height: auto;
+            max-height: 50vh;
+            overflow: auto;
+            border: 1px solid rgb(0, 0, 0);
+            padding: 2px;
+            /*text-align: justify;*/
+            background: transparent;
+        }
+
         #spinnerParent {
             z-index: 10;
             margin: 0;
@@ -160,6 +171,10 @@
         <input id="userStation" value="KLWX">
     </div>
 
+    <div id="messageDialog" style="display: none">
+        <div id="messageBox"></div>
+    </div>
+
     <div id="map"></div>
 
     <!-- <canvas id="texturecolorbar" class="texturecolorbar"></canvas>
@@ -195,6 +210,37 @@
     </script>
     <script src="./polygonTest/demo-radar-script.js"></script> -->
 
+    <script>
+        function logToModal(textContent) {
+            console.log(textContent);
+            function openMessageModal() {
+                $("#messageDialog").dialog({
+                    modal: true,
+                    // https://stackoverflow.com/a/30624445/18758797
+                    open: function () {
+                        $(this).parent().css({
+                            position: 'absolute',
+                            top: 10,
+                            maxHeight: '70vh',
+                            overflow: 'scroll'
+                        });
+                    },
+                });
+            }
+            if (!($("#messageDialog").dialog('instance') == undefined)) {
+                // message box is already initialized
+                if (!$('#messageDialog').closest('.ui-dialog').is(':visible')) {
+                    // message box is initialized but hidden - open it
+                    openMessageModal();
+                }
+            } else if ($("#messageDialog").dialog('instance') == undefined) {
+                // message box is not initialized, open it
+                openMessageModal();
+            }
+            $('#messageBox').append(`<div>${textContent}</div>`);
+            $("#messageBox").animate({ scrollTop: $("#messageBox")[0].scrollHeight}, 0);
+        }
+    </script>
     <script>
         function xmlToJson(xml) {
             if (typeof xml == "string") {
@@ -298,7 +344,7 @@
                 // event.total is only available if server sends `Content-Length` header
                 //console.log(`%c Downloaded ${formatBytes(event.loaded)} of ${formatBytes(event.total)}`, 'color: #bada55');
                 //var complete = (event.loaded / event.total * 50 | 0);
-                console.log(formatBytes(event.loaded))
+                logToModal(formatBytes(event.loaded))
             }
             xhr.send();
         }
@@ -475,7 +521,7 @@
         map.addControl(theTestFileControl, 'top-right');
 
         function getLatestFile(sta, callbck) {
-            console.log('loading latest file...')
+            logToModal('loading latest file...')
             var curTime = new Date();
             var year = curTime.getUTCFullYear();
             var month = curTime.getUTCMonth() + 1;
@@ -515,7 +561,7 @@
                         $('#curFileThing').removeClass('icon-black');
                         getLatestFile($('#userStation').val(), function(fileName, y, m, d, s) {
                             var individualFileURL = `https://noaa-nexrad-level2.s3.amazonaws.com/${y}/${m}/${d}/${s}/${fileName}`
-                            console.log(phpProxy + individualFileURL)
+                            logToModal(phpProxy + individualFileURL)
                             loadFileObject(phpProxy + individualFileURL, fileName);
                         });
                     } else if ($('#curFileThing').hasClass('icon-selected')) {
@@ -591,7 +637,6 @@
             }
         }
     </script>
-    <script src="utils.js"></script>
     <script src="./dist/bundle.js"></script>
     <script src="./polygonTest/demo-radar-script.js"></script>
     <script src="./polygonTest/generateVerticesRadarDemo.js"></script>

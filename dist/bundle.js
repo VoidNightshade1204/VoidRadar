@@ -16368,6 +16368,7 @@ module.exports = function whichTypedArray(value) {
 const { Level2Radar } = require('./nexrad-level-2-data/src');
 const { plot } = require('./nexrad-level-2-plot/src');
 const { map } = require('./nexrad-level-2-plot/src/draw/palettes/hexlookup');
+const utils = require('./utils');
 var work = require('webworkify');
 
 function round(value, precision) {
@@ -16390,7 +16391,7 @@ document.addEventListener('loadFile', function(event) {
         const reader = new FileReader();
 
         reader.addEventListener("load", function () {
-            console.log('file uploaded, parsing now');
+            logToModal('file uploaded, parsing now');
 
             var w = work(require('./worker.js'));
             w.addEventListener('message', function (ev) {
@@ -16488,6 +16489,8 @@ document.addEventListener('loadFile', function(event) {
                 } else if (ev.data.hasOwnProperty('doneStringifyParse')) {
                     document.getElementById('settingsLoading').style.display = 'none';
                     document.getElementById('fullSettingsContents').style.display = 'inline';
+                } else if (ev.data.hasOwnProperty('logContent')) {
+                    logToModal(ev.data.logContent);
                 }
             });
 
@@ -16525,7 +16528,7 @@ document.getElementById('fileThatWorks').addEventListener('click', function() {
         console.log(l2rad)
     })
     .catch(err => console.error(err));*/
-},{"./nexrad-level-2-data/src":77,"./nexrad-level-2-plot/src":90,"./nexrad-level-2-plot/src/draw/palettes/hexlookup":81,"./worker.js":100,"webworkify":99}],66:[function(require,module,exports){
+},{"./nexrad-level-2-data/src":77,"./nexrad-level-2-plot/src":90,"./nexrad-level-2-plot/src/draw/palettes/hexlookup":81,"./utils":100,"./worker.js":101,"webworkify":99}],66:[function(require,module,exports){
 // parse message type 1
 module.exports = (raf, message, options) => {
 	// record starting offset
@@ -17464,15 +17467,17 @@ const { RandomAccessFile, BIG_ENDIAN } = require('./classes/RandomAccessFile');
 // constants
 const { FILE_HEADER_SIZE } = require('./constants');
 
+const utils = require('../../utils');
+
 const decompress = (raf) => {
 	// detect gzip header
 	const gZipHeader = raf.read(2);
 	raf.seek(0);
 	if (gZipHeader[0] === 31 && gZipHeader[1] === 139) {
-		console.log('file is gzipped, decompressing...')
+		utils.logTextFromWorker('file is gzipped, decompressing...')
 		return gzipDecompress(raf);
 	}
-	console.log('file is not gzipped, reading contents...')
+	utils.logTextFromWorker('file is not gzipped, reading contents...')
 
 	// if file length is less than or equal to the file header size then it is not compressed
 	if (raf.getLength() <= FILE_HEADER_SIZE) return raf;
@@ -17482,20 +17487,20 @@ const decompress = (raf) => {
 
 	// test for the magic number 'BZh' for a bzip compressed file
 	if (compressionRecord.header !== 'BZh') {
-		console.log('header is not compressed, checking first archive...')
+		utils.logTextFromWorker('header is not compressed, checking first archive...')
 		// not compressed, try again with after skipping the file header (first chunk or complete archive)
 		raf.seek(0);
 		raf.skip(FILE_HEADER_SIZE);
 		headerSize = FILE_HEADER_SIZE;
 		const fullCompressionRecord = readCompressionHeader(raf);
 		if (fullCompressionRecord.header !== 'BZh') {
-			console.log('radar data is not compressed at all')
+			utils.logTextFromWorker('radar data is not compressed at all')
 			// not compressed in either form, return the original file at the begining
 			raf.seek(0);
 			return raf;
 		}
 	}
-	console.log('file contents are compressed, decompressing...')
+	utils.logTextFromWorker('file contents are compressed, decompressing...')
 	// compressed file, start decompressing
 	// the format is (int) size of block + 'BZh9' + compressed data block, repeat
 	// start by locating the begining of each compressed block by jumping to each offset noted by the size header
@@ -17522,7 +17527,7 @@ const decompress = (raf) => {
 	var iters = 1;
 	// loop through each block and decompress it
 	positions.forEach((block) => {
-		console.log('decompressing block ' + iters);
+		utils.logTextFromWorker('decompressing block ' + iters);
 		iters++;
 		// extract the block from the buffer
 		const compressed = raf.buffer.slice(block.pos, block.pos + block.size);
@@ -17549,7 +17554,7 @@ const readCompressionHeader = (raf) => ({
 module.exports = decompress;
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"./classes/RandomAccessFile":72,"./constants":74,"./gzipdecompress":76,"buffer":11,"seek-bzip":96}],76:[function(require,module,exports){
+},{"../../utils":100,"./classes/RandomAccessFile":72,"./constants":74,"./gzipdecompress":76,"buffer":11,"seek-bzip":96}],76:[function(require,module,exports){
 const zlib = require('zlib');
 // structured byte access
 const { RandomAccessFile, BIG_ENDIAN } = require('./classes/RandomAccessFile');
@@ -17915,6 +17920,7 @@ const { Level2Record } = require('./classes/Level2Record');
 const { RADAR_DATA_SIZE } = require('./constants');
 const decompress = require('./decompress');
 const parseHeader = require('./parseheader');
+const utils = require('../../utils');
 
 /**
  * @typedef {object} ParsedData Intermediate parsed radar data, further processed by Level2Radar
@@ -17971,7 +17977,7 @@ const parseData = (file, options) => {
 
 			if (!r.finished) {
 				if (recordNumber % 200 == 0) {
-					console.log('reading record ' + recordNumber);
+					utils.logTextFromWorker('reading record ' + recordNumber);
 				}
 				if (r.message_type === 31) {
 				// found a message 31 type, update the offset using an actual (from search) size if provided
@@ -18034,7 +18040,7 @@ const groupAndSortScans = (scans) => {
 
 module.exports = parseData;
 
-},{"./classes/Level2Record":70,"./classes/RandomAccessFile":72,"./constants":74,"./decompress":75,"./parseheader":79}],79:[function(require,module,exports){
+},{"../../utils":100,"./classes/Level2Record":70,"./classes/RandomAccessFile":72,"./constants":74,"./decompress":75,"./parseheader":79}],79:[function(require,module,exports){
 const { FILE_HEADER_SIZE } = require('./constants');
 
 const parse = (raf) => {
@@ -20010,9 +20016,100 @@ module.exports = function (fn, options) {
 };
 
 },{}],100:[function(require,module,exports){
+Number.prototype.degreeToRadius = function () {
+    return this * (Math.PI / 180);
+};
+
+Number.prototype.radiusToDegree = function () {
+    return (180 * this) / Math.PI;
+};
+/**
+ * Get the bounding box of the current LatLng with a given distance.
+ * @param   fsLatitude      latitude
+ * @param   fsLongitude     longitude
+ * @param   fiDistanceInKM  distance from center in km
+ * @returns boundingBox     an object containing the four corners of the bounding box
+ */
+function getBoundingBox(fsLatitude, fsLongitude, fiDistanceInKM) {
+
+    if (fiDistanceInKM === null || fiDistanceInKM === undefined || fiDistanceInKM === 0)
+        fiDistanceInKM = 1;
+
+    let MIN_LAT, MAX_LAT, MIN_LON, MAX_LON, ldEarthRadius, ldDistanceInRadius, lsLatitudeInDegree, lsLongitudeInDegree,
+        lsLatitudeInRadius, lsLongitudeInRadius, lsMinLatitude, lsMaxLatitude, lsMinLongitude, lsMaxLongitude, deltaLon;
+
+    // coordinate limits
+    MIN_LAT = (-90).degreeToRadius();
+    MAX_LAT = (90).degreeToRadius();
+    MIN_LON = (-180).degreeToRadius();
+    MAX_LON = (180).degreeToRadius();
+
+    // Earth's radius (km)
+    ldEarthRadius = 6378.1;
+
+    // angular distance in radians on a great circle
+    ldDistanceInRadius = fiDistanceInKM / ldEarthRadius;
+
+    // center point coordinates (deg)
+    lsLatitudeInDegree = fsLatitude;
+    lsLongitudeInDegree = fsLongitude;
+
+    // center point coordinates (rad)
+    lsLatitudeInRadius = lsLatitudeInDegree.degreeToRadius();
+    lsLongitudeInRadius = lsLongitudeInDegree.degreeToRadius();
+
+    // minimum and maximum latitudes for given distance
+    lsMinLatitude = lsLatitudeInRadius - ldDistanceInRadius;
+    lsMaxLatitude = lsLatitudeInRadius + ldDistanceInRadius;
+
+    // minimum and maximum longitudes for given distance
+    lsMinLongitude = void 0;
+    lsMaxLongitude = void 0;
+
+    // define deltaLon to help determine min and max longitudes
+    deltaLon = Math.asin(Math.sin(ldDistanceInRadius) / Math.cos(lsLatitudeInRadius));
+
+    if (lsMinLatitude > MIN_LAT && lsMaxLatitude < MAX_LAT) {
+        lsMinLongitude = lsLongitudeInRadius - deltaLon;
+        lsMaxLongitude = lsLongitudeInRadius + deltaLon;
+        if (lsMinLongitude < MIN_LON) {
+            lsMinLongitude = lsMinLongitude + 2 * Math.PI;
+        }
+        if (lsMaxLongitude > MAX_LON) {
+            lsMaxLongitude = lsMaxLongitude - 2 * Math.PI;
+        }
+    }
+
+    // a pole is within the given distance
+    else {
+        lsMinLatitude = Math.max(lsMinLatitude, MIN_LAT);
+        lsMaxLatitude = Math.min(lsMaxLatitude, MAX_LAT);
+        lsMinLongitude = MIN_LON;
+        lsMaxLongitude = MAX_LON;
+    }
+
+    return {
+        minLat: lsMinLatitude.radiusToDegree(),
+        minLng: lsMinLongitude.radiusToDegree(),
+        maxLat: lsMaxLatitude.radiusToDegree(),
+        maxLng: lsMaxLongitude.radiusToDegree()
+    };
+}
+
+function logTextFromWorker(textContent) {
+    self.postMessage({
+        'logContent': textContent
+    })
+}
+
+module.exports = {
+    logTextFromWorker
+}
+},{}],101:[function(require,module,exports){
 (function (Buffer){(function (){
 const { Level2Radar } = require('./nexrad-level-2-data/src');
 const { plot } = require('./nexrad-level-2-plot/src');
+const utils = require('./utils');
 
 function toBuffer(ab) {
     const buf = Buffer.alloc(ab.byteLength);
@@ -20058,7 +20155,6 @@ module.exports = function (self) {
 
             var l2rad = new Level2Radar(toBuffer(fileBuffer))
             console.log(l2rad)
-            console.log('initial reflectivity plot');
             var theFileVersion = l2rad.header.version;
             self.postMessage({
                 'fileVersion': theFileVersion
@@ -20089,7 +20185,7 @@ module.exports = function (self) {
                 'elevationList': [elevs, elevAngles, theFileVCP, finalRadarDateTime]
             })
 
-            console.log('initial reflectivity plot');
+            utils.logTextFromWorker('initial reflectivity plot');
             const level2Plot = plot(l2rad, 'REF', {
                 elevations: 1,
                 inWebWorker: true,
@@ -20097,7 +20193,7 @@ module.exports = function (self) {
             });
 
             setTimeout(function() {
-                console.log('starting radar object transfer')
+                utils.logTextFromWorker('starting radar object transfer')
                 var start = Date.now();
                 async function stringifyParse() {
                     delete l2rad.options
@@ -20112,7 +20208,7 @@ module.exports = function (self) {
                 stringifyParse()
                     .then(function() {
                         var end = Date.now() - start;
-                        console.log('finished radar object transfer in ' + end + 'ms');
+                        utils.logTextFromWorker('finished radar object transfer in ' + end + 'ms');
                         self.postMessage({
                             'doneStringifyParse': true
                         })
@@ -20122,4 +20218,4 @@ module.exports = function (self) {
     });
 };
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"./nexrad-level-2-data/src":77,"./nexrad-level-2-plot/src":90,"buffer":11}]},{},[65]);
+},{"./nexrad-level-2-data/src":77,"./nexrad-level-2-plot/src":90,"./utils":100,"buffer":11}]},{},[65]);

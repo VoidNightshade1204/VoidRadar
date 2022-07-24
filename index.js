@@ -2,6 +2,7 @@
 const { Level2Radar } = require('./nexrad-level-2-data/src');
 const { plot } = require('./nexrad-level-2-plot/src');
 const { map } = require('./nexrad-level-2-plot/src/draw/palettes/hexlookup');
+const utils = require('./utils');
 var work = require('webworkify');
 
 function round(value, precision) {
@@ -24,7 +25,7 @@ document.addEventListener('loadFile', function(event) {
         const reader = new FileReader();
 
         reader.addEventListener("load", function () {
-            console.log('file uploaded, parsing now');
+            logToModal('file uploaded, parsing now');
 
             var w = work(require('./worker.js'));
             w.addEventListener('message', function (ev) {
@@ -122,6 +123,8 @@ document.addEventListener('loadFile', function(event) {
                 } else if (ev.data.hasOwnProperty('doneStringifyParse')) {
                     document.getElementById('settingsLoading').style.display = 'none';
                     document.getElementById('fullSettingsContents').style.display = 'inline';
+                } else if (ev.data.hasOwnProperty('logContent')) {
+                    logToModal(ev.data.logContent);
                 }
             });
 

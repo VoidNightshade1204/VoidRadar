@@ -77,3 +77,13 @@ function getBoundingBox(fsLatitude, fsLongitude, fiDistanceInKM) {
         maxLng: lsMaxLongitude.radiusToDegree()
     };
 }
+
+function logTextFromWorker(textContent) {
+    self.postMessage({
+        'logContent': textContent
+    })
+}
+
+module.exports = {
+    logTextFromWorker
+}

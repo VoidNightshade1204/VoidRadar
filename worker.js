@@ -1,5 +1,6 @@
 const { Level2Radar } = require('./nexrad-level-2-data/src');
 const { plot } = require('./nexrad-level-2-plot/src');
+const utils = require('./utils');
 
 function toBuffer(ab) {
     const buf = Buffer.alloc(ab.byteLength);
@@ -45,7 +46,6 @@ module.exports = function (self) {
 
             var l2rad = new Level2Radar(toBuffer(fileBuffer))
             console.log(l2rad)
-            console.log('initial reflectivity plot');
             var theFileVersion = l2rad.header.version;
             self.postMessage({
                 'fileVersion': theFileVersion
@@ -76,7 +76,7 @@ module.exports = function (self) {
                 'elevationList': [elevs, elevAngles, theFileVCP, finalRadarDateTime]
             })
 
-            console.log('initial reflectivity plot');
+            utils.logTextFromWorker('initial reflectivity plot');
             const level2Plot = plot(l2rad, 'REF', {
                 elevations: 1,
                 inWebWorker: true,
@@ -84,7 +84,7 @@ module.exports = function (self) {
             });
 
             setTimeout(function() {
-                console.log('starting radar object transfer')
+                utils.logTextFromWorker('starting radar object transfer')
                 var start = Date.now();
                 async function stringifyParse() {
                     delete l2rad.options
@@ -99,7 +99,7 @@ module.exports = function (self) {
                 stringifyParse()
                     .then(function() {
                         var end = Date.now() - start;
-                        console.log('finished radar object transfer in ' + end + 'ms');
+                        utils.logTextFromWorker('finished radar object transfer in ' + end + 'ms');
                         self.postMessage({
                             'doneStringifyParse': true
                         })

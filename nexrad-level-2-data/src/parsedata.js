@@ -3,6 +3,7 @@ const { Level2Record } = require('./classes/Level2Record');
 const { RADAR_DATA_SIZE } = require('./constants');
 const decompress = require('./decompress');
 const parseHeader = require('./parseheader');
+const utils = require('../../utils');
 
 /**
  * @typedef {object} ParsedData Intermediate parsed radar data, further processed by Level2Radar
@@ -59,7 +60,7 @@ const parseData = (file, options) => {
 
 			if (!r.finished) {
 				if (recordNumber % 200 == 0) {
-					console.log('reading record ' + recordNumber);
+					utils.logTextFromWorker('reading record ' + recordNumber);
 				}
 				if (r.message_type === 31) {
 				// found a message 31 type, update the offset using an actual (from search) size if provided
