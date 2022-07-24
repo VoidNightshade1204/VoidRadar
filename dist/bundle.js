@@ -20100,6 +20100,10 @@ module.exports = function (self) {
                 console.log('starting')
                 async function stringifyParse() {
                     delete l2rad.options
+                    for (var b = 2; b < l2rad.data.length; b++) {
+                        delete l2rad.data[b]
+                        delete l2rad.vcp.record.elevations[b]
+                    }
                     self.postMessage({
                         'objectTest': l2rad
                     })
