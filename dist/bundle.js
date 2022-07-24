@@ -16477,7 +16477,7 @@ document.addEventListener('loadFile', function(event) {
                     $('#shouldLowFilter').on('change', function() {
                         if ($('#reflPlotThing').hasClass('icon-selected')) {
                             removeMapLayer('baseReflectivity');
-                            $("#settingsDialog").dialog('close');
+                            //$("#settingsDialog").dialog('close');
                             const level2Plot = plot(l2rad, 'REF', {
                                 elevations: parseInt($('#elevInput').val()),
                                 inWebWorker: false,
@@ -20097,10 +20097,11 @@ module.exports = function (self) {
             });
 
             setTimeout(function() {
-                console.log('starting')
+                console.log('starting radar object transfer')
+                var start = Date.now();
                 async function stringifyParse() {
                     delete l2rad.options
-                    for (var b = 2; b < l2rad.data.length; b++) {
+                    for (var b = 3; b < l2rad.data.length; b++) {
                         delete l2rad.data[b]
                         delete l2rad.vcp.record.elevations[b]
                     }
@@ -20110,7 +20111,8 @@ module.exports = function (self) {
                 }
                 stringifyParse()
                     .then(function() {
-                        console.log('done');
+                        var end = Date.now() - start;
+                        console.log('finished radar object transfer in ' + end + 'ms');
                         self.postMessage({
                             'doneStringifyParse': true
                         })

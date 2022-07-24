@@ -111,7 +111,7 @@ document.addEventListener('loadFile', function(event) {
                     $('#shouldLowFilter').on('change', function() {
                         if ($('#reflPlotThing').hasClass('icon-selected')) {
                             removeMapLayer('baseReflectivity');
-                            $("#settingsDialog").dialog('close');
+                            //$("#settingsDialog").dialog('close');
                             const level2Plot = plot(l2rad, 'REF', {
                                 elevations: parseInt($('#elevInput').val()),
                                 inWebWorker: false,
