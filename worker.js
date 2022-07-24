@@ -86,8 +86,9 @@ module.exports = function (self) {
             setTimeout(function() {
                 console.log('starting')
                 async function stringifyParse() {
+                    delete l2rad.options
                     self.postMessage({
-                        'objectTest': JSON.parse(JSON.stringify(l2rad))
+                        'objectTest': l2rad
                     })
                 }
                 stringifyParse()

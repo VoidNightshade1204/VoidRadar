@@ -66,11 +66,9 @@ document.addEventListener('loadFile', function(event) {
                     document.getElementById('radVCP').innerHTML = theFileVCP;
                     document.getElementById('radDate').innerHTML = finalRadarDateTime;
                 } else if (ev.data.hasOwnProperty('objectTest')) {
-                    function reattachMethods(serialized,originalclass) {
-                        serialized.__proto__ = originalclass.prototype;
-                        return serialized;
-                    }
-                    var l2rad = reattachMethods(ev.data.objectTest, Level2Radar);
+                    var l2rad = ev.data.objectTest;
+                    Object.setPrototypeOf(l2rad, Level2Radar.prototype)
+
                     $('.reflPlotButton').on('click', function() {
                         if ($('#reflPlotThing').hasClass('icon-selected')) {
                             console.log('plot reflectivity data button clicked');
