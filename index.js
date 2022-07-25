@@ -52,6 +52,7 @@ document.getElementById('fileInput').addEventListener('input', function() {
 })
 
 document.addEventListener('loadFile', function(event) {
+    //logToModal('starting')
     document.getElementById('spinnerParent').style.display = 'block';
     removeTestFileControl();
     //console.log(URL.createObjectURL(document.getElementById("fileInput").files[0]));

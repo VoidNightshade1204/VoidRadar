@@ -63,6 +63,17 @@
             justify-content: center;
         }
 
+        #messageBox {
+            width: auto;
+            height: auto;
+            max-height: 50vh;
+            overflow: auto;
+            border: 1px solid rgb(0, 0, 0);
+            padding: 2px;
+            /*text-align: justify;*/
+            background: transparent;
+        }
+
         #spinnerParent {
             z-index: 10;
             margin: 0;
@@ -154,6 +165,10 @@
         <input style="display:none" autofocus>
     </div>
 
+    <div id="messageDialog" style="display: none">
+        <div id="messageBox"></div>
+    </div>
+
     <div id="map"></div>
 
     <!-- <canvas id="texturecolorbar" class="texturecolorbar"></canvas>
@@ -189,6 +204,37 @@
     </script>
     <script src="./polygonTest/demo-radar-script.js"></script> -->
 
+    <script>
+        function logToModal(textContent) {
+            console.log(textContent);
+            function openMessageModal() {
+                $("#messageDialog").dialog({
+                    modal: true,
+                    // https://stackoverflow.com/a/30624445/18758797
+                    open: function () {
+                        $(this).parent().css({
+                            position: 'absolute',
+                            top: 10,
+                            maxHeight: '70vh',
+                            overflow: 'scroll'
+                        });
+                    },
+                });
+            }
+            if (!($("#messageDialog").dialog('instance') == undefined)) {
+                // message box is already initialized
+                if (!$('#messageDialog').closest('.ui-dialog').is(':visible')) {
+                    // message box is initialized but hidden - open it
+                    openMessageModal();
+                }
+            } else if ($("#messageDialog").dialog('instance') == undefined) {
+                // message box is not initialized, open it
+                openMessageModal();
+            }
+            $('#messageBox').append(`<div>${textContent}</div>`);
+            $("#messageBox").animate({ scrollTop: $("#messageBox")[0].scrollHeight}, 0);
+        }
+    </script>
     <script>
         function xmlToJson(xml) {
             if (typeof xml == "string") {
