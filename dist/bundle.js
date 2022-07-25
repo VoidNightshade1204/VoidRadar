@@ -16391,6 +16391,7 @@ document.addEventListener('loadFile', function(event) {
         const reader = new FileReader();
 
         reader.addEventListener("load", function () {
+            var f = this.result;
             logToModal('file uploaded, parsing now');
 
             var w = work(require('./worker.js'));
@@ -16426,23 +16427,25 @@ document.addEventListener('loadFile', function(event) {
                             }
                         }
                     }
-                    showPlotBtn();
                     document.getElementById('fileInput').style.display = 'none';
                     document.getElementById('radarInfoDiv').style.display = 'inline';
                     document.getElementById('radFileName').innerHTML = uploadedFile.name;
                     document.getElementById('radVCP').innerHTML = theFileVCP;
                     document.getElementById('radDate').innerHTML = finalRadarDateTime;
                 } else if (ev.data.hasOwnProperty('objectTest')) {
-                    var l2rad = ev.data.objectTest;
-                    Object.setPrototypeOf(l2rad, Level2Radar.prototype)
+                    //var l2rad = ev.data.objectTest;
+                    //Object.setPrototypeOf(l2rad, Level2Radar.prototype)
 
                     $('.reflPlotButton').on('click', function() {
                         if ($('#reflPlotThing').hasClass('icon-selected')) {
                             console.log('plot reflectivity data button clicked');
-                            const level2Plot = plot(l2rad, 'REF', {
-                                elevations: parseInt($('#elevInput').val()),
-                                inWebWorker: false,
-                                lowFilterRef: $('#shouldLowFilter').prop('checked'),
+                            w.postMessage({
+                                'initial': [f, [
+                                    'REF',
+                                    parseInt($('#elevInput').val()),
+                                    true,
+                                    $('#shouldLowFilter').prop('checked')
+                                ]]
                             });
                         }
                     })
@@ -16451,16 +16454,23 @@ document.addEventListener('loadFile', function(event) {
                         removeMapLayer('baseReflectivity');
                         if ($('#productInput').val() == 'REF') {
                             document.getElementById('extraStuff').style.display = 'inline';
-                            const level2Plot = plot(l2rad, 'REF', {
-                                elevations: parseInt($('#elevInput').val()),
-                                inWebWorker: false,
-                                lowFilterRef: $('#shouldLowFilter').prop('checked'),
+                            w.postMessage({
+                                'initial': [f, [
+                                    'REF',
+                                    parseInt($('#elevInput').val()),
+                                    true,
+                                    $('#shouldLowFilter').prop('checked')
+                                ]]
                             });
                         } else if ($('#productInput').val() == 'VEL') {
                             document.getElementById('extraStuff').style.display = 'none';
-                            const level2Plot = plot(l2rad, 'VEL', {
-                                elevations: 2,
-                                inWebWorker: false
+                            w.postMessage({
+                                'initial': [f, [
+                                    'VEL',
+                                    2,
+                                    true,
+                                    false
+                                ]]
                             });
                         }
                     })
@@ -16468,10 +16478,13 @@ document.addEventListener('loadFile', function(event) {
                         if ($('#reflPlotThing').hasClass('icon-selected')) {
                             removeMapLayer('baseReflectivity');
                             $("#settingsDialog").dialog('close');
-                            const level2Plot = plot(l2rad, 'REF', {
-                                elevations: parseInt($('#elevInput').val()),
-                                inWebWorker: false,
-                                lowFilterRef: $('#shouldLowFilter').prop('checked'),
+                            w.postMessage({
+                                'initial': [f, [
+                                    'REF',
+                                    parseInt($('#elevInput').val()),
+                                    true,
+                                    $('#shouldLowFilter').prop('checked')
+                                ]]
                             });
                         }
                     })
@@ -16479,10 +16492,13 @@ document.addEventListener('loadFile', function(event) {
                         if ($('#reflPlotThing').hasClass('icon-selected')) {
                             removeMapLayer('baseReflectivity');
                             //$("#settingsDialog").dialog('close');
-                            const level2Plot = plot(l2rad, 'REF', {
-                                elevations: parseInt($('#elevInput').val()),
-                                inWebWorker: false,
-                                lowFilterRef: $('#shouldLowFilter').prop('checked'),
+                            w.postMessage({
+                                'initial': [f, [
+                                    'REF',
+                                    parseInt($('#elevInput').val()),
+                                    true,
+                                    $('#shouldLowFilter').prop('checked')
+                                ]]
                             });
                         }
                     })
@@ -16495,7 +16511,7 @@ document.addEventListener('loadFile', function(event) {
             });
 
             w.postMessage({
-                'initial': this.result
+                'initial': [f, ['REF', 1, true, false], 'first']
             });
         }, false);
         reader.readAsArrayBuffer(uploadedFile);
@@ -20151,7 +20167,7 @@ function msToTime(s) {
 module.exports = function (self) {
     self.addEventListener('message',function (ev) {
         if (ev.data.hasOwnProperty('initial')) {
-            var fileBuffer = ev.data.initial;
+            var fileBuffer = ev.data.initial[0];
 
             var l2rad = new Level2Radar(toBuffer(fileBuffer))
             console.log(l2rad)
@@ -20185,13 +20201,25 @@ module.exports = function (self) {
                 'elevationList': [elevs, elevAngles, theFileVCP, finalRadarDateTime]
             })
 
+            var theProduct = ev.data.initial[1][0];
+            var theElevation = ev.data.initial[1][1];
+            var theInWebWorker = ev.data.initial[1][2];
+            var theLowFilterRef = ev.data.initial[1][3];
             utils.logTextFromWorker('initial reflectivity plot');
-            const level2Plot = plot(l2rad, 'REF', {
-                elevations: 1,
-                inWebWorker: true,
-                lowFilterRef: false,
+            const level2Plot = plot(l2rad, theProduct, {
+                elevations: theElevation,
+                inWebWorker: theInWebWorker,
+                lowFilterRef: theLowFilterRef,
             });
 
+            if (ev.data.initial[2] == 'first') {
+                self.postMessage({
+                    'objectTest': true
+                })
+                self.postMessage({
+                    'doneStringifyParse': true
+                })
+            }
             /*setTimeout(function() {
                 utils.logTextFromWorker('starting radar object transfer')
                 var start = Date.now();

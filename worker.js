@@ -42,7 +42,7 @@ function msToTime(s) {
 module.exports = function (self) {
     self.addEventListener('message',function (ev) {
         if (ev.data.hasOwnProperty('initial')) {
-            var fileBuffer = ev.data.initial;
+            var fileBuffer = ev.data.initial[0];
 
             var l2rad = new Level2Radar(toBuffer(fileBuffer))
             console.log(l2rad)
@@ -76,13 +76,25 @@ module.exports = function (self) {
                 'elevationList': [elevs, elevAngles, theFileVCP, finalRadarDateTime]
             })
 
+            var theProduct = ev.data.initial[1][0];
+            var theElevation = ev.data.initial[1][1];
+            var theInWebWorker = ev.data.initial[1][2];
+            var theLowFilterRef = ev.data.initial[1][3];
             utils.logTextFromWorker('initial reflectivity plot');
-            const level2Plot = plot(l2rad, 'REF', {
-                elevations: 1,
-                inWebWorker: true,
-                lowFilterRef: false,
+            const level2Plot = plot(l2rad, theProduct, {
+                elevations: theElevation,
+                inWebWorker: theInWebWorker,
+                lowFilterRef: theLowFilterRef,
             });
 
+            if (ev.data.initial[2] == 'first') {
+                self.postMessage({
+                    'objectTest': true
+                })
+                self.postMessage({
+                    'doneStringifyParse': true
+                })
+            }
             /*setTimeout(function() {
                 utils.logTextFromWorker('starting radar object transfer')
                 var start = Date.now();
