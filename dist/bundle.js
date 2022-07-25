@@ -20192,7 +20192,7 @@ module.exports = function (self) {
                 lowFilterRef: false,
             });
 
-            setTimeout(function() {
+            /*setTimeout(function() {
                 utils.logTextFromWorker('starting radar object transfer')
                 var start = Date.now();
                 async function stringifyParse() {
@@ -20213,7 +20213,7 @@ module.exports = function (self) {
                             'doneStringifyParse': true
                         })
                     })
-            }, 2000)
+            }, 2000)*/
         }
     });
 };
