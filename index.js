@@ -2,9 +2,44 @@
 const { Level2Radar } = require('./nexrad-level-2-data/src');
 const { plot } = require('./nexrad-level-2-plot/src');
 const { map } = require('./nexrad-level-2-plot/src/draw/palettes/hexlookup');
-const utils = require('./utils');
-var work = require('webworkify');
 
+function toBuffer(ab) {
+    const buf = Buffer.alloc(ab.byteLength);
+    const view = new Uint8Array(ab);
+    for (let i = 0; i < buf.length; ++i) {
+        buf[i] = view[i];
+    }
+    return buf;
+}
+
+function printFancyTime(dateObj, tz) {
+    return dateObj.toLocaleDateString(undefined, {timeZone: tz}) + " " + dateObj.toLocaleTimeString(undefined, {timeZone: tz}) + ` ${tz}`;
+}
+Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+function msToTime(s) {
+    // Pad to 2 or 3 digits, default is 2
+    function pad(n, z) {
+        z = z || 2;
+        return ('00' + n).slice(-z);
+    }
+    var ms = s % 1000;
+    s = (s - ms) / 1000;
+    var secs = s % 60;
+    s = (s - secs) / 60;
+    var mins = s % 60;
+    var hrs = (s - mins) / 60;
+    return {
+        'hours': pad(hrs),
+        'minutes': pad(mins),
+        'seconds': pad(secs),
+        'milliseconds': pad(ms, 3),
+    }
+    //return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+}
 function round(value, precision) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
@@ -17,7 +52,7 @@ document.getElementById('fileInput').addEventListener('input', function() {
 })
 
 document.addEventListener('loadFile', function(event) {
-    //document.getElementById('spinnerParent').style.display = 'block';
+    document.getElementById('spinnerParent').style.display = 'block';
     removeTestFileControl();
     //console.log(URL.createObjectURL(document.getElementById("fileInput").files[0]));
     setTimeout(function() {
@@ -25,128 +60,116 @@ document.addEventListener('loadFile', function(event) {
         const reader = new FileReader();
 
         reader.addEventListener("load", function () {
-            var f = this.result;
-            logToModal('file uploaded, parsing now');
+            console.log('file uploaded, parsing now');
+            var l2rad = new Level2Radar(toBuffer(this.result))
+            console.log(l2rad)
+            var theFileVersion = l2rad.header.version;
+            document.getElementById('fileVersion').innerHTML = theFileVersion;
 
-            var w = work(require('./worker.js'));
-            w.addEventListener('message', function (ev) {
-                if (ev.data.hasOwnProperty('fileStation')) {
-                    document.getElementById('fileStation').innerHTML = ev.data.fileStation;
-                    document.getElementById('radStation').innerHTML = ev.data.fileStation;
-                } else if (ev.data.hasOwnProperty('parsedData')) {
-                    var url = ev.data.parsedData[0];
-                    var statLat = ev.data.parsedData[1];
-                    var statLng = ev.data.parsedData[2];
-                    var radProd = ev.data.parsedData[3];
-                    var lowFilter = ev.data.parsedData[4]; // true or false (true)
-                    drawRadarShape(url, statLat, statLng, radProd, lowFilter);
-                } else if (ev.data.hasOwnProperty('fileVersion')) {
-                    document.getElementById('fileVersion').innerHTML = ev.data.fileVersion;
-                } else if (ev.data.hasOwnProperty('elevationList')) {
-                    var elevs = ev.data.elevationList[0]
-                    var elevAngles = ev.data.elevationList[1]
-                    var theFileVCP = ev.data.elevationList[2]
-                    var finalRadarDateTime = ev.data.elevationList[3]
-                    var theFileVersion = document.getElementById('fileVersion').innerHTML;
-                    for (var key in elevAngles) {
-                        // I believe waveform_type == 2 means that ref data is not in that sweep
-                        // 1, 3, and 4 are safe
-                        if (theFileVersion == "06") {
-                            if (elevAngles[key][1] != 2) {
-                                document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
-                            }
-                        } else {
-                            if (elevAngles[key][1] == 1) {
-                                document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
-                            }
-                        }
+            var elevs = l2rad.listElevations();
+            var elevAngles = l2rad.listElevations('angle', l2rad);
+            for (var key in elevAngles) {
+                // I believe waveform_type == 2 means that ref data is not in that sweep
+                // 1, 3, and 4 are safe
+                if (theFileVersion == "06") {
+                    if (elevAngles[key][1] != 2) {
+                        document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
                     }
-                    document.getElementById('fileInput').style.display = 'none';
-                    document.getElementById('radarInfoDiv').style.display = 'inline';
-                    document.getElementById('radFileName').innerHTML = uploadedFile.name;
-                    document.getElementById('radVCP').innerHTML = theFileVCP;
-                    document.getElementById('radDate').innerHTML = finalRadarDateTime;
-                } else if (ev.data.hasOwnProperty('objectTest')) {
-                    //var l2rad = ev.data.objectTest;
-                    //Object.setPrototypeOf(l2rad, Level2Radar.prototype)
-
-                    $('.reflPlotButton').on('click', function() {
-                        if ($('#reflPlotThing').hasClass('icon-selected')) {
-                            console.log('plot reflectivity data button clicked');
-                            w.postMessage({
-                                'initial': [f, [
-                                    'REF',
-                                    parseInt($('#elevInput').val()),
-                                    true,
-                                    $('#shouldLowFilter').prop('checked')
-                                ]]
-                            });
-                        }
-                    })
-                    $('.reflPlotButton').trigger('click');
-                    $('#productInput').on('change', function() {
-                        removeMapLayer('baseReflectivity');
-                        if ($('#productInput').val() == 'REF') {
-                            document.getElementById('extraStuff').style.display = 'inline';
-                            w.postMessage({
-                                'initial': [f, [
-                                    'REF',
-                                    parseInt($('#elevInput').val()),
-                                    true,
-                                    $('#shouldLowFilter').prop('checked')
-                                ]]
-                            });
-                        } else if ($('#productInput').val() == 'VEL') {
-                            document.getElementById('extraStuff').style.display = 'none';
-                            w.postMessage({
-                                'initial': [f, [
-                                    'VEL',
-                                    2,
-                                    true,
-                                    false
-                                ]]
-                            });
-                        }
-                    })
-                    $('#elevInput').on('change', function() {
-                        if ($('#reflPlotThing').hasClass('icon-selected')) {
-                            removeMapLayer('baseReflectivity');
-                            $("#settingsDialog").dialog('close');
-                            w.postMessage({
-                                'initial': [f, [
-                                    'REF',
-                                    parseInt($('#elevInput').val()),
-                                    true,
-                                    $('#shouldLowFilter').prop('checked')
-                                ]]
-                            });
-                        }
-                    })
-                    $('#shouldLowFilter').on('change', function() {
-                        if ($('#reflPlotThing').hasClass('icon-selected')) {
-                            removeMapLayer('baseReflectivity');
-                            //$("#settingsDialog").dialog('close');
-                            w.postMessage({
-                                'initial': [f, [
-                                    'REF',
-                                    parseInt($('#elevInput').val()),
-                                    true,
-                                    $('#shouldLowFilter').prop('checked')
-                                ]]
-                            });
-                        }
-                    })
-                } else if (ev.data.hasOwnProperty('doneStringifyParse')) {
-                    document.getElementById('settingsLoading').style.display = 'none';
-                    document.getElementById('fullSettingsContents').style.display = 'inline';
-                } else if (ev.data.hasOwnProperty('logContent')) {
-                    logToModal(ev.data.logContent);
+                } else {
+                    if (elevAngles[key][1] == 1) {
+                        document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
+                    }
                 }
-            });
+            }
+            //var blob = new Blob([JSON.stringify(l2rad)], {type: "text/plain"});
+            //var url = window.URL.createObjectURL(blob);
+            //document.getElementById('decodedRadarDataURL').innerHTML = url;
+            showPlotBtn();
+            //document.getElementById('plotRef').style.display = 'inline';
+            //document.getElementById('plotVel').style.display = 'inline';
+            document.getElementById('fileInput').style.display = 'none';
 
-            w.postMessage({
-                'initial': [f, ['REF', 1, true, false], 'first']
+            document.getElementById('radarInfoDiv').style.display = 'inline';
+
+            document.getElementById('radFileName').innerHTML = uploadedFile.name;
+
+            var theFileStation = l2rad.header.ICAO;
+            document.getElementById('radStation').innerHTML = theFileStation;
+
+            var theFileVCP;
+            if (theFileVersion == "06") {
+                theFileVCP = l2rad.vcp.record.pattern_number;
+            } else {
+                theFileVCP = l2rad.data[1][0].record.vcp;
+            }
+            document.getElementById('radVCP').innerHTML = theFileVCP;
+
+            var theFileDate = l2rad.header.modified_julian_date;
+            var theFileTime = l2rad.header.milliseconds;
+            var fileDateObj = new Date(0).addDays(theFileDate);
+            var fileHours = msToTime(theFileTime).hours;
+            var fileMinutes = msToTime(theFileTime).minutes;
+            var fileSeconds = msToTime(theFileTime).seconds;
+            fileDateObj.setUTCHours(fileHours);
+            fileDateObj.setUTCMinutes(fileMinutes);
+            fileDateObj.setUTCSeconds(fileSeconds);
+            var finalRadarDateTime = printFancyTime(fileDateObj, "UTC");
+
+            document.getElementById('radDate').innerHTML = finalRadarDateTime;
+
+            $('.reflPlotButton').on('click', function() {
+                if ($('#reflPlotThing').hasClass('icon-selected')) {
+                    console.log('plot reflectivity data button clicked');
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                }
+            })
+            $('.reflPlotButton').trigger('click');
+            console.log('initial reflectivity plot');
+            const level2Plot = plot(l2rad, 'REF', {
+                elevations: parseInt($('#elevInput').val()),
             });
+            $('#productInput').on('change', function() {
+                removeMapLayer('baseReflectivity');
+                if ($('#productInput').val() == 'REF') {
+                    document.getElementById('extraStuff').style.display = 'inline';
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                } else if ($('#productInput').val() == 'VEL') {
+                    document.getElementById('extraStuff').style.display = 'none';
+                    const level2Plot = plot(l2rad, 'VEL', {
+                        elevations: 2,
+                    });
+                }
+            })
+            $('#elevInput').on('change', function() {
+                if ($('#reflPlotThing').hasClass('icon-selected')) {
+                    removeMapLayer('baseReflectivity');
+                    //$("#settingsDialog").dialog('close');
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                }
+            })
+            $('#shouldLowFilter').on('change', function() {
+                if ($('#reflPlotThing').hasClass('icon-selected')) {
+                    removeMapLayer('baseReflectivity');
+                    //$("#settingsDialog").dialog('close');
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                }
+            })
+            /*const level2Plot = plot(l2rad, 'REF', {
+                elevations: 1,
+                background: 'rgba(0, 0, 0, 0)',
+                //size: 500,
+                //cropTo: 500,
+                dpi: $('#userDPI').val(),
+            });
+            console.log('dpi set to ' + $('#userDPI').val())*/
         }, false);
         reader.readAsArrayBuffer(uploadedFile);
     }, 300)

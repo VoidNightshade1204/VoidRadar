@@ -12,17 +12,15 @@ const { RandomAccessFile, BIG_ENDIAN } = require('./classes/RandomAccessFile');
 // constants
 const { FILE_HEADER_SIZE } = require('./constants');
 
-const utils = require('../../utils');
-
 const decompress = (raf) => {
 	// detect gzip header
 	const gZipHeader = raf.read(2);
 	raf.seek(0);
 	if (gZipHeader[0] === 31 && gZipHeader[1] === 139) {
-		utils.logTextFromWorker('file is gzipped, decompressing...')
+		console.log('file is gzipped, decompressing...')
 		return gzipDecompress(raf);
 	}
-	utils.logTextFromWorker('file is not gzipped, reading contents...')
+	console.log('file is not gzipped, reading contents...')
 
 	// if file length is less than or equal to the file header size then it is not compressed
 	if (raf.getLength() <= FILE_HEADER_SIZE) return raf;
@@ -32,20 +30,20 @@ const decompress = (raf) => {
 
 	// test for the magic number 'BZh' for a bzip compressed file
 	if (compressionRecord.header !== 'BZh') {
-		utils.logTextFromWorker('header is not compressed, checking first archive...')
+		console.log('header is not compressed, checking first archive...')
 		// not compressed, try again with after skipping the file header (first chunk or complete archive)
 		raf.seek(0);
 		raf.skip(FILE_HEADER_SIZE);
 		headerSize = FILE_HEADER_SIZE;
 		const fullCompressionRecord = readCompressionHeader(raf);
 		if (fullCompressionRecord.header !== 'BZh') {
-			utils.logTextFromWorker('radar data is not compressed at all')
+			console.log('radar data is not compressed at all')
 			// not compressed in either form, return the original file at the begining
 			raf.seek(0);
 			return raf;
 		}
 	}
-	utils.logTextFromWorker('file contents are compressed, decompressing...')
+	console.log('file contents are compressed, decompressing...')
 	// compressed file, start decompressing
 	// the format is (int) size of block + 'BZh9' + compressed data block, repeat
 	// start by locating the begining of each compressed block by jumping to each offset noted by the size header
@@ -72,7 +70,7 @@ const decompress = (raf) => {
 	var iters = 1;
 	// loop through each block and decompress it
 	positions.forEach((block) => {
-		utils.logTextFromWorker('decompressing block ' + iters);
+		console.log('decompressing block ' + iters);
 		iters++;
 		// extract the block from the buffer
 		const compressed = raf.buffer.slice(block.pos, block.pos + block.size);

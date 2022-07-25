@@ -1,6 +1,4 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-
-},{}],2:[function(require,module,exports){
 (function (global){(function (){
 'use strict';
 
@@ -510,7 +508,7 @@ var objectKeys = Object.keys || function (obj) {
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"object-assign":30,"util/":5}],3:[function(require,module,exports){
+},{"object-assign":30,"util/":4}],2:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -535,14 +533,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 (function (process,global){(function (){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1132,7 +1130,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":4,"_process":42,"inherits":3}],6:[function(require,module,exports){
+},{"./support/isBuffer":3,"_process":42,"inherits":2}],5:[function(require,module,exports){
 (function (global){(function (){
 'use strict';
 
@@ -1163,7 +1161,7 @@ module.exports = function availableTypedArrays() {
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -1315,9 +1313,9 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
+},{}],7:[function(require,module,exports){
+
 },{}],8:[function(require,module,exports){
-arguments[4][1][0].apply(exports,arguments)
-},{"dup":1}],9:[function(require,module,exports){
 (function (process,Buffer){(function (){
 'use strict';
 /* eslint camelcase: "off" */
@@ -1729,7 +1727,7 @@ Zlib.prototype._reset = function () {
 
 exports.Zlib = Zlib;
 }).call(this)}).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":42,"assert":2,"buffer":11,"pako/lib/zlib/constants":33,"pako/lib/zlib/deflate.js":35,"pako/lib/zlib/inflate.js":37,"pako/lib/zlib/zstream":41}],10:[function(require,module,exports){
+},{"_process":42,"assert":1,"buffer":11,"pako/lib/zlib/constants":33,"pako/lib/zlib/deflate.js":35,"pako/lib/zlib/inflate.js":37,"pako/lib/zlib/zstream":41}],9:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -2341,7 +2339,9 @@ util.inherits(DeflateRaw, Zlib);
 util.inherits(InflateRaw, Zlib);
 util.inherits(Unzip, Zlib);
 }).call(this)}).call(this,require('_process'))
-},{"./binding":9,"_process":42,"assert":2,"buffer":11,"stream":44,"util":63}],11:[function(require,module,exports){
+},{"./binding":8,"_process":42,"assert":1,"buffer":11,"stream":44,"util":63}],10:[function(require,module,exports){
+arguments[4][7][0].apply(exports,arguments)
+},{"dup":7}],11:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * The buffer module from node.js, for the browser.
@@ -4122,7 +4122,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"base64-js":7,"buffer":11,"ieee754":24}],12:[function(require,module,exports){
+},{"base64-js":6,"buffer":11,"ieee754":24}],12:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('get-intrinsic');
@@ -5571,7 +5571,7 @@ module.exports = function isTypedArray(value) {
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"available-typed-arrays":6,"call-bind/callBound":12,"es-abstract/helpers/getOwnPropertyDescriptor":14,"for-each":16,"has-tostringtag/shams":22}],30:[function(require,module,exports){
+},{"available-typed-arrays":5,"call-bind/callBound":12,"es-abstract/helpers/getOwnPropertyDescriptor":14,"for-each":16,"has-tostringtag/shams":22}],30:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -13209,7 +13209,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../errors":45,"./_stream_duplex":46,"./internal/streams/async_iterator":51,"./internal/streams/buffer_list":52,"./internal/streams/destroy":53,"./internal/streams/from":55,"./internal/streams/state":57,"./internal/streams/stream":58,"_process":42,"buffer":11,"events":15,"inherits":25,"string_decoder/":59,"util":8}],49:[function(require,module,exports){
+},{"../errors":45,"./_stream_duplex":46,"./internal/streams/async_iterator":51,"./internal/streams/buffer_list":52,"./internal/streams/destroy":53,"./internal/streams/from":55,"./internal/streams/state":57,"./internal/streams/stream":58,"_process":42,"buffer":11,"events":15,"inherits":25,"string_decoder/":59,"util":7}],49:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -14532,7 +14532,7 @@ function () {
 
   return BufferList;
 }();
-},{"buffer":11,"util":8}],53:[function(require,module,exports){
+},{"buffer":11,"util":7}],53:[function(require,module,exports){
 (function (process){(function (){
 'use strict'; // undocumented cb() API, needed for core, not for public API
 
@@ -15248,8 +15248,8 @@ function config (name) {
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],61:[function(require,module,exports){
-arguments[4][4][0].apply(exports,arguments)
-},{"dup":4}],62:[function(require,module,exports){
+arguments[4][3][0].apply(exports,arguments)
+},{"dup":3}],62:[function(require,module,exports){
 // Currently in sync with Node.js lib/internal/util/types.js
 // https://github.com/nodejs/node/commit/112cc7c27551254aa2b17098fb774867f05ed0d9
 
@@ -16363,14 +16363,50 @@ module.exports = function whichTypedArray(value) {
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"available-typed-arrays":6,"call-bind/callBound":12,"es-abstract/helpers/getOwnPropertyDescriptor":14,"for-each":16,"has-tostringtag/shams":22,"is-typed-array":29}],65:[function(require,module,exports){
+},{"available-typed-arrays":5,"call-bind/callBound":12,"es-abstract/helpers/getOwnPropertyDescriptor":14,"for-each":16,"has-tostringtag/shams":22,"is-typed-array":29}],65:[function(require,module,exports){
+(function (Buffer){(function (){
 //const fetch = require('node-fetch');
 const { Level2Radar } = require('./nexrad-level-2-data/src');
 const { plot } = require('./nexrad-level-2-plot/src');
 const { map } = require('./nexrad-level-2-plot/src/draw/palettes/hexlookup');
-const utils = require('./utils');
-var work = require('webworkify');
 
+function toBuffer(ab) {
+    const buf = Buffer.alloc(ab.byteLength);
+    const view = new Uint8Array(ab);
+    for (let i = 0; i < buf.length; ++i) {
+        buf[i] = view[i];
+    }
+    return buf;
+}
+
+function printFancyTime(dateObj, tz) {
+    return dateObj.toLocaleDateString(undefined, {timeZone: tz}) + " " + dateObj.toLocaleTimeString(undefined, {timeZone: tz}) + ` ${tz}`;
+}
+Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+function msToTime(s) {
+    // Pad to 2 or 3 digits, default is 2
+    function pad(n, z) {
+        z = z || 2;
+        return ('00' + n).slice(-z);
+    }
+    var ms = s % 1000;
+    s = (s - ms) / 1000;
+    var secs = s % 60;
+    s = (s - secs) / 60;
+    var mins = s % 60;
+    var hrs = (s - mins) / 60;
+    return {
+        'hours': pad(hrs),
+        'minutes': pad(mins),
+        'seconds': pad(secs),
+        'milliseconds': pad(ms, 3),
+    }
+    //return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
+}
 function round(value, precision) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
@@ -16383,7 +16419,7 @@ document.getElementById('fileInput').addEventListener('input', function() {
 })
 
 document.addEventListener('loadFile', function(event) {
-    //document.getElementById('spinnerParent').style.display = 'block';
+    document.getElementById('spinnerParent').style.display = 'block';
     removeTestFileControl();
     //console.log(URL.createObjectURL(document.getElementById("fileInput").files[0]));
     setTimeout(function() {
@@ -16391,128 +16427,116 @@ document.addEventListener('loadFile', function(event) {
         const reader = new FileReader();
 
         reader.addEventListener("load", function () {
-            var f = this.result;
-            logToModal('file uploaded, parsing now');
+            console.log('file uploaded, parsing now');
+            var l2rad = new Level2Radar(toBuffer(this.result))
+            console.log(l2rad)
+            var theFileVersion = l2rad.header.version;
+            document.getElementById('fileVersion').innerHTML = theFileVersion;
 
-            var w = work(require('./worker.js'));
-            w.addEventListener('message', function (ev) {
-                if (ev.data.hasOwnProperty('fileStation')) {
-                    document.getElementById('fileStation').innerHTML = ev.data.fileStation;
-                    document.getElementById('radStation').innerHTML = ev.data.fileStation;
-                } else if (ev.data.hasOwnProperty('parsedData')) {
-                    var url = ev.data.parsedData[0];
-                    var statLat = ev.data.parsedData[1];
-                    var statLng = ev.data.parsedData[2];
-                    var radProd = ev.data.parsedData[3];
-                    var lowFilter = ev.data.parsedData[4]; // true or false (true)
-                    drawRadarShape(url, statLat, statLng, radProd, lowFilter);
-                } else if (ev.data.hasOwnProperty('fileVersion')) {
-                    document.getElementById('fileVersion').innerHTML = ev.data.fileVersion;
-                } else if (ev.data.hasOwnProperty('elevationList')) {
-                    var elevs = ev.data.elevationList[0]
-                    var elevAngles = ev.data.elevationList[1]
-                    var theFileVCP = ev.data.elevationList[2]
-                    var finalRadarDateTime = ev.data.elevationList[3]
-                    var theFileVersion = document.getElementById('fileVersion').innerHTML;
-                    for (var key in elevAngles) {
-                        // I believe waveform_type == 2 means that ref data is not in that sweep
-                        // 1, 3, and 4 are safe
-                        if (theFileVersion == "06") {
-                            if (elevAngles[key][1] != 2) {
-                                document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
-                            }
-                        } else {
-                            if (elevAngles[key][1] == 1) {
-                                document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
-                            }
-                        }
+            var elevs = l2rad.listElevations();
+            var elevAngles = l2rad.listElevations('angle', l2rad);
+            for (var key in elevAngles) {
+                // I believe waveform_type == 2 means that ref data is not in that sweep
+                // 1, 3, and 4 are safe
+                if (theFileVersion == "06") {
+                    if (elevAngles[key][1] != 2) {
+                        document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
                     }
-                    document.getElementById('fileInput').style.display = 'none';
-                    document.getElementById('radarInfoDiv').style.display = 'inline';
-                    document.getElementById('radFileName').innerHTML = uploadedFile.name;
-                    document.getElementById('radVCP').innerHTML = theFileVCP;
-                    document.getElementById('radDate').innerHTML = finalRadarDateTime;
-                } else if (ev.data.hasOwnProperty('objectTest')) {
-                    //var l2rad = ev.data.objectTest;
-                    //Object.setPrototypeOf(l2rad, Level2Radar.prototype)
-
-                    $('.reflPlotButton').on('click', function() {
-                        if ($('#reflPlotThing').hasClass('icon-selected')) {
-                            console.log('plot reflectivity data button clicked');
-                            w.postMessage({
-                                'initial': [f, [
-                                    'REF',
-                                    parseInt($('#elevInput').val()),
-                                    true,
-                                    $('#shouldLowFilter').prop('checked')
-                                ]]
-                            });
-                        }
-                    })
-                    $('.reflPlotButton').trigger('click');
-                    $('#productInput').on('change', function() {
-                        removeMapLayer('baseReflectivity');
-                        if ($('#productInput').val() == 'REF') {
-                            document.getElementById('extraStuff').style.display = 'inline';
-                            w.postMessage({
-                                'initial': [f, [
-                                    'REF',
-                                    parseInt($('#elevInput').val()),
-                                    true,
-                                    $('#shouldLowFilter').prop('checked')
-                                ]]
-                            });
-                        } else if ($('#productInput').val() == 'VEL') {
-                            document.getElementById('extraStuff').style.display = 'none';
-                            w.postMessage({
-                                'initial': [f, [
-                                    'VEL',
-                                    2,
-                                    true,
-                                    false
-                                ]]
-                            });
-                        }
-                    })
-                    $('#elevInput').on('change', function() {
-                        if ($('#reflPlotThing').hasClass('icon-selected')) {
-                            removeMapLayer('baseReflectivity');
-                            $("#settingsDialog").dialog('close');
-                            w.postMessage({
-                                'initial': [f, [
-                                    'REF',
-                                    parseInt($('#elevInput').val()),
-                                    true,
-                                    $('#shouldLowFilter').prop('checked')
-                                ]]
-                            });
-                        }
-                    })
-                    $('#shouldLowFilter').on('change', function() {
-                        if ($('#reflPlotThing').hasClass('icon-selected')) {
-                            removeMapLayer('baseReflectivity');
-                            //$("#settingsDialog").dialog('close');
-                            w.postMessage({
-                                'initial': [f, [
-                                    'REF',
-                                    parseInt($('#elevInput').val()),
-                                    true,
-                                    $('#shouldLowFilter').prop('checked')
-                                ]]
-                            });
-                        }
-                    })
-                } else if (ev.data.hasOwnProperty('doneStringifyParse')) {
-                    document.getElementById('settingsLoading').style.display = 'none';
-                    document.getElementById('fullSettingsContents').style.display = 'inline';
-                } else if (ev.data.hasOwnProperty('logContent')) {
-                    logToModal(ev.data.logContent);
+                } else {
+                    if (elevAngles[key][1] == 1) {
+                        document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
+                    }
                 }
-            });
+            }
+            //var blob = new Blob([JSON.stringify(l2rad)], {type: "text/plain"});
+            //var url = window.URL.createObjectURL(blob);
+            //document.getElementById('decodedRadarDataURL').innerHTML = url;
+            showPlotBtn();
+            //document.getElementById('plotRef').style.display = 'inline';
+            //document.getElementById('plotVel').style.display = 'inline';
+            document.getElementById('fileInput').style.display = 'none';
 
-            w.postMessage({
-                'initial': [f, ['REF', 1, true, false], 'first']
+            document.getElementById('radarInfoDiv').style.display = 'inline';
+
+            document.getElementById('radFileName').innerHTML = uploadedFile.name;
+
+            var theFileStation = l2rad.header.ICAO;
+            document.getElementById('radStation').innerHTML = theFileStation;
+
+            var theFileVCP;
+            if (theFileVersion == "06") {
+                theFileVCP = l2rad.vcp.record.pattern_number;
+            } else {
+                theFileVCP = l2rad.data[1][0].record.vcp;
+            }
+            document.getElementById('radVCP').innerHTML = theFileVCP;
+
+            var theFileDate = l2rad.header.modified_julian_date;
+            var theFileTime = l2rad.header.milliseconds;
+            var fileDateObj = new Date(0).addDays(theFileDate);
+            var fileHours = msToTime(theFileTime).hours;
+            var fileMinutes = msToTime(theFileTime).minutes;
+            var fileSeconds = msToTime(theFileTime).seconds;
+            fileDateObj.setUTCHours(fileHours);
+            fileDateObj.setUTCMinutes(fileMinutes);
+            fileDateObj.setUTCSeconds(fileSeconds);
+            var finalRadarDateTime = printFancyTime(fileDateObj, "UTC");
+
+            document.getElementById('radDate').innerHTML = finalRadarDateTime;
+
+            $('.reflPlotButton').on('click', function() {
+                if ($('#reflPlotThing').hasClass('icon-selected')) {
+                    console.log('plot reflectivity data button clicked');
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                }
+            })
+            $('.reflPlotButton').trigger('click');
+            console.log('initial reflectivity plot');
+            const level2Plot = plot(l2rad, 'REF', {
+                elevations: parseInt($('#elevInput').val()),
             });
+            $('#productInput').on('change', function() {
+                removeMapLayer('baseReflectivity');
+                if ($('#productInput').val() == 'REF') {
+                    document.getElementById('extraStuff').style.display = 'inline';
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                } else if ($('#productInput').val() == 'VEL') {
+                    document.getElementById('extraStuff').style.display = 'none';
+                    const level2Plot = plot(l2rad, 'VEL', {
+                        elevations: 2,
+                    });
+                }
+            })
+            $('#elevInput').on('change', function() {
+                if ($('#reflPlotThing').hasClass('icon-selected')) {
+                    removeMapLayer('baseReflectivity');
+                    //$("#settingsDialog").dialog('close');
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                }
+            })
+            $('#shouldLowFilter').on('change', function() {
+                if ($('#reflPlotThing').hasClass('icon-selected')) {
+                    removeMapLayer('baseReflectivity');
+                    //$("#settingsDialog").dialog('close');
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                }
+            })
+            /*const level2Plot = plot(l2rad, 'REF', {
+                elevations: 1,
+                background: 'rgba(0, 0, 0, 0)',
+                //size: 500,
+                //cropTo: 500,
+                dpi: $('#userDPI').val(),
+            });
+            console.log('dpi set to ' + $('#userDPI').val())*/
         }, false);
         reader.readAsArrayBuffer(uploadedFile);
     }, 300)
@@ -16544,7 +16568,8 @@ document.getElementById('fileThatWorks').addEventListener('click', function() {
         console.log(l2rad)
     })
     .catch(err => console.error(err));*/
-},{"./nexrad-level-2-data/src":77,"./nexrad-level-2-plot/src":90,"./nexrad-level-2-plot/src/draw/palettes/hexlookup":81,"./utils":100,"./worker.js":101,"webworkify":99}],66:[function(require,module,exports){
+}).call(this)}).call(this,require("buffer").Buffer)
+},{"./nexrad-level-2-data/src":77,"./nexrad-level-2-plot/src":90,"./nexrad-level-2-plot/src/draw/palettes/hexlookup":81,"buffer":11}],66:[function(require,module,exports){
 // parse message type 1
 module.exports = (raf, message, options) => {
 	// record starting offset
@@ -17483,17 +17508,15 @@ const { RandomAccessFile, BIG_ENDIAN } = require('./classes/RandomAccessFile');
 // constants
 const { FILE_HEADER_SIZE } = require('./constants');
 
-const utils = require('../../utils');
-
 const decompress = (raf) => {
 	// detect gzip header
 	const gZipHeader = raf.read(2);
 	raf.seek(0);
 	if (gZipHeader[0] === 31 && gZipHeader[1] === 139) {
-		utils.logTextFromWorker('file is gzipped, decompressing...')
+		console.log('file is gzipped, decompressing...')
 		return gzipDecompress(raf);
 	}
-	utils.logTextFromWorker('file is not gzipped, reading contents...')
+	console.log('file is not gzipped, reading contents...')
 
 	// if file length is less than or equal to the file header size then it is not compressed
 	if (raf.getLength() <= FILE_HEADER_SIZE) return raf;
@@ -17503,20 +17526,20 @@ const decompress = (raf) => {
 
 	// test for the magic number 'BZh' for a bzip compressed file
 	if (compressionRecord.header !== 'BZh') {
-		utils.logTextFromWorker('header is not compressed, checking first archive...')
+		console.log('header is not compressed, checking first archive...')
 		// not compressed, try again with after skipping the file header (first chunk or complete archive)
 		raf.seek(0);
 		raf.skip(FILE_HEADER_SIZE);
 		headerSize = FILE_HEADER_SIZE;
 		const fullCompressionRecord = readCompressionHeader(raf);
 		if (fullCompressionRecord.header !== 'BZh') {
-			utils.logTextFromWorker('radar data is not compressed at all')
+			console.log('radar data is not compressed at all')
 			// not compressed in either form, return the original file at the begining
 			raf.seek(0);
 			return raf;
 		}
 	}
-	utils.logTextFromWorker('file contents are compressed, decompressing...')
+	console.log('file contents are compressed, decompressing...')
 	// compressed file, start decompressing
 	// the format is (int) size of block + 'BZh9' + compressed data block, repeat
 	// start by locating the begining of each compressed block by jumping to each offset noted by the size header
@@ -17543,7 +17566,7 @@ const decompress = (raf) => {
 	var iters = 1;
 	// loop through each block and decompress it
 	positions.forEach((block) => {
-		utils.logTextFromWorker('decompressing block ' + iters);
+		console.log('decompressing block ' + iters);
 		iters++;
 		// extract the block from the buffer
 		const compressed = raf.buffer.slice(block.pos, block.pos + block.size);
@@ -17570,7 +17593,7 @@ const readCompressionHeader = (raf) => ({
 module.exports = decompress;
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"../../utils":100,"./classes/RandomAccessFile":72,"./constants":74,"./gzipdecompress":76,"buffer":11,"seek-bzip":96}],76:[function(require,module,exports){
+},{"./classes/RandomAccessFile":72,"./constants":74,"./gzipdecompress":76,"buffer":11,"seek-bzip":96}],76:[function(require,module,exports){
 const zlib = require('zlib');
 // structured byte access
 const { RandomAccessFile, BIG_ENDIAN } = require('./classes/RandomAccessFile');
@@ -17580,7 +17603,7 @@ module.exports = (raf) => {
 	return new RandomAccessFile(data, BIG_ENDIAN);
 };
 
-},{"./classes/RandomAccessFile":72,"zlib":10}],77:[function(require,module,exports){
+},{"./classes/RandomAccessFile":72,"zlib":9}],77:[function(require,module,exports){
 (function (Buffer){(function (){
 const parseData = require('./parsedata');
 const combineData = require('./combinedata');
@@ -17936,7 +17959,6 @@ const { Level2Record } = require('./classes/Level2Record');
 const { RADAR_DATA_SIZE } = require('./constants');
 const decompress = require('./decompress');
 const parseHeader = require('./parseheader');
-const utils = require('../../utils');
 
 /**
  * @typedef {object} ParsedData Intermediate parsed radar data, further processed by Level2Radar
@@ -17965,9 +17987,7 @@ const parseData = (file, options) => {
 
 	// read the file header
 	const header = parseHeader(raf);
-	self.postMessage({
-		'fileStation': header.ICAO
-	})
+	document.getElementById('fileStation').innerHTML = header.ICAO;
 
 	let messageOffset31 = 0; // the current message 31 offset
 	let recordNumber = 0; // the record number
@@ -17993,7 +18013,7 @@ const parseData = (file, options) => {
 
 			if (!r.finished) {
 				if (recordNumber % 200 == 0) {
-					utils.logTextFromWorker('reading record ' + recordNumber);
+					console.log('reading record ' + recordNumber);
 				}
 				if (r.message_type === 31) {
 				// found a message 31 type, update the offset using an actual (from search) size if provided
@@ -18018,7 +18038,7 @@ const parseData = (file, options) => {
 			}
 		} while (!r.finished);
 	}
-    //document.getElementById('spinnerParent').style.display = 'none';
+    document.getElementById('spinnerParent').style.display = 'none';
 
 	// sort and group the scans by elevation asc
 	return {
@@ -18056,7 +18076,7 @@ const groupAndSortScans = (scans) => {
 
 module.exports = parseData;
 
-},{"../../utils":100,"./classes/Level2Record":70,"./classes/RandomAccessFile":72,"./constants":74,"./decompress":75,"./parseheader":79}],79:[function(require,module,exports){
+},{"./classes/Level2Record":70,"./classes/RandomAccessFile":72,"./constants":74,"./decompress":75,"./parseheader":79}],79:[function(require,module,exports){
 const { FILE_HEADER_SIZE } = require('./constants');
 
 const parse = (raf) => {
@@ -18142,6 +18162,19 @@ const DEFAULT_OPTIONS = {
 	dpi: 96,
 };
 
+function setDPI(canvas, dpi) {
+    // Set up CSS size.
+    canvas.style.width = canvas.style.width || canvas.width + 'px';
+    canvas.style.height = canvas.style.height || canvas.height + 'px';
+
+    // Resize canvas and scale future draws.
+    var scaleFactor = dpi / 96;
+    canvas.width = Math.ceil(canvas.width * scaleFactor);
+    canvas.height = Math.ceil(canvas.height * scaleFactor);
+    var ctx = canvas.getContext('2d');
+    ctx.scale(scaleFactor, scaleFactor);
+}
+
 const draw = (data, _options) => {
 	// combine options with defaults
 	const options = {
@@ -18171,6 +18204,26 @@ const draw = (data, _options) => {
 	// calculate crop, adjust if necessary
 	const cropTo = Math.min(options.size, options.cropTo);
 	if (options.cropTo < 1) throw new Error('Provide options.cropTo > 0');
+
+	// create the canvas and context
+	const canvas = document.getElementById('theCanvas');
+	const ctx = canvas.getContext('2d', { alpha: options.alpha });
+	ctx.canvas.width = cropTo;
+	ctx.canvas.height = cropTo;
+	ctx.antialias = options.antialias;
+	ctx.imageSmoothingEnabled = options.imageSmoothingEnabled;
+
+	setDPI(canvas, options.dpi);
+
+	// fill background with black
+	ctx.fillStyle = options.background;
+	ctx.fillRect(0, 0, cropTo, cropTo);
+
+	// canvas settings
+	ctx.imageSmoothingEnabled = true;
+	ctx.lineWidth = options.lineWidth / gateSizeScaling;
+	ctx.translate(cropTo / 2, cropTo / 2);
+	ctx.rotate(-Math.PI / 2);
 
 	// get the palette
 	const palette = palettes[options.product];
@@ -18293,7 +18346,7 @@ const draw = (data, _options) => {
 	//}
 	json.version.push(data.header.version);
 	var blob = new Blob([JSON.stringify(json)], {type: "text/plain"});
-    var url = URL.createObjectURL(blob);
+    var url = window.URL.createObjectURL(blob);
 	/*const a = document.createElement('a');
     a.style.display = 'none';
     a.href = url;
@@ -18303,38 +18356,20 @@ const draw = (data, _options) => {
     //a.click();*/
 
 	//testHello('yeet')
-	var shouldFilter;
-	if (options.lowFilterRef == undefined || options.lowFilterRef == false) {
-		shouldFilter = true;
-	} else if (options.lowFilterRef == true) {
-		shouldFilter = false;
-	}
-	var shtation = data.header.ICAO;
-    var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			var data = JSON.parse(this.responseText);
-			var statLat = data[shtation][1];
-			var statLng = data[shtation][2];
-			if (options.inWebWorker) {
-				self.postMessage({
-					'parsedData': [url, statLat, statLng, options.product, shouldFilter]
-				})
-			} else if (!options.inWebWorker) {
-				drawRadarShape(url, statLat, statLng, options.product, shouldFilter);
-			}
+	var shtation = document.getElementById('fileStation').innerHTML;
+    $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
+        var statLat = data[shtation][1];
+        var statLng = data[shtation][2];
+		drawRadarShape(url, statLat, statLng, options.product, !$('#shouldLowFilter').prop("checked"));
 
-			//new mapboxgl.Marker()
-			//    .setLngLat([stationLng, stationLat])
-			//    .addTo(map);
-		}
-	};
-	xhr.open("GET", 'https://steepatticstairs.github.io/weather/json/radarStations.json', true);
-	xhr.send();
+        //new mapboxgl.Marker()
+        //    .setLngLat([stationLng, stationLat])
+        //    .addTo(map);
+    });
 
-    //document.getElementById('spinnerParent').style.display = 'none';
+    document.getElementById('spinnerParent').style.display = 'none';
 
-	/*if (!options.palettize) {
+	if (!options.palettize) {
 	// return the palette and canvas
 		return {
 			canvas,
@@ -18348,7 +18383,7 @@ const draw = (data, _options) => {
 	return {
 		canvas: palettized,
 		palette: palette.getPalette(),
-	};*/
+	};
 };
 
 module.exports = {
@@ -18916,7 +18951,7 @@ module.exports = {
 	writePngToFile,
 };
 
-},{"fs":1}],92:[function(require,module,exports){
+},{"fs":10}],92:[function(require,module,exports){
 /* globals document, ImageData */
 
 const parseFont = require('./lib/parse-font')
@@ -19949,301 +19984,4 @@ module.exports={
   }
 }
 
-},{}],99:[function(require,module,exports){
-var bundleFn = arguments[3];
-var sources = arguments[4];
-var cache = arguments[5];
-
-var stringify = JSON.stringify;
-
-module.exports = function (fn, options) {
-    var wkey;
-    var cacheKeys = Object.keys(cache);
-
-    for (var i = 0, l = cacheKeys.length; i < l; i++) {
-        var key = cacheKeys[i];
-        var exp = cache[key].exports;
-        // Using babel as a transpiler to use esmodule, the export will always
-        // be an object with the default export as a property of it. To ensure
-        // the existing api and babel esmodule exports are both supported we
-        // check for both
-        if (exp === fn || exp && exp.default === fn) {
-            wkey = key;
-            break;
-        }
-    }
-
-    if (!wkey) {
-        wkey = Math.floor(Math.pow(16, 8) * Math.random()).toString(16);
-        var wcache = {};
-        for (var i = 0, l = cacheKeys.length; i < l; i++) {
-            var key = cacheKeys[i];
-            wcache[key] = key;
-        }
-        sources[wkey] = [
-            'function(require,module,exports){' + fn + '(self); }',
-            wcache
-        ];
-    }
-    var skey = Math.floor(Math.pow(16, 8) * Math.random()).toString(16);
-
-    var scache = {}; scache[wkey] = wkey;
-    sources[skey] = [
-        'function(require,module,exports){' +
-            // try to call default if defined to also support babel esmodule exports
-            'var f = require(' + stringify(wkey) + ');' +
-            '(f.default ? f.default : f)(self);' +
-        '}',
-        scache
-    ];
-
-    var workerSources = {};
-    resolveSources(skey);
-
-    function resolveSources(key) {
-        workerSources[key] = true;
-
-        for (var depPath in sources[key][1]) {
-            var depKey = sources[key][1][depPath];
-            if (!workerSources[depKey]) {
-                resolveSources(depKey);
-            }
-        }
-    }
-
-    var src = '(' + bundleFn + ')({'
-        + Object.keys(workerSources).map(function (key) {
-            return stringify(key) + ':['
-                + sources[key][0]
-                + ',' + stringify(sources[key][1]) + ']'
-            ;
-        }).join(',')
-        + '},{},[' + stringify(skey) + '])'
-    ;
-
-    var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
-
-    var blob = new Blob([src], { type: 'text/javascript' });
-    if (options && options.bare) { return blob; }
-    var workerUrl = URL.createObjectURL(blob);
-    var worker = new Worker(workerUrl);
-    worker.objectURL = workerUrl;
-    return worker;
-};
-
-},{}],100:[function(require,module,exports){
-Number.prototype.degreeToRadius = function () {
-    return this * (Math.PI / 180);
-};
-
-Number.prototype.radiusToDegree = function () {
-    return (180 * this) / Math.PI;
-};
-/**
- * Get the bounding box of the current LatLng with a given distance.
- * @param   fsLatitude      latitude
- * @param   fsLongitude     longitude
- * @param   fiDistanceInKM  distance from center in km
- * @returns boundingBox     an object containing the four corners of the bounding box
- */
-function getBoundingBox(fsLatitude, fsLongitude, fiDistanceInKM) {
-
-    if (fiDistanceInKM === null || fiDistanceInKM === undefined || fiDistanceInKM === 0)
-        fiDistanceInKM = 1;
-
-    let MIN_LAT, MAX_LAT, MIN_LON, MAX_LON, ldEarthRadius, ldDistanceInRadius, lsLatitudeInDegree, lsLongitudeInDegree,
-        lsLatitudeInRadius, lsLongitudeInRadius, lsMinLatitude, lsMaxLatitude, lsMinLongitude, lsMaxLongitude, deltaLon;
-
-    // coordinate limits
-    MIN_LAT = (-90).degreeToRadius();
-    MAX_LAT = (90).degreeToRadius();
-    MIN_LON = (-180).degreeToRadius();
-    MAX_LON = (180).degreeToRadius();
-
-    // Earth's radius (km)
-    ldEarthRadius = 6378.1;
-
-    // angular distance in radians on a great circle
-    ldDistanceInRadius = fiDistanceInKM / ldEarthRadius;
-
-    // center point coordinates (deg)
-    lsLatitudeInDegree = fsLatitude;
-    lsLongitudeInDegree = fsLongitude;
-
-    // center point coordinates (rad)
-    lsLatitudeInRadius = lsLatitudeInDegree.degreeToRadius();
-    lsLongitudeInRadius = lsLongitudeInDegree.degreeToRadius();
-
-    // minimum and maximum latitudes for given distance
-    lsMinLatitude = lsLatitudeInRadius - ldDistanceInRadius;
-    lsMaxLatitude = lsLatitudeInRadius + ldDistanceInRadius;
-
-    // minimum and maximum longitudes for given distance
-    lsMinLongitude = void 0;
-    lsMaxLongitude = void 0;
-
-    // define deltaLon to help determine min and max longitudes
-    deltaLon = Math.asin(Math.sin(ldDistanceInRadius) / Math.cos(lsLatitudeInRadius));
-
-    if (lsMinLatitude > MIN_LAT && lsMaxLatitude < MAX_LAT) {
-        lsMinLongitude = lsLongitudeInRadius - deltaLon;
-        lsMaxLongitude = lsLongitudeInRadius + deltaLon;
-        if (lsMinLongitude < MIN_LON) {
-            lsMinLongitude = lsMinLongitude + 2 * Math.PI;
-        }
-        if (lsMaxLongitude > MAX_LON) {
-            lsMaxLongitude = lsMaxLongitude - 2 * Math.PI;
-        }
-    }
-
-    // a pole is within the given distance
-    else {
-        lsMinLatitude = Math.max(lsMinLatitude, MIN_LAT);
-        lsMaxLatitude = Math.min(lsMaxLatitude, MAX_LAT);
-        lsMinLongitude = MIN_LON;
-        lsMaxLongitude = MAX_LON;
-    }
-
-    return {
-        minLat: lsMinLatitude.radiusToDegree(),
-        minLng: lsMinLongitude.radiusToDegree(),
-        maxLat: lsMaxLatitude.radiusToDegree(),
-        maxLng: lsMaxLongitude.radiusToDegree()
-    };
-}
-
-function logTextFromWorker(textContent) {
-    self.postMessage({
-        'logContent': textContent
-    })
-}
-
-module.exports = {
-    logTextFromWorker
-}
-},{}],101:[function(require,module,exports){
-(function (Buffer){(function (){
-const { Level2Radar } = require('./nexrad-level-2-data/src');
-const { plot } = require('./nexrad-level-2-plot/src');
-const utils = require('./utils');
-
-function toBuffer(ab) {
-    const buf = Buffer.alloc(ab.byteLength);
-    const view = new Uint8Array(ab);
-    for (let i = 0; i < buf.length; ++i) {
-        buf[i] = view[i];
-    }
-    return buf;
-}
-function printFancyTime(dateObj, tz) {
-    return dateObj.toLocaleDateString(undefined, {timeZone: tz}) + " " + dateObj.toLocaleTimeString(undefined, {timeZone: tz}) + ` ${tz}`;
-}
-Date.prototype.addDays = function(days) {
-    var date = new Date(this.valueOf());
-    date.setDate(date.getDate() + days);
-    return date;
-}
-function msToTime(s) {
-    // Pad to 2 or 3 digits, default is 2
-    function pad(n, z) {
-        z = z || 2;
-        return ('00' + n).slice(-z);
-    }
-    var ms = s % 1000;
-    s = (s - ms) / 1000;
-    var secs = s % 60;
-    s = (s - secs) / 60;
-    var mins = s % 60;
-    var hrs = (s - mins) / 60;
-    return {
-        'hours': pad(hrs),
-        'minutes': pad(mins),
-        'seconds': pad(secs),
-        'milliseconds': pad(ms, 3),
-    }
-    //return pad(hrs) + ':' + pad(mins) + ':' + pad(secs) + '.' + pad(ms, 3);
-}
-
-module.exports = function (self) {
-    self.addEventListener('message',function (ev) {
-        if (ev.data.hasOwnProperty('initial')) {
-            var fileBuffer = ev.data.initial[0];
-
-            var l2rad = new Level2Radar(toBuffer(fileBuffer))
-            console.log(l2rad)
-            var theFileVersion = l2rad.header.version;
-            self.postMessage({
-                'fileVersion': theFileVersion
-            })
-
-            var elevs = l2rad.listElevations();
-            var elevAngles = l2rad.listElevations('angle', l2rad);
-
-            var theFileVCP;
-            if (theFileVersion == "06") {
-                theFileVCP = l2rad.vcp.record.pattern_number;
-            } else {
-                theFileVCP = l2rad.data[1][0].record.vcp;
-            }
-
-            var theFileDate = l2rad.header.modified_julian_date;
-            var theFileTime = l2rad.header.milliseconds;
-            var fileDateObj = new Date(0).addDays(theFileDate);
-            var fileHours = msToTime(theFileTime).hours;
-            var fileMinutes = msToTime(theFileTime).minutes;
-            var fileSeconds = msToTime(theFileTime).seconds;
-            fileDateObj.setUTCHours(fileHours);
-            fileDateObj.setUTCMinutes(fileMinutes);
-            fileDateObj.setUTCSeconds(fileSeconds);
-            var finalRadarDateTime = printFancyTime(fileDateObj, "UTC");
-
-            self.postMessage({
-                'elevationList': [elevs, elevAngles, theFileVCP, finalRadarDateTime]
-            })
-
-            var theProduct = ev.data.initial[1][0];
-            var theElevation = ev.data.initial[1][1];
-            var theInWebWorker = ev.data.initial[1][2];
-            var theLowFilterRef = ev.data.initial[1][3];
-            utils.logTextFromWorker('initial reflectivity plot');
-            const level2Plot = plot(l2rad, theProduct, {
-                elevations: theElevation,
-                inWebWorker: theInWebWorker,
-                lowFilterRef: theLowFilterRef,
-            });
-
-            if (ev.data.initial[2] == 'first') {
-                self.postMessage({
-                    'objectTest': true
-                })
-                self.postMessage({
-                    'doneStringifyParse': true
-                })
-            }
-            /*setTimeout(function() {
-                utils.logTextFromWorker('starting radar object transfer')
-                var start = Date.now();
-                async function stringifyParse() {
-                    delete l2rad.options
-                    for (var b = 3; b < l2rad.data.length; b++) {
-                        delete l2rad.data[b]
-                        delete l2rad.vcp.record.elevations[b]
-                    }
-                    self.postMessage({
-                        'objectTest': l2rad
-                    })
-                }
-                stringifyParse()
-                    .then(function() {
-                        var end = Date.now() - start;
-                        utils.logTextFromWorker('finished radar object transfer in ' + end + 'ms');
-                        self.postMessage({
-                            'doneStringifyParse': true
-                        })
-                    })
-            }, 2000)*/
-        }
-    });
-};
-}).call(this)}).call(this,require("buffer").Buffer)
-},{"./nexrad-level-2-data/src":77,"./nexrad-level-2-plot/src":90,"./utils":100,"buffer":11}]},{},[65]);
+},{}]},{},[65]);

@@ -3,7 +3,6 @@ const { Level2Record } = require('./classes/Level2Record');
 const { RADAR_DATA_SIZE } = require('./constants');
 const decompress = require('./decompress');
 const parseHeader = require('./parseheader');
-const utils = require('../../utils');
 
 /**
  * @typedef {object} ParsedData Intermediate parsed radar data, further processed by Level2Radar
@@ -32,9 +31,7 @@ const parseData = (file, options) => {
 
 	// read the file header
 	const header = parseHeader(raf);
-	self.postMessage({
-		'fileStation': header.ICAO
-	})
+	document.getElementById('fileStation').innerHTML = header.ICAO;
 
 	let messageOffset31 = 0; // the current message 31 offset
 	let recordNumber = 0; // the record number
@@ -60,7 +57,7 @@ const parseData = (file, options) => {
 
 			if (!r.finished) {
 				if (recordNumber % 200 == 0) {
-					utils.logTextFromWorker('reading record ' + recordNumber);
+					console.log('reading record ' + recordNumber);
 				}
 				if (r.message_type === 31) {
 				// found a message 31 type, update the offset using an actual (from search) size if provided
@@ -85,7 +82,7 @@ const parseData = (file, options) => {
 			}
 		} while (!r.finished);
 	}
-    //document.getElementById('spinnerParent').style.display = 'none';
+    document.getElementById('spinnerParent').style.display = 'none';
 
 	// sort and group the scans by elevation asc
 	return {

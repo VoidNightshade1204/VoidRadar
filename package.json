@@ -1,12 +1,11 @@
 {
   "scripts": {
-    "build": "browserify index.js -o dist/bundle.js",
-    "serve": "watchify index.js -o dist/bundle.js -v"
-  },
+		"build": "browserify index.js -o dist/bundle.js",
+		"serve": "watchify index.js -o dist/bundle.js -v"
+	},
   "dependencies": {
-    "canvas": "^2.9.1",
-    "seek-bzip": "^2.0.0",
-    "webworkify": "^1.5.0"
+		"canvas": "^2.9.1",
+    "seek-bzip": "^2.0.0"
   },
   "devDependencies": {
     "del": "^6.0.0",
