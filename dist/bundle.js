@@ -20213,7 +20213,7 @@ module.exports = function (self) {
                             'doneStringifyParse': true
                         })
                     })
-            }, 500)
+            }, 2000)
         }
     });
 };
