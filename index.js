@@ -74,6 +74,7 @@ document.addEventListener('loadFile', function(event) {
                 document.getElementById('productInput').add(new Option('Correlation Coefficient', 'RHO'));
                 document.getElementById('productInput').add(new Option('Differential Phase Shift', 'PHI'));
                 document.getElementById('productInput').add(new Option('Differential Reflectivity', 'ZDR'));
+                document.getElementById('productInput').add(new Option('Spectrum Width', 'SW '));
             } else {
                 document.getElementById('productInput').add(new Option('Reflectivity', 'REF'));
                 document.getElementById('productInput').add(new Option('Velocity', 'VEL'));
@@ -84,7 +85,7 @@ document.addEventListener('loadFile', function(event) {
                 var elevs = l2rad.listElevations();
                 var elevAngles = l2rad.listElevations('angle', l2rad);
                 const preferredWaveformUsage = {
-                    1: ['REF', 'SW ', 'ZDR', 'PHI', 'RHO'],
+                    1: ['REF', 'ZDR', 'PHI', 'RHO'],
                     2: ['VEL'],
                     3: ['REF', 'VEL', 'SW ', 'ZDR', 'PHI', 'RHO'],
                     4: ['REF', 'VEL', 'SW ', 'ZDR', 'PHI', 'RHO'],
@@ -183,6 +184,12 @@ document.addEventListener('loadFile', function(event) {
                     displayElevations('ZDR');
                     const level2Plot = plot(l2rad, 'ZDR', {
                         elevations: 1,
+                    });
+                } else if ($('#productInput').val() == 'SW ') {
+                    document.getElementById('extraStuff').style.display = 'none';
+                    displayElevations('SW ');
+                    const level2Plot = plot(l2rad, 'SW ', {
+                        elevations: parseInt($('#elevInput').val()),
                     });
                 }
             })

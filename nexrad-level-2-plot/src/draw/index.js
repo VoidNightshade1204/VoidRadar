@@ -28,6 +28,7 @@ const dataFunctions = {
 	RHO: 'getHighresCorrelationCoefficient',
 	PHI: 'getHighresDiffPhase',
 	ZDR: 'getHighresDiffReflectivity',
+	'SW ': 'getHighresSpectrum',
 };
 
 // generate all palettes
@@ -200,6 +201,8 @@ const draw = (data, _options) => {
 		adder = 0;
 	} else if (options.product == "ZDR") {
 		adder = 10;
+	} else if (options.product == "SW ") {
+		adder = 0;
 	}
 	var c = [];
 	rrlEncoded.forEach((radial) => {

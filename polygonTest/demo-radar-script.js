@@ -23,6 +23,7 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     var colors = {"ref":[]}
     var values = {"ref":[]}
     if (produc == "REF") {
+      console.log('base reflectivity!?-.,')
       if (!shouldFilter) {
         // if the user doesnt want to filter low values,
         // push the normal colors
@@ -97,7 +98,7 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
         -50, -30, -10, -5, 10, 20, 50
       )
     } else if (produc == "RHO") {
-      console.log('cor coef??')
+      console.log('cor coef --')
       colors["ref"].push(
         "#000000", "#949494", "#7593FF", "#0045BD", "#ADF4FF", "#00FA32", "#FFD53D", "#F01000", "#C20047", "#FFB8D8", "#FFEBF2"
       )
@@ -145,6 +146,26 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
       )
       values["ref"].push(
         -8, -6, -4, -2, 0, 0, 0.25, 1, 1.5, 2, 3, 4, 5, 6, 8
+      )
+    } else if (produc == "SW ") {
+      console.log('spect width,')
+      // https://github.com/paulyc/NOAA-WCT/blob/master/ext/config/colormaps/nexrad_spec.wctpal
+      colors["ref"].push(
+        'rgb(118, 118, 118)',
+        'rgb(137, 137, 137)',
+        'rgb(156, 156, 156)',
+        'rgb(78, 171, 78)',
+        'rgb(0, 187, 0)',
+        'rgb(127, 93, 0)',
+        'rgb(255, 0, 0)',
+        'rgb(231, 56, 0)',
+        'rgb(208, 112, 0)',
+        'rgb(231, 183, 0)',
+        'rgb(255, 255, 0)',
+      )
+      values["ref"].push(
+        0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30
+        //0, 4, 9.7, 13, 19, 25, 30, 40
       )
     }
     var colors=colors["ref"];
@@ -224,6 +245,8 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     divider = '/(135.0)';
   } else if (produc == "ZDR") {
     divider = '/(20.0)';
+  } else if (produc == "SW ") {
+    divider = '/(10.0)';
   }
   console.log(divider)
   //compile shaders

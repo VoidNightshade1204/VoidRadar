@@ -313,7 +313,7 @@ class Level2Radar {
 					) {
 						yn = 'REFVEL';
 					}
-					elevAngleArr.push([base[0].record.elevation_angle, yn]);
+					elevAngleArr.push([baseelevation_angle, yn]);
 				}
 			}
 			return elevAngleArr;
