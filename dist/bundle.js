@@ -16523,7 +16523,7 @@ document.addEventListener('loadFile', function(event) {
                     document.getElementById('extraStuff').style.display = 'block';
                     displayElevations('REF');
                     const level2Plot = plot(l2rad, 'REF', {
-                        elevations: parseInt($('#elevInput').val()),
+                        elevations: 1,
                     });
                 } else if ($('#productInput').val() == 'VEL') {
                     document.getElementById('extraStuff').style.display = 'none';
