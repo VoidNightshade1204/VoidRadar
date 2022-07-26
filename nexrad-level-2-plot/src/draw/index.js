@@ -26,6 +26,7 @@ const dataFunctions = {
 	REF: 'getHighresReflectivity',
 	VEL: 'getHighresVelocity',
 	RHO: 'getHighresCorrelationCoefficient',
+	PHI: 'getHighresDiffPhase',
 };
 
 // generate all palettes
@@ -194,7 +195,10 @@ const draw = (data, _options) => {
 		adder = 30;
 	} else if (options.product == "RHO") {
 		adder = 0;
+	} else if (options.product == "PHI") {
+		adder = 0;
 	}
+	var c = [];
 	rrlEncoded.forEach((radial) => {
 		arr = [];
 		valArr = [];
@@ -223,12 +227,14 @@ const draw = (data, _options) => {
 				//ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle + resolution * (bin.count - 1));
 				arr.push((idx + deadZone) * gateSizeScaling)
 				valArr.push(bin.value + adder)
+				//c.push(bin.value + adder)
 			} else {
 				// plain data
 				//ctx.strokeStyle = palette.lookupRgba[bin];
 				//ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle);
 				arr.push((idx + deadZone) * gateSizeScaling)
 				valArr.push(bin + adder)
+				//c.push(bin + adder)
 			}
 			//ctx.stroke();
 		});

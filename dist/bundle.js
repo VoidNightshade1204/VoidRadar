@@ -16439,6 +16439,7 @@ document.addEventListener('loadFile', function(event) {
                 document.getElementById('productInput').add(new Option('Reflectivity', 'REF'));
                 document.getElementById('productInput').add(new Option('Velocity', 'VEL'));
                 document.getElementById('productInput').add(new Option('Correlation Coefficient', 'RHO'));
+                document.getElementById('productInput').add(new Option('Differential Phase Shift', 'PHI'));
             } else {
                 document.getElementById('productInput').add(new Option('Reflectivity', 'REF'));
                 document.getElementById('productInput').add(new Option('Velocity', 'VEL'));
@@ -16535,6 +16536,12 @@ document.addEventListener('loadFile', function(event) {
                     document.getElementById('extraStuff').style.display = 'none';
                     displayElevations('RHO');
                     const level2Plot = plot(l2rad, 'RHO', {
+                        elevations: 1,
+                    });
+                } else if ($('#productInput').val() == 'PHI') {
+                    document.getElementById('extraStuff').style.display = 'none';
+                    displayElevations('PHI');
+                    const level2Plot = plot(l2rad, 'PHI', {
                         elevations: 1,
                     });
                 }
@@ -18172,6 +18179,7 @@ const dataFunctions = {
 	REF: 'getHighresReflectivity',
 	VEL: 'getHighresVelocity',
 	RHO: 'getHighresCorrelationCoefficient',
+	PHI: 'getHighresDiffPhase',
 };
 
 // generate all palettes
@@ -18340,7 +18348,10 @@ const draw = (data, _options) => {
 		adder = 30;
 	} else if (options.product == "RHO") {
 		adder = 0;
+	} else if (options.product == "PHI") {
+		adder = 0;
 	}
+	var c = [];
 	rrlEncoded.forEach((radial) => {
 		arr = [];
 		valArr = [];
@@ -18369,12 +18380,14 @@ const draw = (data, _options) => {
 				//ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle + resolution * (bin.count - 1));
 				arr.push((idx + deadZone) * gateSizeScaling)
 				valArr.push(bin.value + adder)
+				//c.push(bin.value + adder)
 			} else {
 				// plain data
 				//ctx.strokeStyle = palette.lookupRgba[bin];
 				//ctx.arc(0, 0, (idx + deadZone) * gateSizeScaling, startAngle, endAngle);
 				arr.push((idx + deadZone) * gateSizeScaling)
 				valArr.push(bin + adder)
+				//c.push(bin + adder)
 			}
 			//ctx.stroke();
 		});
