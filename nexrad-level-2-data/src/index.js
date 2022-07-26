@@ -297,8 +297,21 @@ class Level2Radar {
 				for (var key in radObj.data) {
 					var base = radObj.data[key];
 					var yn = 0;
-					if (base[0].record.reflect) {
-						yn = 1;
+					if ( // if elevation contains only reflectivity data
+						base[0].record.reflect &&
+						!base[0].record.velocity
+					) {
+						yn = 'REF';
+					} else if ( // if elevation contains only velocity data
+						base[0].record.velocity &&
+						!base[0].record.reflect
+					) {
+						yn = 'VEL';
+					} else if ( // if elevation contains reflectivity AND velocity data
+						base[0].record.velocity &&
+						base[0].record.reflect
+					) {
+						yn = 'REFVEL';
 					}
 					elevAngleArr.push([base[0].record.elevation_angle, yn]);
 				}

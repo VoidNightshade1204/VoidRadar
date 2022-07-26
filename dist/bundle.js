@@ -16434,6 +16434,16 @@ document.addEventListener('loadFile', function(event) {
             var theFileVersion = l2rad.header.version;
             document.getElementById('fileVersion').innerHTML = theFileVersion;
 
+            // older file versions only have reflectivity and velocity data - check for that here
+            if (theFileVersion == "06") {
+                document.getElementById('productInput').add(new Option('Reflectivity', 'REF'));
+                document.getElementById('productInput').add(new Option('Velocity', 'VEL'));
+                document.getElementById('productInput').add(new Option('Correlation Coefficient', 'RHO'));
+            } else {
+                document.getElementById('productInput').add(new Option('Reflectivity', 'REF'));
+                document.getElementById('productInput').add(new Option('Velocity', 'VEL'));
+            }
+
             function displayElevations(displayedProduct) {
                 $('#elevInput').empty();
                 var elevs = l2rad.listElevations();
@@ -16446,15 +16456,12 @@ document.addEventListener('loadFile', function(event) {
                     5: ['REF', 'VEL', 'SW ', 'ZDR', 'PHI', 'RHO'],
                 };
                 for (var key in elevAngles) {
-                    // I believe waveform_type == 2 means that ref data is not in that sweep
-                    // 1, 3, and 4 are safe
-                    //document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
                     if (theFileVersion == "06") {
                         if (preferredWaveformUsage[elevAngles[key][1]].includes(displayedProduct)) {
                             document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
                         }
                     } else {
-                        if (elevAngles[key][1] == 1) {
+                        if (elevAngles[key][1].includes(displayedProduct)) {
                             document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
                         }
                     }
@@ -17925,8 +17932,21 @@ class Level2Radar {
 				for (var key in radObj.data) {
 					var base = radObj.data[key];
 					var yn = 0;
-					if (base[0].record.reflect) {
-						yn = 1;
+					if ( // if elevation contains only reflectivity data
+						base[0].record.reflect &&
+						!base[0].record.velocity
+					) {
+						yn = 'REF';
+					} else if ( // if elevation contains only velocity data
+						base[0].record.velocity &&
+						!base[0].record.reflect
+					) {
+						yn = 'VEL';
+					} else if ( // if elevation contains reflectivity AND velocity data
+						base[0].record.velocity &&
+						base[0].record.reflect
+					) {
+						yn = 'REFVEL';
 					}
 					elevAngleArr.push([base[0].record.elevation_angle, yn]);
 				}

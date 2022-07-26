@@ -196,9 +196,9 @@
         <br>
         <div><b>Product:</b></div>
         <select id="productInput">
-            <option value="REF" selected>Reflectivity</option>
+            <!-- <option value="REF" selected>Reflectivity</option>
             <option value="VEL">Velocity</option>
-            <option value="RHO">Correlation Coefficient</option>
+            <option value="RHO">Correlation Coefficient</option> -->
         </select>
         <br><br>
         <div><b>Station:</b></div>
@@ -569,7 +569,7 @@
                         $('#testFileThing').removeClass('icon-black');
                         // KLIX20050829_061516.gz
                         // KTLX20130520_200356_V06.gz
-                        var fileToLoad = 'KTLX20130520_200356_V06.gz';
+                        var fileToLoad = 'KLIX20050829_061516.gz';
                         loadFileObject('data/' + fileToLoad, fileToLoad);
                     } else if ($('#testFileThing').hasClass('icon-selected')) {
                         $('#testFileThing').removeClass('icon-selected');
