@@ -73,6 +73,7 @@ document.addEventListener('loadFile', function(event) {
                 document.getElementById('productInput').add(new Option('Velocity', 'VEL'));
                 document.getElementById('productInput').add(new Option('Correlation Coefficient', 'RHO'));
                 document.getElementById('productInput').add(new Option('Differential Phase Shift', 'PHI'));
+                document.getElementById('productInput').add(new Option('Differential Reflectivity', 'ZDR'));
             } else {
                 document.getElementById('productInput').add(new Option('Reflectivity', 'REF'));
                 document.getElementById('productInput').add(new Option('Velocity', 'VEL'));
@@ -175,6 +176,12 @@ document.addEventListener('loadFile', function(event) {
                     document.getElementById('extraStuff').style.display = 'none';
                     displayElevations('PHI');
                     const level2Plot = plot(l2rad, 'PHI', {
+                        elevations: 1,
+                    });
+                } else if ($('#productInput').val() == 'ZDR') {
+                    document.getElementById('extraStuff').style.display = 'none';
+                    displayElevations('ZDR');
+                    const level2Plot = plot(l2rad, 'ZDR', {
                         elevations: 1,
                     });
                 }
