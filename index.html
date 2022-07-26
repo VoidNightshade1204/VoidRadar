@@ -179,7 +179,6 @@
     <div id="messageDisplay" style="display: none"></div>
     <br><br><br>
     <canvas id="theCanvas" style="display: none"></canvas>
-    <canvas id="texturecolorbar" class="texturecolorbar" style="display: none"></canvas>
 
     <div id="settingsDialog" style="display: none">
         <div id="extraStuff">
@@ -199,6 +198,7 @@
         <select id="productInput">
             <option value="REF" selected>Reflectivity</option>
             <option value="VEL">Velocity</option>
+            <option value="RHO">Correlation Coefficient</option>
         </select>
         <br><br>
         <div><b>Station:</b></div>
@@ -435,6 +435,37 @@
         }
         var theInfoControl = new infoControl
         map.addControl(theInfoControl, 'top-center');
+
+        class infoControlBottom {
+            onAdd(map) {
+                this._map = map;
+                this._container = document.createElement('div');
+                this._container.innerHTML = `
+                    <div id='infoContainerBottom' style='
+                    text-align: center;
+                    width: auto;
+                    height: auto;
+                    padding: 5px 10px;
+                    /* line-height: 25px; */
+                    background-color: white;
+                    border: 1px solid black;
+                    border-radius: 5px;
+                    '>
+                        <canvas id="texturecolorbar" class="texturecolorbar"></canvas>
+                    </div>`
+                return this._container;
+            }
+
+            onRemove() {
+                this._container.parentNode.removeChild(this._container);
+                this._map = undefined;
+            }
+        }
+        var theInfoControlBottom = new infoControlBottom
+        map.addControl(theInfoControlBottom, 'bottom-center');
+
+        document.getElementById("texturecolorbar").width = 0;
+        document.getElementById("texturecolorbar").height = 0;
 
         function showPlotBtn() {
             class reflPlotControl {

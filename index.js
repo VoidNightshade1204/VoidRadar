@@ -143,6 +143,11 @@ document.addEventListener('loadFile', function(event) {
                     const level2Plot = plot(l2rad, 'VEL', {
                         elevations: 2,
                     });
+                } else if ($('#productInput').val() == 'RHO') {
+                    document.getElementById('extraStuff').style.display = 'none';
+                    const level2Plot = plot(l2rad, 'RHO', {
+                        elevations: 1,
+                    });
                 }
             })
             $('#elevInput').on('change', function() {

@@ -25,6 +25,7 @@ const dataNames = {
 const dataFunctions = {
 	REF: 'getHighresReflectivity',
 	VEL: 'getHighresVelocity',
+	RHO: 'getHighresCorrelationCoefficient',
 };
 
 // generate all palettes
@@ -123,7 +124,7 @@ const draw = (data, _options) => {
 	// get the palette
 	const palette = palettes[options.product];
 	// test for valid palette
-	if (!palette) throw new Error(`No product found for product type: ${options.product}`);
+	//if (!palette) throw new Error(`No product found for product type: ${options.product}`);
 
 	// set the elevation
 	data.setElevation(options.elevation);
@@ -191,6 +192,8 @@ const draw = (data, _options) => {
 		adder = 0;
 	} else if (options.product == "VEL") {
 		adder = 30;
+	} else if (options.product == "RHO") {
+		adder = 0;
 	}
 	rrlEncoded.forEach((radial) => {
 		arr = [];

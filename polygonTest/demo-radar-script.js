@@ -7,6 +7,7 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
   settings["base"] = jsonObj;
 
 
+  var divider;
   function createTexture(gl) {
     /*
     color: -120 0 0 155
@@ -95,15 +96,23 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
       values["ref"].push(
         -50, -30, -10, -5, 10, 20, 50
       )
+    } else if (produc == "RHO") {
+      console.log('cor coef??')
+      colors["ref"].push(
+        "#000000", "#949494", "#7593FF", "#0045BD", "#ADF4FF", "#00FA32", "#FFD53D", "#F01000", "#C20047", "#FFB8D8", "#FFEBF2"
+      )
+      values["ref"].push(
+        0.2, 0.4, 0.55, 0.65, 0.8, 0.85, 0.95, 0.975, 1, 1.04, 1.05
+      )
     }
     var colors=colors["ref"];
     var levs=values["ref"];
     var colortcanvas=document.getElementById("texturecolorbar");
-    colortcanvas.width=1200;
-    colortcanvas.height=1;
+    colortcanvas.width=300;
+    colortcanvas.height=30;
     var ctxt = colortcanvas.getContext('2d');
     ctxt.clearRect(0,0,colortcanvas.width,colortcanvas.height); 
-    var grdt=ctxt.createLinearGradient(0,0,1200,0);
+    var grdt=ctxt.createLinearGradient(0,0,colortcanvas.width,0);
     var cmax=levs[levs.length-1];
     var cmin=levs[0];
     var clen=colors.length;
@@ -112,8 +121,8 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
       grdt.addColorStop((levs[i]-cmin)/(cmax-cmin),colors[i]);
     }
     ctxt.fillStyle=grdt;
-    ctxt.fillRect(0,0,1200,1);
-    imagedata=ctxt.getImageData(0,0,1200,1);
+    ctxt.fillRect(0,0,colortcanvas.width,colortcanvas.height);
+    imagedata=ctxt.getImageData(0,0,colortcanvas.width,colortcanvas.height);
     imagetexture=gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D,imagetexture);
     pageState.imagetexture = imagetexture;
@@ -163,6 +172,14 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
   xhttp.open("GET", jsonObj, true);
   xhttp.send();
 
+  if (produc == "REF") {
+    divider = '/(70.0)';
+  } else if (produc == "VEL") {
+    divider = '/(70.0)';
+  } else if (produc == "RHO") {
+    divider = '';
+  }
+  console.log(divider)
   //compile shaders
   var vertexSource = `
     //x: azimuth
@@ -183,7 +200,7 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     uniform sampler2D u_texture;
     void main() {
         //gl_FragColor = vec4(0.0,color/60.0,0.0,1.0);
-        float calcolor = (color)/(70.0);
+        float calcolor = (color)${divider};
         gl_FragColor = texture2D(u_texture,vec2(min(max(calcolor,0.0),1.0),0.0));
         //gl_FragColor = vec4(1.0,0.0,0.0,1.0);
     }`
