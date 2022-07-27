@@ -290,7 +290,7 @@ class Level2Radar {
 					var base = radObj.vcp.record.elevations[key]
 					elevAngleArr.push([base.elevation_angle, base.waveform_type]);
 				}
-			} else if (radObj.header.version == "01") {
+			} else {
 				console.log('non hi-res data');
 				// elevation angles are stored in a different place for non hi-res data
 				var elevAngleArr = [];
@@ -313,7 +313,13 @@ class Level2Radar {
 					) {
 						yn = 'REFVEL';
 					}
-					elevAngleArr.push([baseelevation_angle, yn]);
+					var base2;
+					if (!(radObj.header.version == "01")) {
+						base2 = radObj.vcp.record.elevations[key];
+					} else {
+						base2 = radObj.data[key];
+					}
+					elevAngleArr.push([base2.elevation_angle, yn]);
 				}
 			}
 			return elevAngleArr;

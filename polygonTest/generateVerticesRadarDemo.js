@@ -10,12 +10,12 @@ onmessage=function(oEvent) {
   var gateRes;
   var multiplier;
   // different gate resolutions for hi-res vs non hi-res data
-  if (radVersion == "06") {
-    gateRes = 125;
-    multiplier = gateRes*2;
-  } else if (radVersion == "01") {
+  if (radVersion == "01") {
     gateRes = 2000;
     multiplier = gateRes*8;
+  } else {
+    gateRes = 125;
+    multiplier = gateRes*2;
   }
 
   console.log(gateRes, multiplier)
