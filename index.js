@@ -3,6 +3,9 @@ const { Level2Radar } = require('./nexrad-level-2-data/src');
 const { plot } = require('./nexrad-level-2-plot/src');
 const { map } = require('./nexrad-level-2-plot/src/draw/palettes/hexlookup');
 
+const fs = require('fs');
+const { plotAndData, writePngToFile } = require('./nexrad-level-3-plot/src');
+
 function toBuffer(ab) {
     const buf = Buffer.alloc(ab.byteLength);
     const view = new Uint8Array(ab);
@@ -50,6 +53,29 @@ document.getElementById('fileInput').addEventListener('input', function() {
     // Dispatch/Trigger/Fire the event
     document.dispatchEvent(event);
 })
+
+function loadTestLevel3File() {
+    $('#level3json').on('DOMSubtreeModified', function() {
+        var url = document.getElementById('level3json').innerHTML
+
+        document.getElementById('fileStation').innerHTML = 'KTLX'
+        $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
+            var statLat = data[document.getElementById('fileStation').innerHTML][1];
+            var statLng = data[document.getElementById('fileStation').innerHTML][2];
+            // ../../../data/json/KLWX20220623_014344_V06.json
+            drawRadarShape(url, statLat, statLng, 'REF', !$('#shouldLowFilter').prop("checked"));
+
+            //new mapboxgl.Marker()
+            //    .setLngLat([stationLng, stationLat])
+            //    .addTo(map);
+        });
+    })
+    const file = fs.readFileSync('./data/level3/LWX_HHC_2022_04_18_15_21_24');
+    const level3Plot = plotAndData(file);
+}
+setTimeout(function() {
+    //loadTestLevel3File();
+}, 1000)
 
 document.addEventListener('loadFile', function(event) {
     //logToModal('starting')

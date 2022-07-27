@@ -20,32 +20,24 @@ const draw = (data, product, _options) => {
 	if (options.size < 1) throw new Error('Provide a size > 0');
 	const scale = DEFAULT_OPTIONS.size / options.size;
 
-	// create the canvas and context
-	//const canvas = createCanvas(options.size, options.size);
-	const canvas = document.getElementById('level3Canvas');
-	const ctx = canvas.getContext('2d');
-	ctx.canvas.width = options.size;
-	ctx.canvas.height = options.size;
-
-	// fill background with black
-	ctx.fillStyle = options.background;
-	ctx.fillRect(0, 0, options.size, options.size);
-
-	// canvas settings
-	ctx.imageSmoothingEnabled = true;
-	ctx.lineWidth = options.lineWidth;
-	ctx.translate(options.size / 2, options.size / 2);
-	ctx.rotate(-Math.PI / 2);
-
 	var c = [];
+	var json = {
+		'radials': [],
+		'values': [],
+		'azimuths': [],
+		'version': [],
+	};
 	// generate a palette
 	const palette = Palette.generate(product.palette);
 	// calculate scaling paramater with respect to pallet's designed criteria
 	const paletteScale = (data?.productDescription?.plot?.maxDataValue ?? 255) / (product.palette.baseScale ?? data?.productDescription?.plot?.maxDataValue ?? 1);
 	// use the raw values to avoid scaling and un-scaling
 	data.radialPackets[0].radials.forEach((radial) => {
+		arr = [];
+		valArr = [];
 		const startAngle = radial.startAngle * (Math.PI / 180);
 		const endAngle = startAngle + radial.angleDelta * (Math.PI / 180);
+		json.azimuths.push(radial.startAngle)
 		// track max value for downsampling
 		let maxDownsample = 0;
 		let lastRemainder = 0;
@@ -72,15 +64,32 @@ const draw = (data, product, _options) => {
 			}
 			// see if there's a sample to plot
 			if (!thisSample) return;
-			ctx.beginPath();
-			ctx.strokeStyle = palette[Math.round(thisSample * paletteScale)];
-			ctx.arc(0, 0, (idx + data.radialPackets[0].firstBin) / scale, startAngle, endAngle);
-			ctx.stroke();
-		});
-	});
-	//console.log(c)
+			//ctx.beginPath();
+			//ctx.strokeStyle = palette[Math.round(thisSample * paletteScale)];
+			//ctx.arc(0, 0, (idx + data.radialPackets[0].firstBin) / scale, startAngle, endAngle);
 
-	return canvas;
+			arr.push((idx + data.radialPackets[0].firstBin) / scale)
+			valArr.push(thisSample)
+
+			//ctx.stroke();
+		});
+		json.radials.push(arr)
+		json.values.push(valArr)
+	});
+
+	json.version = '06';
+	var blob = new Blob([JSON.stringify(json)], {type: "text/plain"});
+    var url = window.URL.createObjectURL(blob);
+	document.getElementById('level3json').innerHTML = url;
+	/*const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    // the filename you want
+    a.download = 'level3.json';
+    document.body.appendChild(a);
+    a.click();*/
+
+	//return canvas;
 };
 
 module.exports = {

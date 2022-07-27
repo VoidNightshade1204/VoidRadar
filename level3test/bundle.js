@@ -27177,6 +27177,10 @@ const level3Plot = plotAndData(file, {
     //background: 'black'
 });
 
+// clone NexradJS repo
+// cd level3test
+// browserify -t brfs index.js -o bundle.js
+
 //console.log(level3Plot);
 //(async () => {
 //	await writePngToFile(`${fileName}.png`, level3Plot.image);
@@ -29524,14 +29528,23 @@ const draw = (data, product, _options) => {
 	ctx.rotate(-Math.PI / 2);
 
 	var c = [];
+	var json = {
+		'radials': [],
+		'values': [],
+		'azimuths': [],
+		'version': [],
+	};
 	// generate a palette
 	const palette = Palette.generate(product.palette);
 	// calculate scaling paramater with respect to pallet's designed criteria
 	const paletteScale = (data?.productDescription?.plot?.maxDataValue ?? 255) / (product.palette.baseScale ?? data?.productDescription?.plot?.maxDataValue ?? 1);
 	// use the raw values to avoid scaling and un-scaling
 	data.radialPackets[0].radials.forEach((radial) => {
+		arr = [];
+		valArr = [];
 		const startAngle = radial.startAngle * (Math.PI / 180);
 		const endAngle = startAngle + radial.angleDelta * (Math.PI / 180);
+		json.azimuths.push(radial.startAngle)
 		// track max value for downsampling
 		let maxDownsample = 0;
 		let lastRemainder = 0;
@@ -29561,10 +29574,27 @@ const draw = (data, product, _options) => {
 			ctx.beginPath();
 			ctx.strokeStyle = palette[Math.round(thisSample * paletteScale)];
 			ctx.arc(0, 0, (idx + data.radialPackets[0].firstBin) / scale, startAngle, endAngle);
+
+			arr.push((idx + data.radialPackets[0].firstBin) / scale)
+			valArr.push(thisSample)
+
 			ctx.stroke();
 		});
+		json.radials.push(arr)
+		json.values.push(valArr)
 	});
-	//console.log(c)
+	console.log(json)
+
+	json.version = '06';
+	var blob = new Blob([JSON.stringify(json)], {type: "text/plain"});
+    var url = window.URL.createObjectURL(blob);
+	const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    // the filename you want
+    a.download = 'level3.json';
+    document.body.appendChild(a);
+    a.click();
 
 	return canvas;
 };
