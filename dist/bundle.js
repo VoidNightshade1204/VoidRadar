@@ -37183,6 +37183,10 @@ setTimeout(function() {
 document.addEventListener('loadFile', function(event) {
     //logToModal('starting')
     document.getElementById('spinnerParent').style.display = 'block';
+
+    document.getElementById('elevStuff').style.display = 'block';
+    document.getElementById('extraStuff').style.display = 'block';
+    document.getElementById('productStuff').style.display = 'block';
     removeTestFileControl();
     //console.log(URL.createObjectURL(document.getElementById("fileInput").files[0]));
     setTimeout(function() {
@@ -37380,7 +37384,9 @@ document.addEventListener('loadFile', function(event) {
                 document.getElementById('radDate').innerHTML = finalRadarDateTime;
 
                 const level3Plot = plotAndData(l3rad);
-                document.getElementById('settingsDialog').innerHTML = 'No settings for Level 3 files yet.'
+                //document.getElementById('settingsDialog').innerHTML = 'No settings for Level 3 files yet.'
+                document.getElementById('elevStuff').style.display = 'none';
+                document.getElementById('extraStuff').style.display = 'none';
                 document.getElementById('spinnerParent').style.display = 'none';
             }
         }, false);
@@ -42194,12 +42200,17 @@ const draw = (data, product, _options) => {
 		json.radials.push(arr)
 		json.values.push(valArr)
 	});
+
+	// if the first azimuth isn't zero (e.g. azimuths going 0-360) then we need to do some re-arrangement
 	if (json.azimuths[0] != 0) {
+		// store the value of first azimuth (in this case it will be the offset)
 		var startAzimuth = json.azimuths[0];
 		for (val in json.azimuths) {
+			// add the starting value to each azimuth value, allowing for correct rotation
 			json.azimuths[val] = json.azimuths[val] + startAzimuth
 		}
 	}
+	// sort each azimuth value from lowest to highest
 	json.azimuths.sort(function(a, b){return a - b});
 
 	//console.log(Math.min(...[...new Set(c)]), Math.max(...[...new Set(c)]))

@@ -66,6 +66,10 @@ setTimeout(function() {
 document.addEventListener('loadFile', function(event) {
     //logToModal('starting')
     document.getElementById('spinnerParent').style.display = 'block';
+
+    document.getElementById('elevStuff').style.display = 'block';
+    document.getElementById('extraStuff').style.display = 'block';
+    document.getElementById('productStuff').style.display = 'block';
     removeTestFileControl();
     //console.log(URL.createObjectURL(document.getElementById("fileInput").files[0]));
     setTimeout(function() {
@@ -263,7 +267,9 @@ document.addEventListener('loadFile', function(event) {
                 document.getElementById('radDate').innerHTML = finalRadarDateTime;
 
                 const level3Plot = plotAndData(l3rad);
-                document.getElementById('settingsDialog').innerHTML = 'No settings for Level 3 files yet.'
+                //document.getElementById('settingsDialog').innerHTML = 'No settings for Level 3 files yet.'
+                document.getElementById('elevStuff').style.display = 'none';
+                document.getElementById('extraStuff').style.display = 'none';
                 document.getElementById('spinnerParent').style.display = 'none';
             }
         }, false);

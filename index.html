@@ -182,28 +182,37 @@
     <canvas id="theCanvas" style="display: none"></canvas>
 
     <div id="settingsDialog" style="display: none">
-        <div><b>Elevation:</b></div>
-        <select id="elevInput">
-            <!-- <option value="1" selected>1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="17">17</option> -->
-        </select>
-        <br><br>
-        <div id="extraStuff">
+        <a id="elevStuff" style="display: none">
+            <div><b>Elevation:</b></div>
+            <select id="elevInput">
+                <!-- <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="17">17</option> -->
+            </select>
+            <br><br>
+        </a>
+        <a id="extraStuff" style="display: none">
             <input type="checkbox" id="shouldLowFilter">
             <label for="shouldLowFilter">Low Filter</label>
-        </div>
-        <br>
-        <div><b>Product:</b></div>
-        <select id="productInput">
-            <!-- <option value="REF" selected>Reflectivity</option>
-            <option value="VEL">Velocity</option>
-            <option value="RHO">Correlation Coefficient</option> -->
-        </select>
-        <br><br>
+            <br><br>
+        </a>
+        <a id="productStuff" style="display: none">
+            <div><b>Product:</b></div>
+            <select id="productInput">
+                <!-- <option value="REF" selected>Reflectivity</option>
+                <option value="VEL">Velocity</option>
+                <option value="RHO">Correlation Coefficient</option> -->
+            </select>
+            <br><br>
+        </a>
         <div><b>Station:</b></div>
         <input id="userStation" value="KLWX">
+        <br>
+        <select id="levelInput">
+            <option value="l2" selected>Level 2</option>
+            <option value="l3">Level 3</option>
+        </select>
 
         <input style="display:none" autofocus>
     </div>
@@ -670,11 +679,19 @@
                     if (!$('#curFileThing').hasClass('icon-selected')) {
                         $('#curFileThing').addClass('icon-selected');
                         $('#curFileThing').removeClass('icon-black');
-                        getLatestFile($('#userStation').val(), function(fileName, y, m, d, s) {
-                            var individualFileURL = `https://noaa-nexrad-level2.s3.amazonaws.com/${y}/${m}/${d}/${s}/${fileName}`
-                            console.log(phpProxy + individualFileURL)
-                            loadFileObject(phpProxy + individualFileURL, fileName, 2);
-                        });
+                        if ($('#levelInput').val() == 'l2') {
+                            getLatestFile($('#userStation').val(), function(fileName, y, m, d, s) {
+                                var individualFileURL = `https://noaa-nexrad-level2.s3.amazonaws.com/${y}/${m}/${d}/${s}/${fileName}`
+                                console.log(phpProxy + individualFileURL)
+                                loadFileObject(phpProxy + individualFileURL, fileName, 2);
+                            });
+                        } else if ($('#levelInput').val() == 'l3') {
+                            // https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.165h0/SI.kgld/sn.last
+                            // DS.165h0 = product code 165, N0H (h0)
+                            var level3url = `${phpProxy}https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.165h0/SI.${$('#userStation').val().toLowerCase()}/sn.last`
+                            console.log(level3url)
+                            loadFileObject(level3url, 'sn.last', 3);
+                        }
                     } else if ($('#curFileThing').hasClass('icon-selected')) {
                         $('#curFileThing').removeClass('icon-selected');
                         $('#curFileThing').addClass('icon-black');
