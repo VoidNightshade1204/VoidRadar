@@ -688,8 +688,9 @@
                         } else if ($('#levelInput').val() == 'l3') {
                             // https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.165h0/SI.kgld/sn.last
                             // DS.165h0 = product code 165, N0H (h0)
-                            var level3url = `${phpProxy}https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.165h0/SI.${$('#userStation').val().toLowerCase()}/sn.last`
+                            var level3url = `${phpProxy}https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.${$('#productInput').val()}/SI.${$('#userStation').val().toLowerCase()}/sn.last`
                             console.log(level3url)
+                            console.log($('#productInput').val(), $('#userStation').val().toLowerCase())
                             loadFileObject(level3url, 'sn.last', 3);
                         }
                     } else if ($('#curFileThing').hasClass('icon-selected')) {
@@ -707,6 +708,21 @@
         }
         var theCurFileControl = new curFileControl;
         map.addControl(theCurFileControl, 'top-right');
+
+        $('#levelInput').on('change', function() {
+            if ($('#levelInput').val() == 'l2') {
+                document.getElementById('productStuff').style.display = 'none';
+                $('#productInput').empty();
+            } else if ($('#levelInput').val() == 'l3') {
+                document.getElementById('productStuff').style.display = 'block';
+
+                document.getElementById('productInput').add(new Option('Hybrid Hydrometer Classification', '177hh'));
+                document.getElementById('productInput').add(new Option('Hydrometer Classification Tilt 1', '165h0', false, true));
+                document.getElementById('productInput').add(new Option('Hydrometer Classification Tilt 2', '165h1'));
+                document.getElementById('productInput').add(new Option('Hydrometer Classification Tilt 3', '165h2'));
+                document.getElementById('productInput').add(new Option('Hydrometer Classification Tilt 4', '165h3'));
+            }
+        })
 
         // radius of wsr-88d scan in km
         var radius = 460;
