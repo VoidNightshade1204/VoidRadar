@@ -42132,6 +42132,7 @@ module.exports.LITTLE_ENDIAN = LITTLE_ENDIAN;
 }).call(this)}).call(this,require("buffer").Buffer)
 },{"buffer":71}],303:[function(require,module,exports){
 const { createCanvas } = require('canvas');
+const { keys } = require('../../../nexrad-level-2-plot/src/draw/palettes/hexlookup');
 const Palette = require('./palette');
 
 const DEFAULT_OPTIONS = {
@@ -42193,10 +42194,18 @@ const draw = (data, product, _options) => {
 		json.radials.push(arr)
 		json.values.push(valArr)
 	});
+	if (json.azimuths[0] != 0) {
+		var startAzimuth = json.azimuths[0];
+		for (val in json.azimuths) {
+			json.azimuths[val] = json.azimuths[val] + startAzimuth
+		}
+	}
+	json.azimuths.sort(function(a, b){return a - b});
 
 	//console.log(Math.min(...[...new Set(c)]), Math.max(...[...new Set(c)]))
 	//console.log([...new Set(c)])
 	json.version = 'l3';
+	console.log(json)
 	var blob = new Blob([JSON.stringify(json)], {type: "text/plain"});
     var url = window.URL.createObjectURL(blob);
 	document.getElementById('level3json').innerHTML = url;
@@ -42230,7 +42239,7 @@ module.exports = {
 	DEFAULT_OPTIONS,
 };
 
-},{"./palette":304,"canvas":317}],304:[function(require,module,exports){
+},{"../../../nexrad-level-2-plot/src/draw/palettes/hexlookup":243,"./palette":304,"canvas":317}],304:[function(require,module,exports){
 // pallette utilities
 
 // generate a palette as rgb[a](r,g,b)

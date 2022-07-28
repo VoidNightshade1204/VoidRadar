@@ -167,7 +167,7 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
         0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30
         //0, 4, 9.7, 13, 19, 25, 30, 40
       )
-    } else if (produc == "HHC") {
+    } else if (produc == "HHC" || produc[0] == "N0H") {
       console.log('hhc')
       // https://github.com/paulyc/NOAA-WCT/blob/master/ext/config/colormaps/nexrad_spec.wctpal
       colors["ref"].push(
@@ -331,7 +331,7 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     divider = '/(10.0)';
   }
 
-  else if (produc == "HHC") {
+  else if (produc == "HHC" || produc[0] == "N0H") {
     divider = '/(135.0)';
   }
   console.log(divider)

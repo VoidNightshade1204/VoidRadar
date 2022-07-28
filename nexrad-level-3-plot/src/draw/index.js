@@ -1,4 +1,5 @@
 const { createCanvas } = require('canvas');
+const { keys } = require('../../../nexrad-level-2-plot/src/draw/palettes/hexlookup');
 const Palette = require('./palette');
 
 const DEFAULT_OPTIONS = {
@@ -61,9 +62,22 @@ const draw = (data, product, _options) => {
 		json.values.push(valArr)
 	});
 
+	// if the first azimuth isn't zero (e.g. azimuths going 0-360) then we need to do some re-arrangement
+	if (json.azimuths[0] != 0) {
+		// store the value of first azimuth (in this case it will be the offset)
+		var startAzimuth = json.azimuths[0];
+		for (val in json.azimuths) {
+			// add the starting value to each azimuth value, allowing for correct rotation
+			json.azimuths[val] = json.azimuths[val] + startAzimuth
+		}
+	}
+	// sort each azimuth value from lowest to highest
+	json.azimuths.sort(function(a, b){return a - b});
+
 	//console.log(Math.min(...[...new Set(c)]), Math.max(...[...new Set(c)]))
 	//console.log([...new Set(c)])
 	json.version = 'l3';
+	console.log(json)
 	var blob = new Blob([JSON.stringify(json)], {type: "text/plain"});
     var url = window.URL.createObjectURL(blob);
 	document.getElementById('level3json').innerHTML = url;
