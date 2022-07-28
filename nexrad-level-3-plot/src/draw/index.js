@@ -45,31 +45,15 @@ const draw = (data, product, _options) => {
 		radial.bins.forEach((bin, idx) => {
 			// skip null values
 			if (bin === null) return;
-			let thisSample;
-			// if test for downsampling
-			if (scale !== 1) {
-				const remainder = idx % scale;
-				// test for rollover in scaling
-				if (remainder < lastRemainder) {
-					// plot this point and reset values
-					thisSample = maxDownsample;
-					maxDownsample = 0;
-				}
-				// store this sample
-				maxDownsample = Math.max(bin, maxDownsample);
-				// store for rollover tracking
-				lastRemainder = remainder;
-			} else {
-				thisSample = bin;
-			}
 			// see if there's a sample to plot
-			if (!thisSample) return;
+			if (!bin) return;
 			//ctx.beginPath();
 			//ctx.strokeStyle = palette[Math.round(thisSample * paletteScale)];
 			//ctx.arc(0, 0, (idx + data.radialPackets[0].firstBin) / scale, startAngle, endAngle);
 
-			arr.push((idx + data.radialPackets[0].firstBin) / scale)
-			valArr.push(thisSample)
+			arr.push(idx + data.radialPackets[0].firstBin)
+			valArr.push(bin)
+			c.push(bin)
 
 			//ctx.stroke();
 		});
@@ -77,7 +61,9 @@ const draw = (data, product, _options) => {
 		json.values.push(valArr)
 	});
 
-	json.version = '06';
+	//console.log(Math.min(...[...new Set(c)]), Math.max(...[...new Set(c)]))
+	//console.log([...new Set(c)])
+	json.version = 'l3';
 	var blob = new Blob([JSON.stringify(json)], {type: "text/plain"});
     var url = window.URL.createObjectURL(blob);
 	document.getElementById('level3json').innerHTML = url;
@@ -88,6 +74,20 @@ const draw = (data, product, _options) => {
     a.download = 'level3.json';
     document.body.appendChild(a);
     a.click();*/
+
+	var currentStation = data.textHeader.id;
+	document.getElementById('fileStation').innerHTML = currentStation;
+	$.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
+		var statLat = data[currentStation][1];
+		var statLng = data[currentStation][2];
+		// ../../../data/json/KLWX20220623_014344_V06.json
+		// product.abbreviation
+		drawRadarShape(url, statLat, statLng, product.abbreviation, !$('#shouldLowFilter').prop("checked"));
+
+		//new mapboxgl.Marker()
+		//    .setLngLat([stationLng, stationLat])
+		//    .addTo(map);
+	});
 
 	//return canvas;
 };

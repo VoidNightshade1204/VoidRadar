@@ -362,7 +362,13 @@
             });*/
         })
 
-        function loadFileObject(path, name, callback) {
+        function loadFileObject(path, name, level, callback) {
+            var radLevel;
+            if (level == 2) {
+                radLevel = 'level2';
+            } else if (level == 3) {
+                radLevel = 'level3';
+            }
             var xhr = new XMLHttpRequest();
             xhr.open("GET", path);
             xhr.responseType = "blob";
@@ -371,7 +377,10 @@
                 blob.lastModifiedDate = new Date();
                 blob.name = name;
                 // Create the event
-                var event = new CustomEvent("loadFile", { "detail": blob });
+                var event = new CustomEvent("loadFile", { "detail": [
+                    blob,
+                    radLevel
+                ] });
                 // Dispatch/Trigger/Fire the event
                 document.dispatchEvent(event);
             });
@@ -571,7 +580,7 @@
                         // KLIX20050829_061516.gz
                         // KTLX20130520_200356_V06.gz
                         var fileToLoad = 'KTLX20130520_200356_V06.gz';
-                        loadFileObject('data/' + fileToLoad, fileToLoad);
+                        loadFileObject('data/' + fileToLoad, fileToLoad, 2);
                     } else if ($('#testFileThing').hasClass('icon-selected')) {
                         $('#testFileThing').removeClass('icon-selected');
                         $('#testFileThing').addClass('icon-black');
@@ -587,6 +596,40 @@
         }
         var theTestFileControl = new testFileControl;
         map.addControl(theTestFileControl, 'top-right');
+
+        class testFile3Control {
+            onAdd(map) {
+                this._map = map;
+                this._container = document.createElement('div');
+                this._container.innerHTML = `
+                    <div class="mapboxgl-control-container" style="margin-top: 100%;">
+                        <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
+                            <button class="mapboxgl-ctrl-fullscreen" type="button" aria-label="Globe Toggle">
+                                <span class="fa fa-3 icon-black" id="testFile3Thing" aria-hidden="true" title="Globe Toggle"></span>
+                            </button>
+                        </div>
+                    </div>`
+                this._container.addEventListener('click', function() {
+                    if (!$('#testFile3Thing').hasClass('icon-selected')) {
+                        $('#testFile3Thing').addClass('icon-selected');
+                        $('#testFile3Thing').removeClass('icon-black');
+                        var fileToLoad = 'LWX_HHC_2022_04_18_15_21_24';
+                        loadFileObject('data/level3/' + fileToLoad, fileToLoad, 3);
+                    } else if ($('#testFile3Thing').hasClass('icon-selected')) {
+                        $('#testFile3Thing').removeClass('icon-selected');
+                        $('#testFile3Thing').addClass('icon-black');
+                    }
+                })
+                return this._container;
+            }
+
+            onRemove() {
+                this._container.parentNode.removeChild(this._container);
+                this._map = undefined;
+            }
+        }
+        var theTestFile3Control = new testFile3Control;
+        map.addControl(theTestFile3Control, 'top-right');
 
         function getLatestFile(sta, callbck) {
             document.getElementById('spinnerParent').style.display = 'block';
@@ -630,7 +673,7 @@
                         getLatestFile($('#userStation').val(), function(fileName, y, m, d, s) {
                             var individualFileURL = `https://noaa-nexrad-level2.s3.amazonaws.com/${y}/${m}/${d}/${s}/${fileName}`
                             console.log(phpProxy + individualFileURL)
-                            loadFileObject(phpProxy + individualFileURL, fileName);
+                            loadFileObject(phpProxy + individualFileURL, fileName, 2);
                         });
                     } else if ($('#curFileThing').hasClass('icon-selected')) {
                         $('#curFileThing').removeClass('icon-selected');
@@ -699,6 +742,9 @@
         function removeTestFileControl() {
             if (map.hasControl(theTestFileControl)) {
                 map.removeControl(theTestFileControl);
+            }
+            if (map.hasControl(theTestFile3Control)) {
+                map.removeControl(theTestFile3Control);
             }
             if (map.hasControl(theCurFileControl)) {
                 map.removeControl(theCurFileControl);

@@ -13,6 +13,9 @@ onmessage=function(oEvent) {
   if (radVersion == "01") {
     gateRes = 2000;
     multiplier = gateRes*8;
+  } else if (radVersion == "l3") {
+    gateRes = 125;
+    multiplier = gateRes*2;
   } else {
     gateRes = 125;
     multiplier = gateRes*2;

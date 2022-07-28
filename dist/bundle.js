@@ -37117,6 +37117,7 @@ module.exports = function whichTypedArray(value) {
 (function (Buffer){(function (){
 //const fetch = require('node-fetch');
 const { Level2Radar } = require('./nexrad-level-2-data/src');
+const Level3Radar = require('./nexrad-level-3-data/src');
 const { plot } = require('./nexrad-level-2-plot/src');
 const { map } = require('./nexrad-level-2-plot/src/draw/palettes/hexlookup');
 
@@ -37166,32 +37167,17 @@ function round(value, precision) {
 }
 document.getElementById('fileInput').addEventListener('input', function() {
     // Create the event
-    var event = new CustomEvent("loadFile", { "detail": document.getElementById('fileInput').files[0] });
+    var event = new CustomEvent("loadFile", { "detail": [
+        document.getElementById('fileInput').files[0],
+        'level2'
+    ] });
     // Dispatch/Trigger/Fire the event
     document.dispatchEvent(event);
 })
 
-function loadTestLevel3File() {
-    $('#level3json').on('DOMSubtreeModified', function() {
-        var url = document.getElementById('level3json').innerHTML
-
-        document.getElementById('fileStation').innerHTML = 'KTLX'
-        $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
-            var statLat = data[document.getElementById('fileStation').innerHTML][1];
-            var statLng = data[document.getElementById('fileStation').innerHTML][2];
-            // ../../../data/json/KLWX20220623_014344_V06.json
-            drawRadarShape(url, statLat, statLng, 'REF', !$('#shouldLowFilter').prop("checked"));
-
-            //new mapboxgl.Marker()
-            //    .setLngLat([stationLng, stationLat])
-            //    .addTo(map);
-        });
-    })
-    const file = Buffer("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","base64");
-    const level3Plot = plotAndData(file);
-}
 setTimeout(function() {
-    //loadTestLevel3File();
+    //const file = fs.readFileSync('./data/level3/LWX_HHC_2022_04_18_15_21_24');
+    //const level3Plot = plotAndData(file);
 }, 1000)
 
 document.addEventListener('loadFile', function(event) {
@@ -37200,168 +37186,203 @@ document.addEventListener('loadFile', function(event) {
     removeTestFileControl();
     //console.log(URL.createObjectURL(document.getElementById("fileInput").files[0]));
     setTimeout(function() {
-        var uploadedFile = event.detail;
+        var uploadedFile = event.detail[0];
+        var fileLevel = event.detail[1];
         const reader = new FileReader();
 
         reader.addEventListener("load", function () {
             console.log('file uploaded, parsing now');
-            var l2rad = new Level2Radar(toBuffer(this.result))
-            console.log(l2rad)
-            var theFileVersion = l2rad.header.version;
-            document.getElementById('fileVersion').innerHTML = theFileVersion;
+            if (fileLevel == 'level2') {
+                var l2rad = new Level2Radar(toBuffer(this.result))
+                console.log(l2rad)
+                var theFileVersion = l2rad.header.version;
+                document.getElementById('fileVersion').innerHTML = theFileVersion;
 
-            // older file versions only have reflectivity and velocity data - check for that here
-            if (theFileVersion == "06") {
-                document.getElementById('productInput').add(new Option('Reflectivity', 'REF'));
-                document.getElementById('productInput').add(new Option('Velocity', 'VEL'));
-                document.getElementById('productInput').add(new Option('Correlation Coefficient', 'RHO'));
-                document.getElementById('productInput').add(new Option('Differential Phase Shift', 'PHI'));
-                document.getElementById('productInput').add(new Option('Differential Reflectivity', 'ZDR'));
-                document.getElementById('productInput').add(new Option('Spectrum Width', 'SW '));
-            } else {
-                document.getElementById('productInput').add(new Option('Reflectivity', 'REF'));
-                document.getElementById('productInput').add(new Option('Velocity', 'VEL'));
-            }
+                // older file versions only have reflectivity and velocity data - check for that here
+                if (theFileVersion == "06") {
+                    document.getElementById('productInput').add(new Option('Reflectivity', 'REF'));
+                    document.getElementById('productInput').add(new Option('Velocity', 'VEL'));
+                    document.getElementById('productInput').add(new Option('Correlation Coefficient', 'RHO'));
+                    document.getElementById('productInput').add(new Option('Differential Phase Shift', 'PHI'));
+                    document.getElementById('productInput').add(new Option('Differential Reflectivity', 'ZDR'));
+                    document.getElementById('productInput').add(new Option('Spectrum Width', 'SW '));
+                } else {
+                    document.getElementById('productInput').add(new Option('Reflectivity', 'REF'));
+                    document.getElementById('productInput').add(new Option('Velocity', 'VEL'));
+                }
 
-            function displayElevations(displayedProduct) {
-                $('#elevInput').empty();
-                var elevs = l2rad.listElevations();
-                var elevAngles = l2rad.listElevations('angle', l2rad);
-                const preferredWaveformUsage = {
-                    1: ['REF', 'ZDR', 'PHI', 'RHO'],
-                    2: ['VEL'],
-                    3: ['REF', 'VEL', 'SW ', 'ZDR', 'PHI', 'RHO'],
-                    4: ['REF', 'VEL', 'SW ', 'ZDR', 'PHI', 'RHO'],
-                    5: ['REF', 'VEL', 'SW ', 'ZDR', 'PHI', 'RHO'],
-                };
-                for (var key in elevAngles) {
-                    if (theFileVersion == "06") {
-                        if (preferredWaveformUsage[elevAngles[key][1]].includes(displayedProduct)) {
-                            document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
-                        }
-                    } else {
-                        if (elevAngles[key][1].includes(displayedProduct)) {
-                            document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
+                function displayElevations(displayedProduct) {
+                    $('#elevInput').empty();
+                    var elevs = l2rad.listElevations();
+                    var elevAngles = l2rad.listElevations('angle', l2rad);
+                    const preferredWaveformUsage = {
+                        1: ['REF', 'ZDR', 'PHI', 'RHO'],
+                        2: ['VEL'],
+                        3: ['REF', 'VEL', 'SW ', 'ZDR', 'PHI', 'RHO'],
+                        4: ['REF', 'VEL', 'SW ', 'ZDR', 'PHI', 'RHO'],
+                        5: ['REF', 'VEL', 'SW ', 'ZDR', 'PHI', 'RHO'],
+                    };
+                    for (var key in elevAngles) {
+                        if (theFileVersion == "06") {
+                            if (preferredWaveformUsage[elevAngles[key][1]].includes(displayedProduct)) {
+                                document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
+                            }
+                        } else {
+                            if (elevAngles[key][1].includes(displayedProduct)) {
+                                document.getElementById('elevInput').add(new Option(round(elevAngles[key][0], 1), elevs[key]));
+                            }
                         }
                     }
                 }
-            }
-            //var blob = new Blob([JSON.stringify(l2rad)], {type: "text/plain"});
-            //var url = window.URL.createObjectURL(blob);
-            //document.getElementById('decodedRadarDataURL').innerHTML = url;
-            showPlotBtn();
-            //document.getElementById('plotRef').style.display = 'inline';
-            //document.getElementById('plotVel').style.display = 'inline';
-            document.getElementById('fileInput').style.display = 'none';
+                //var blob = new Blob([JSON.stringify(l2rad)], {type: "text/plain"});
+                //var url = window.URL.createObjectURL(blob);
+                //document.getElementById('decodedRadarDataURL').innerHTML = url;
+                showPlotBtn();
+                //document.getElementById('plotRef').style.display = 'inline';
+                //document.getElementById('plotVel').style.display = 'inline';
+                document.getElementById('fileInput').style.display = 'none';
+                document.getElementById('radarInfoDiv').style.display = 'inline';
 
-            document.getElementById('radarInfoDiv').style.display = 'inline';
+                document.getElementById('radFileName').innerHTML = uploadedFile.name;
 
-            document.getElementById('radFileName').innerHTML = uploadedFile.name;
+                var theFileStation = l2rad.header.ICAO;
+                document.getElementById('radStation').innerHTML = theFileStation;
 
-            var theFileStation = l2rad.header.ICAO;
-            document.getElementById('radStation').innerHTML = theFileStation;
-
-            var theFileVCP;
-            if (!(theFileVersion == "01")) {
-                theFileVCP = l2rad.vcp.record.pattern_number;
-            } else {
-                theFileVCP = l2rad.data[1][0].record.vcp;
-            }
-            document.getElementById('radVCP').innerHTML = theFileVCP;
-
-            var theFileDate = l2rad.header.modified_julian_date;
-            var theFileTime = l2rad.header.milliseconds;
-            var fileDateObj = new Date(0).addDays(theFileDate);
-            var fileHours = msToTime(theFileTime).hours;
-            var fileMinutes = msToTime(theFileTime).minutes;
-            var fileSeconds = msToTime(theFileTime).seconds;
-            fileDateObj.setUTCHours(fileHours);
-            fileDateObj.setUTCMinutes(fileMinutes);
-            fileDateObj.setUTCSeconds(fileSeconds);
-            var finalRadarDateTime = printFancyTime(fileDateObj, "UTC");
-
-            document.getElementById('radDate').innerHTML = finalRadarDateTime;
-
-            $('.reflPlotButton').on('click', function() {
-                if ($('#reflPlotThing').hasClass('icon-selected')) {
-                    console.log('plot reflectivity data button clicked');
-                    const level2Plot = plot(l2rad, 'REF', {
-                        elevations: parseInt($('#elevInput').val()),
-                    });
+                var theFileVCP;
+                if (!(theFileVersion == "01")) {
+                    theFileVCP = l2rad.vcp.record.pattern_number;
+                } else {
+                    theFileVCP = l2rad.data[1][0].record.vcp;
                 }
-            })
-            $('.reflPlotButton').trigger('click');
-            console.log('initial reflectivity plot');
-            displayElevations('REF');
-            const level2Plot = plot(l2rad, 'REF', {
-                elevations: parseInt($('#elevInput').val()),
-            });
-            $('#productInput').on('change', function() {
-                removeMapLayer('baseReflectivity');
-                if ($('#productInput').val() == 'REF') {
-                    document.getElementById('extraStuff').style.display = 'block';
-                    displayElevations('REF');
-                    const level2Plot = plot(l2rad, 'REF', {
-                        elevations: 1,
-                    });
-                } else if ($('#productInput').val() == 'VEL') {
-                    document.getElementById('extraStuff').style.display = 'none';
-                    displayElevations('VEL');
-                    const level2Plot = plot(l2rad, 'VEL', {
-                        elevations: 2,
-                    });
-                } else if ($('#productInput').val() == 'RHO') {
-                    document.getElementById('extraStuff').style.display = 'none';
-                    displayElevations('RHO');
-                    const level2Plot = plot(l2rad, 'RHO', {
-                        elevations: 1,
-                    });
-                } else if ($('#productInput').val() == 'PHI') {
-                    document.getElementById('extraStuff').style.display = 'none';
-                    displayElevations('PHI');
-                    const level2Plot = plot(l2rad, 'PHI', {
-                        elevations: 1,
-                    });
-                } else if ($('#productInput').val() == 'ZDR') {
-                    document.getElementById('extraStuff').style.display = 'none';
-                    displayElevations('ZDR');
-                    const level2Plot = plot(l2rad, 'ZDR', {
-                        elevations: 1,
-                    });
-                } else if ($('#productInput').val() == 'SW ') {
-                    document.getElementById('extraStuff').style.display = 'none';
-                    displayElevations('SW ');
-                    const level2Plot = plot(l2rad, 'SW ', {
-                        elevations: parseInt($('#elevInput').val()),
-                    });
-                }
-            })
-            $('#elevInput').on('change', function() {
-                if ($('#reflPlotThing').hasClass('icon-selected')) {
+                document.getElementById('radVCP').innerHTML = theFileVCP;
+
+                var theFileDate = l2rad.header.modified_julian_date;
+                var theFileTime = l2rad.header.milliseconds;
+                var fileDateObj = new Date(0).addDays(theFileDate);
+                var fileHours = msToTime(theFileTime).hours;
+                var fileMinutes = msToTime(theFileTime).minutes;
+                var fileSeconds = msToTime(theFileTime).seconds;
+                fileDateObj.setUTCHours(fileHours);
+                fileDateObj.setUTCMinutes(fileMinutes);
+                fileDateObj.setUTCSeconds(fileSeconds);
+                var finalRadarDateTime = printFancyTime(fileDateObj, "UTC");
+
+                document.getElementById('radDate').innerHTML = finalRadarDateTime;
+
+                $('.reflPlotButton').on('click', function() {
+                    if ($('#reflPlotThing').hasClass('icon-selected')) {
+                        console.log('plot reflectivity data button clicked');
+                        const level2Plot = plot(l2rad, 'REF', {
+                            elevations: parseInt($('#elevInput').val()),
+                        });
+                    }
+                })
+                $('.reflPlotButton').trigger('click');
+                console.log('initial reflectivity plot');
+                displayElevations('REF');
+                const level2Plot = plot(l2rad, 'REF', {
+                    elevations: parseInt($('#elevInput').val()),
+                });
+                $('#productInput').on('change', function() {
                     removeMapLayer('baseReflectivity');
-                    //$("#settingsDialog").dialog('close');
-                    const level2Plot = plot(l2rad, $('#productInput').val(), {
-                        elevations: parseInt($('#elevInput').val()),
-                    });
-                }
-            })
-            $('#shouldLowFilter').on('change', function() {
-                if ($('#reflPlotThing').hasClass('icon-selected')) {
-                    removeMapLayer('baseReflectivity');
-                    //$("#settingsDialog").dialog('close');
-                    const level2Plot = plot(l2rad, 'REF', {
-                        elevations: parseInt($('#elevInput').val()),
-                    });
-                }
-            })
-            /*const level2Plot = plot(l2rad, 'REF', {
-                elevations: 1,
-                background: 'rgba(0, 0, 0, 0)',
-                //size: 500,
-                //cropTo: 500,
-                dpi: $('#userDPI').val(),
-            });
-            console.log('dpi set to ' + $('#userDPI').val())*/
+                    if ($('#productInput').val() == 'REF') {
+                        document.getElementById('extraStuff').style.display = 'block';
+                        displayElevations('REF');
+                        const level2Plot = plot(l2rad, 'REF', {
+                            elevations: 1,
+                        });
+                    } else if ($('#productInput').val() == 'VEL') {
+                        document.getElementById('extraStuff').style.display = 'none';
+                        displayElevations('VEL');
+                        const level2Plot = plot(l2rad, 'VEL', {
+                            elevations: 2,
+                        });
+                    } else if ($('#productInput').val() == 'RHO') {
+                        document.getElementById('extraStuff').style.display = 'none';
+                        displayElevations('RHO');
+                        const level2Plot = plot(l2rad, 'RHO', {
+                            elevations: 1,
+                        });
+                    } else if ($('#productInput').val() == 'PHI') {
+                        document.getElementById('extraStuff').style.display = 'none';
+                        displayElevations('PHI');
+                        const level2Plot = plot(l2rad, 'PHI', {
+                            elevations: 1,
+                        });
+                    } else if ($('#productInput').val() == 'ZDR') {
+                        document.getElementById('extraStuff').style.display = 'none';
+                        displayElevations('ZDR');
+                        const level2Plot = plot(l2rad, 'ZDR', {
+                            elevations: 1,
+                        });
+                    } else if ($('#productInput').val() == 'SW ') {
+                        document.getElementById('extraStuff').style.display = 'none';
+                        displayElevations('SW ');
+                        const level2Plot = plot(l2rad, 'SW ', {
+                            elevations: parseInt($('#elevInput').val()),
+                        });
+                    }
+                })
+                $('#elevInput').on('change', function() {
+                    if ($('#reflPlotThing').hasClass('icon-selected')) {
+                        removeMapLayer('baseReflectivity');
+                        //$("#settingsDialog").dialog('close');
+                        const level2Plot = plot(l2rad, $('#productInput').val(), {
+                            elevations: parseInt($('#elevInput').val()),
+                        });
+                    }
+                })
+                $('#shouldLowFilter').on('change', function() {
+                    if ($('#reflPlotThing').hasClass('icon-selected')) {
+                        removeMapLayer('baseReflectivity');
+                        //$("#settingsDialog").dialog('close');
+                        const level2Plot = plot(l2rad, 'REF', {
+                            elevations: parseInt($('#elevInput').val()),
+                        });
+                    }
+                })
+                /*const level2Plot = plot(l2rad, 'REF', {
+                    elevations: 1,
+                    background: 'rgba(0, 0, 0, 0)',
+                    //size: 500,
+                    //cropTo: 500,
+                    dpi: $('#userDPI').val(),
+                });
+                console.log('dpi set to ' + $('#userDPI').val())*/
+            } else if (fileLevel == 'level3') {
+                console.log('level 3 file')
+                var l3rad = Level3Radar(toBuffer(this.result))
+                console.log(l3rad)
+
+                showPlotBtn();
+                document.getElementById('fileInput').style.display = 'none';
+                document.getElementById('radarInfoDiv').style.display = 'inline';
+
+                document.getElementById('radFileName').innerHTML = uploadedFile.name;
+
+                var theFileStation = l3rad.textHeader.id;
+                document.getElementById('radStation').innerHTML = theFileStation;
+
+                var theFileVCP = l3rad.productDescription.vcp;
+                document.getElementById('radVCP').innerHTML = theFileVCP;
+
+                var theFileDate = l3rad.messageHeader.julianDate;
+                var theFileTime = l3rad.messageHeader.seconds * 1000;
+                var fileDateObj = new Date(0).addDays(theFileDate);
+                var fileHours = msToTime(theFileTime).hours;
+                var fileMinutes = msToTime(theFileTime).minutes;
+                var fileSeconds = msToTime(theFileTime).seconds;
+                fileDateObj.setUTCHours(fileHours);
+                fileDateObj.setUTCMinutes(fileMinutes);
+                fileDateObj.setUTCSeconds(fileSeconds);
+                var finalRadarDateTime = printFancyTime(fileDateObj, "UTC");
+
+                document.getElementById('radDate').innerHTML = finalRadarDateTime;
+
+                const level3Plot = plotAndData(l3rad);
+                document.getElementById('settingsDialog').innerHTML = 'No settings for Level 3 files yet.'
+                document.getElementById('spinnerParent').style.display = 'none';
+            }
         }, false);
         reader.readAsArrayBuffer(uploadedFile);
     }, 300)
@@ -37394,7 +37415,7 @@ document.getElementById('fileThatWorks').addEventListener('click', function() {
     })
     .catch(err => console.error(err));*/
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"./nexrad-level-2-data/src":239,"./nexrad-level-2-plot/src":252,"./nexrad-level-2-plot/src/draw/palettes/hexlookup":243,"./nexrad-level-3-plot/src":305,"buffer":71}],228:[function(require,module,exports){
+},{"./nexrad-level-2-data/src":239,"./nexrad-level-2-plot/src":252,"./nexrad-level-2-plot/src/draw/palettes/hexlookup":243,"./nexrad-level-3-data/src":263,"./nexrad-level-3-plot/src":305,"buffer":71}],228:[function(require,module,exports){
 // parse message type 1
 module.exports = (raf, message, options) => {
 	// record starting offset
@@ -42157,31 +42178,15 @@ const draw = (data, product, _options) => {
 		radial.bins.forEach((bin, idx) => {
 			// skip null values
 			if (bin === null) return;
-			let thisSample;
-			// if test for downsampling
-			if (scale !== 1) {
-				const remainder = idx % scale;
-				// test for rollover in scaling
-				if (remainder < lastRemainder) {
-					// plot this point and reset values
-					thisSample = maxDownsample;
-					maxDownsample = 0;
-				}
-				// store this sample
-				maxDownsample = Math.max(bin, maxDownsample);
-				// store for rollover tracking
-				lastRemainder = remainder;
-			} else {
-				thisSample = bin;
-			}
 			// see if there's a sample to plot
-			if (!thisSample) return;
+			if (!bin) return;
 			//ctx.beginPath();
 			//ctx.strokeStyle = palette[Math.round(thisSample * paletteScale)];
 			//ctx.arc(0, 0, (idx + data.radialPackets[0].firstBin) / scale, startAngle, endAngle);
 
-			arr.push((idx + data.radialPackets[0].firstBin) / scale)
-			valArr.push(thisSample)
+			arr.push(idx + data.radialPackets[0].firstBin)
+			valArr.push(bin)
+			c.push(bin)
 
 			//ctx.stroke();
 		});
@@ -42189,7 +42194,9 @@ const draw = (data, product, _options) => {
 		json.values.push(valArr)
 	});
 
-	json.version = '06';
+	//console.log(Math.min(...[...new Set(c)]), Math.max(...[...new Set(c)]))
+	//console.log([...new Set(c)])
+	json.version = 'l3';
 	var blob = new Blob([JSON.stringify(json)], {type: "text/plain"});
     var url = window.URL.createObjectURL(blob);
 	document.getElementById('level3json').innerHTML = url;
@@ -42200,6 +42207,20 @@ const draw = (data, product, _options) => {
     a.download = 'level3.json';
     document.body.appendChild(a);
     a.click();*/
+
+	var currentStation = data.textHeader.id;
+	document.getElementById('fileStation').innerHTML = currentStation;
+	$.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
+		var statLat = data[currentStation][1];
+		var statLng = data[currentStation][2];
+		// ../../../data/json/KLWX20220623_014344_V06.json
+		// product.abbreviation
+		drawRadarShape(url, statLat, statLng, product.abbreviation, !$('#shouldLowFilter').prop("checked"));
+
+		//new mapboxgl.Marker()
+		//    .setLngLat([stationLng, stationLat])
+		//    .addTo(map);
+	});
 
 	//return canvas;
 };
@@ -42264,10 +42285,10 @@ const { draw } = require('./draw');
 const palletize = require('./palletize');
 const { writePngToFile } = require('./utils/file');
 
-const plotAndData = (file, _options) => {
+const plotAndData = (data, _options) => {
 	const options = combineOptions(_options);
-	// parse the file
-	const data = NexradLevel3Data(file);
+	// // parse the file
+	// const data = NexradLevel3Data(file);
 	// test the product code and product type
 	if (!productAbbreviations.includes(data.textHeader.type)) throw new Error(`Unsupported product ${data.textHeader.type}`);
 	// get the product

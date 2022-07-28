@@ -167,6 +167,88 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
         0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30
         //0, 4, 9.7, 13, 19, 25, 30, 40
       )
+    } else if (produc == "HHC") {
+      console.log('hhc')
+      // https://github.com/paulyc/NOAA-WCT/blob/master/ext/config/colormaps/nexrad_spec.wctpal
+      colors["ref"].push(
+        // '#9C9C9C',
+        // '#767676',
+        // '#FFB0B0',
+        // '#00FFFF',
+        // '#0090FF',
+        // '#00FB90',
+        // '#00BB00',
+        // '#D0D060',
+        // '#D28484',
+        // '#FF0000',
+        // '#A01414',
+        // '#FFFF00',
+        // '#FFFFFF',
+        // '#E700FF',
+        // '#77007D',
+
+        'rgb(0, 0, 0)',
+        'rgb(0, 0, 0)',
+
+        'rgb(127, 35, 35)',
+        'rgb(127, 35, 35)',
+
+        'rgb(118, 118, 118)',
+        'rgb(118, 118, 118)',
+
+        'rgb(255, 176, 176)',
+        'rgb(255, 176, 176)',
+
+        'rgb(235, 235, 235)',
+        'rgb(235, 235, 235)',
+
+        'rgb(0, 144, 255)',
+        'rgb(0, 144, 255)',
+
+        'rgb(0, 251, 144)',
+        'rgb(0, 251, 144)',
+
+        'rgb(0, 187, 0)',
+        'rgb(0, 187, 0)',
+
+        'rgb(208, 208, 96)',
+        'rgb(208, 208, 96)',
+
+        'rgb(210, 132, 132)',
+        'rgb(210, 132, 132)',
+
+        'rgb(255, 0, 0)',
+        'rgb(255, 0, 0)',
+
+        'rgb(255, 96, 0)',
+        'rgb(255, 96, 0)',
+
+        'rgb(255, 192, 0)',
+        'rgb(255, 192, 0)',
+
+        'rgb(231, 0, 255)',
+        'rgb(231, 0, 255)',
+
+        'rgb(119, 0, 255)',
+        'rgb(119, 0, 255)',
+      )
+      values["ref"].push(
+        0, 10,
+        10, 20,
+        20, 30,
+        30, 40,
+        40, 50,
+        50, 60,
+        60, 70,
+        70, 80,
+        80, 90,
+        90, 100,
+        100, 110,
+        110, 120,
+        120, 130,
+        130, 140,
+        140, 140
+      )
     }
     var colors=colors["ref"];
     var levs=values["ref"];
@@ -221,7 +303,7 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
-        var vers = JSON.parse(this.responseText).version[0];
+        var vers = JSON.parse(this.responseText).version;
 
         myWorker.postMessage([
           settings["base"],
@@ -247,6 +329,10 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     divider = '/(20.0)';
   } else if (produc == "SW ") {
     divider = '/(10.0)';
+  }
+
+  else if (produc == "HHC") {
+    divider = '/(135.0)';
   }
   console.log(divider)
   //compile shaders

@@ -4,10 +4,10 @@ const { draw } = require('./draw');
 const palletize = require('./palletize');
 const { writePngToFile } = require('./utils/file');
 
-const plotAndData = (file, _options) => {
+const plotAndData = (data, _options) => {
 	const options = combineOptions(_options);
-	// parse the file
-	const data = NexradLevel3Data(file);
+	// // parse the file
+	// const data = NexradLevel3Data(file);
 	// test the product code and product type
 	if (!productAbbreviations.includes(data.textHeader.type)) throw new Error(`Unsupported product ${data.textHeader.type}`);
 	// get the product
