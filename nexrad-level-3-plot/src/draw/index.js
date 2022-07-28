@@ -29,9 +29,9 @@ const draw = (data, product, _options) => {
 		'version': [],
 	};
 	// generate a palette
-	const palette = Palette.generate(product.palette);
+	//const palette = Palette.generate(product.palette);
 	// calculate scaling paramater with respect to pallet's designed criteria
-	const paletteScale = (data?.productDescription?.plot?.maxDataValue ?? 255) / (product.palette.baseScale ?? data?.productDescription?.plot?.maxDataValue ?? 1);
+	//const paletteScale = (data?.productDescription?.plot?.maxDataValue ?? 255) / (product.palette.baseScale ?? data?.productDescription?.plot?.maxDataValue ?? 1);
 	// use the raw values to avoid scaling and un-scaling
 	data.radialPackets[0].radials.forEach((radial) => {
 		arr = [];
@@ -74,7 +74,7 @@ const draw = (data, product, _options) => {
 	// sort each azimuth value from lowest to highest
 	json.azimuths.sort(function(a, b){return a - b});
 
-	//console.log(Math.min(...[...new Set(c)]), Math.max(...[...new Set(c)]))
+	console.log(Math.min(...[...new Set(c)]), Math.max(...[...new Set(c)]))
 	//console.log([...new Set(c)])
 	json.version = 'l3';
 	console.log(json)
@@ -90,13 +90,16 @@ const draw = (data, product, _options) => {
     a.click();*/
 
 	var currentStation = data.textHeader.id;
+	if (currentStation == 'KOUN') {
+		currentStation = 'K' + data.textHeader.id3;
+	}
 	document.getElementById('fileStation').innerHTML = currentStation;
 	$.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
 		var statLat = data[currentStation][1];
 		var statLng = data[currentStation][2];
 		// ../../../data/json/KLWX20220623_014344_V06.json
 		// product.abbreviation
-		drawRadarShape(url, statLat, statLng, product.abbreviation, !$('#shouldLowFilter').prop("checked"));
+		drawRadarShape(url, statLat, statLng, product, !$('#shouldLowFilter').prop("checked"));
 
 		//new mapboxgl.Marker()
 		//    .setLngLat([stationLng, stationLat])

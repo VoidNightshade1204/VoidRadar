@@ -9,10 +9,11 @@ const plotAndData = (data, _options) => {
 	// // parse the file
 	// const data = NexradLevel3Data(file);
 	// test the product code and product type
-	if (!productAbbreviations.includes(data.textHeader.type)) throw new Error(`Unsupported product ${data.textHeader.type}`);
+	//if (!productAbbreviations.includes(data.textHeader.type)) throw new Error(`Unsupported product ${data.textHeader.type}`);
 	// get the product
-	const product = products[data.productDescription.code];
-	if (!product) throw new Error(`Unsupported product code ${data.productDescription.code}`);
+	//const product = products[data.productDescription.code];
+	const product = data.productDescription.abbreviation;
+	//if (!product) throw new Error(`Unsupported product code ${data.productDescription.code}`);
 
 	// test for a null product code
 	if (data.productDescription.nullProductFlag) {

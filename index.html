@@ -622,6 +622,8 @@
                     if (!$('#testFile3Thing').hasClass('icon-selected')) {
                         $('#testFile3Thing').addClass('icon-selected');
                         $('#testFile3Thing').removeClass('icon-black');
+                        // LWX_N0H_2022_04_18_15_21_24
+                        // KOUN_SDUS54_N0STLX_201305200301
                         var fileToLoad = 'LWX_N0H_2022_04_18_15_21_24';
                         loadFileObject('data/level3/' + fileToLoad, fileToLoad, 3);
                     } else if ($('#testFile3Thing').hasClass('icon-selected')) {
@@ -717,10 +719,16 @@
                 document.getElementById('productStuff').style.display = 'block';
 
                 document.getElementById('productInput').add(new Option('Hybrid Hydrometer Classification', '177hh'));
+
                 document.getElementById('productInput').add(new Option('Hydrometer Classification Tilt 1', '165h0', false, true));
                 document.getElementById('productInput').add(new Option('Hydrometer Classification Tilt 2', '165h1'));
                 document.getElementById('productInput').add(new Option('Hydrometer Classification Tilt 3', '165h2'));
                 document.getElementById('productInput').add(new Option('Hydrometer Classification Tilt 4', '165h3'));
+
+                document.getElementById('productInput').add(new Option('Storm Relative Velocity Tilt 1', '56rm0'));
+                document.getElementById('productInput').add(new Option('Storm Relative Velocity Tilt 2', '56rm1'));
+                document.getElementById('productInput').add(new Option('Storm Relative Velocity Tilt 3', '56rm2'));
+                document.getElementById('productInput').add(new Option('Storm Relative Velocity Tilt 4', '56rm3'));
             }
         })
 

@@ -248,6 +248,9 @@ document.addEventListener('loadFile', function(event) {
                 document.getElementById('radFileName').innerHTML = uploadedFile.name;
 
                 var theFileStation = l3rad.textHeader.id;
+                if (theFileStation == 'KOUN') {
+                    theFileStation = 'K' + l3rad.textHeader.id3;
+                }
                 document.getElementById('radStation').innerHTML = theFileStation;
 
                 var theFileVCP = l3rad.productDescription.vcp;

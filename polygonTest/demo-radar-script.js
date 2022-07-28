@@ -249,6 +249,72 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
         130, 140,
         140, 140
       )
+    } else if (produc[0] == "N0S") {
+      console.log('n0s')
+      // https://github.com/paulyc/NOAA-WCT/blob/master/ext/config/colormaps/nexrad_l3_p56.wctpal
+      colors["ref"].push(
+        'rgb(0, 224, 255)',
+        'rgb(0, 224, 255)',
+
+        'rgb(0, 138, 255)',
+        'rgb(0, 138, 255)',
+
+        'rgb(50, 0, 150)',
+        'rgb(50, 0, 150)',
+
+        'rgb(0, 251, 144)',
+        'rgb(0, 251, 144)',
+
+        'rgb(0, 187, 0)',
+        'rgb(0, 187, 0)',
+
+        'rgb(0, 143, 0)',
+        'rgb(0, 143, 0)',
+
+        'rgb(205, 192, 159)',
+        'rgb(205, 192, 159)',
+
+        'rgb(118, 118, 118)',
+        'rgb(118, 118, 118)',
+
+        'rgb(248, 135, 0)',
+        'rgb(248, 135, 0)',
+
+        'rgb(255, 207, 0)',
+        'rgb(255, 207, 0)',
+
+        'rgb(255, 255, 0)',
+        'rgb(255, 255, 0)',
+
+        'rgb(174, 0, 0)',
+        'rgb(174, 0, 0)',
+
+        'rgb(208, 122, 0)',
+        'rgb(208, 122, 0)',
+
+        'rgb(255, 0, 0)',
+        'rgb(255, 0, 0)',
+
+        'rgb(119, 0, 125)',
+        'rgb(119, 0, 125)',
+      )
+      values["ref"].push(
+        1, 2,
+        2, 3,
+        3, 4,
+        4, 5,
+        5, 6,
+        6, 7,
+        7, 8,
+        8, 9,
+        9, 10,
+        10, 11,
+        11, 12,
+        12, 13, 
+        13, 14,
+        14, 15,
+        15, 16
+      )
     }
     var colors=colors["ref"];
     var levs=values["ref"];
@@ -333,6 +399,8 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
 
   else if (produc == "HHC" || produc[0] == "N0H") {
     divider = '/(155.0)';
+  } else if (produc[0] == "N0S") {
+    divider = '/(16.0)';
   }
   console.log(divider)
   //compile shaders
