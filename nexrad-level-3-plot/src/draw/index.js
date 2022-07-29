@@ -83,8 +83,8 @@ const draw = (data, product, _options) => {
 	console.log(Math.min(...[...new Set(c)]), Math.max(...[...new Set(c)]))
 	//console.log([...new Set(c)])
 	json.version = 'l3';
-	if (product[0] == "NXQ") {
-		json.version = 'NXQ';
+	if (product[0] == "NXQ" || product[0] == "N0S") {
+		json.version = product[0];
 	}
 	console.log(json)
 	var blob = new Blob([JSON.stringify(json)], {type: "text/plain"});

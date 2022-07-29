@@ -22,8 +22,8 @@ onmessage=function(oEvent) {
     // version l3 is level 3 data
     gateRes = 125;
     multiplier = gateRes*2;
-  } else if (radVersion == "NXQ") {
-    // different resolution for l3 base reflectivity
+  } else if (radVersion == "NXQ" || radVersion == "N0S") {
+    // different resolution for l3 base reflectivity, storm relative velocity
     gateRes = 500;
     multiplier = gateRes*2;
   } else {
