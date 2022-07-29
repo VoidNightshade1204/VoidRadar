@@ -521,6 +521,7 @@
             var theReflPlotControl = new reflPlotControl;
             map.addControl(theReflPlotControl, 'top-left');
         }
+        showPlotBtn();
 
         class settingsControl {
             onAdd(map) {
@@ -666,6 +667,24 @@
             })
         }
 
+        function loadLatestFile(levell) {
+            if (levell == 'l2') {
+                getLatestFile($('#userStation').val(), function(fileName, y, m, d, s) {
+                    var individualFileURL = `https://noaa-nexrad-level2.s3.amazonaws.com/${y}/${m}/${d}/${s}/${fileName}`
+                    console.log(phpProxy + individualFileURL)
+                    loadFileObject(phpProxy + individualFileURL, fileName, 2);
+                });
+            } else if (levell == 'l3') {
+                removeMapLayer('baseReflectivity');
+                // https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.165h0/SI.kgld/sn.last
+                // DS.165h0 = product code 165, N0H (h0)
+                var level3url = `${phpProxy}https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.${$('#productInput').val()}/SI.${$('#userStation').val().toLowerCase()}/sn.last`
+                console.log(level3url)
+                console.log($('#productInput').val(), $('#userStation').val().toLowerCase())
+                loadFileObject(level3url, 'sn.last', 3);
+            }
+        }
+
         class curFileControl {
             onAdd(map) {
                 this._map = map;
@@ -678,23 +697,15 @@
                             </button>
                         </div>
                     </div>`
+                this._container.classList.add('currentFileControl');
                 this._container.addEventListener('click', function() {
                     if (!$('#curFileThing').hasClass('icon-selected')) {
                         $('#curFileThing').addClass('icon-selected');
                         $('#curFileThing').removeClass('icon-black');
                         if ($('#levelInput').val() == 'l2') {
-                            getLatestFile($('#userStation').val(), function(fileName, y, m, d, s) {
-                                var individualFileURL = `https://noaa-nexrad-level2.s3.amazonaws.com/${y}/${m}/${d}/${s}/${fileName}`
-                                console.log(phpProxy + individualFileURL)
-                                loadFileObject(phpProxy + individualFileURL, fileName, 2);
-                            });
+                            loadLatestFile('l2');
                         } else if ($('#levelInput').val() == 'l3') {
-                            // https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.165h0/SI.kgld/sn.last
-                            // DS.165h0 = product code 165, N0H (h0)
-                            var level3url = `${phpProxy}https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.${$('#productInput').val()}/SI.${$('#userStation').val().toLowerCase()}/sn.last`
-                            console.log(level3url)
-                            console.log($('#productInput').val(), $('#userStation').val().toLowerCase())
-                            loadFileObject(level3url, 'sn.last', 3);
+                            loadLatestFile('l3');
                         }
                     } else if ($('#curFileThing').hasClass('icon-selected')) {
                         $('#curFileThing').removeClass('icon-selected');
@@ -717,6 +728,10 @@
                 document.getElementById('productStuff').style.display = 'none';
                 $('#productInput').empty();
             } else if ($('#levelInput').val() == 'l3') {
+                $('#productStuff').on('change', function() {
+                    console.log('ch')
+                    loadLatestFile('l3');
+                })
                 document.getElementById('productStuff').style.display = 'block';
 
                 document.getElementById('productInput').add(new Option('Base Reflectivity Tilt 1', 'p94r0', false, true));

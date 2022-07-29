@@ -37241,7 +37241,7 @@ document.addEventListener('loadFile', function(event) {
                 //var blob = new Blob([JSON.stringify(l2rad)], {type: "text/plain"});
                 //var url = window.URL.createObjectURL(blob);
                 //document.getElementById('decodedRadarDataURL').innerHTML = url;
-                showPlotBtn();
+                //showPlotBtn();
                 //document.getElementById('plotRef').style.display = 'inline';
                 //document.getElementById('plotVel').style.display = 'inline';
                 document.getElementById('fileInput').style.display = 'none';
@@ -37358,7 +37358,7 @@ document.addEventListener('loadFile', function(event) {
                 var l3rad = Level3Radar(toBuffer(this.result))
                 console.log(l3rad)
 
-                showPlotBtn();
+                //showPlotBtn();
                 document.getElementById('fileInput').style.display = 'none';
                 document.getElementById('radarInfoDiv').style.display = 'inline';
 
