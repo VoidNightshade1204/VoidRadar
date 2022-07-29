@@ -11,12 +11,19 @@ onmessage=function(oEvent) {
   var multiplier;
   // different gate resolutions for hi-res vs non hi-res data
   if (radVersion == "01") {
+    // version 01 is non hi-res data
     gateRes = 2000;
     multiplier = gateRes*8;
+  } else if (radVersion == "08") {
+    // version 08 is TDWR
+    gateRes = 150;
+    multiplier = gateRes*1.2;
   } else if (radVersion == "l3") {
+    // version l3 is level 3 data
     gateRes = 125;
     multiplier = gateRes*2;
   } else {
+    // everything else (new l2 files - hi-res)
     gateRes = 125;
     multiplier = gateRes*2;
   }
