@@ -28,6 +28,10 @@ const draw = (data, product, _options) => {
 		'azimuths': [],
 		'version': [],
 	};
+	var adder = 0;
+	if (product[0] == "N0U") {
+		var adder = 65;
+	}
 	// generate a palette
 	//const palette = Palette.generate(product.palette);
 	// calculate scaling paramater with respect to pallet's designed criteria
@@ -59,8 +63,8 @@ const draw = (data, product, _options) => {
 			//ctx.arc(0, 0, (idx + data.radialPackets[0].firstBin) / scale, startAngle, endAngle);
 
 			arr.push(idx + data.radialPackets[0].firstBin)
-			valArr.push(bin)
-			c.push(bin)
+			valArr.push(bin + adder)
+			c.push(bin + adder)
 
 			//ctx.stroke();
 		});

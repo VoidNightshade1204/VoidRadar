@@ -66,10 +66,8 @@ setTimeout(function() {
 document.addEventListener('loadFile', function(event) {
     //logToModal('starting')
     document.getElementById('spinnerParent').style.display = 'block';
-
-    document.getElementById('elevStuff').style.display = 'block';
-    document.getElementById('extraStuff').style.display = 'block';
     document.getElementById('productStuff').style.display = 'block';
+    document.getElementById('levelInput').style.display = 'none';
     removeTestFileControl();
     //console.log(URL.createObjectURL(document.getElementById("fileInput").files[0]));
     setTimeout(function() {
@@ -80,6 +78,8 @@ document.addEventListener('loadFile', function(event) {
         reader.addEventListener("load", function () {
             console.log('file uploaded, parsing now');
             if (fileLevel == 'level2') {
+                document.getElementById('elevStuff').style.display = 'block';
+                document.getElementById('extraStuff').style.display = 'block';
                 var l2rad = new Level2Radar(toBuffer(this.result))
                 console.log(l2rad)
                 var theFileVersion = l2rad.header.version;

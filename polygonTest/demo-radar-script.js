@@ -340,6 +340,45 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
         5, 10, 15, 20, 25, 30, 35, 40,
         45, 50, 55, 60, 65, 70, 75
       )
+    } else if (produc[0] == "N0U") {
+      console.log('l3 velocity')
+      colors["ref"].push(
+        "#ffffff",
+        "#FC52FF",
+        "#871FFF",
+        "#0011CC",
+        "#0088CC",
+        "#B3F0FF",
+
+        "#42FF42",
+        "#009402",
+        "#A3A3A3",
+        "#8A0000",
+        "#FF5269",
+
+        "#FFB3E0",
+        "#FFF1C2",
+        "#FF9214",
+        "#B85C00",
+        "#572100",
+        "#000000"
+
+        // 'rgb(0, 0, 155)',
+        // 'rgb(0, 255, 255)',
+        // 'rgb(0, 102, 0)',
+        // 'rgb(128, 128, 128)',
+        // 'rgb(96, 13, 23)',
+        // 'rgb(200, 0, 0)',
+        // 'rgb(255, 255, 0)',
+        // 'rgb(120, 60, 0)',
+      )
+      values["ref"].push(
+        //-80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80
+        //-120, -50, -10, 0, 10, 30, 60, 120
+        -260, -250, -220, -190, -150, -90, -60, -30,
+        0,
+        30, 60, 90, 150, 190, 220, 250, 260
+      )
     }
     var colors=colors["ref"];
     var levs=values["ref"];
@@ -428,6 +467,8 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     divider = '/(16.0)';
   } else if (produc[0] == "NXQ") {
     divider = '/(70.0)';
+  } else if (produc[0] == "N0U") {
+    divider = '/(135.0)';
   }
   console.log(divider)
   //compile shaders
