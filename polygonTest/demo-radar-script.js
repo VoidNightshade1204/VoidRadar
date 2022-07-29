@@ -315,6 +315,14 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
         14, 15,
         15, 16
       )
+    } else if (produc[0] == "NXQ") {
+      console.log('l3 reflectivity')
+      colors["ref"].push(
+        "#24242400", "#242424", "#0FCBFF", "#1D9E00", "#95F44C", "#FFF700", "#FF9F0F", "#EB7900", "#FF1F1F", "#AD1100", "#FFB8F5", "#CA57FF", "#4A009E"
+      )
+      values["ref"].push(
+        0, 10, 20, 25, 30, 35, 40, 45, 50, 60, 65, 70, 80
+      )
     }
     var colors=colors["ref"];
     var levs=values["ref"];
@@ -401,6 +409,8 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     divider = '/(155.0)';
   } else if (produc[0] == "N0S") {
     divider = '/(16.0)';
+  } else if (produc[0] == "NXQ") {
+    divider = '/(70.0)';
   }
   console.log(divider)
   //compile shaders

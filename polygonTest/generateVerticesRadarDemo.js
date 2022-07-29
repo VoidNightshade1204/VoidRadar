@@ -22,6 +22,10 @@ onmessage=function(oEvent) {
     // version l3 is level 3 data
     gateRes = 125;
     multiplier = gateRes*2;
+  } else if (radVersion == "NXQ") {
+    // different resolution for l3 base reflectivity
+    gateRes = 500;
+    multiplier = gateRes*2;
   } else {
     // everything else (new l2 files - hi-res)
     gateRes = 125;

@@ -48,6 +48,12 @@ const draw = (data, product, _options) => {
 			if (bin === null) return;
 			// see if there's a sample to plot
 			if (!bin) return;
+			// if the product is l3 reflectivity, only push values 0 or greater
+			if (product[0] == "NXQ") {
+				if (bin < 0) {
+					return;
+				}
+			}
 			//ctx.beginPath();
 			//ctx.strokeStyle = palette[Math.round(thisSample * paletteScale)];
 			//ctx.arc(0, 0, (idx + data.radialPackets[0].firstBin) / scale, startAngle, endAngle);
@@ -77,6 +83,9 @@ const draw = (data, product, _options) => {
 	console.log(Math.min(...[...new Set(c)]), Math.max(...[...new Set(c)]))
 	//console.log([...new Set(c)])
 	json.version = 'l3';
+	if (product[0] == "NXQ") {
+		json.version = 'NXQ';
+	}
 	console.log(json)
 	var blob = new Blob([JSON.stringify(json)], {type: "text/plain"});
     var url = window.URL.createObjectURL(blob);
