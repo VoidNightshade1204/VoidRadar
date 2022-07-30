@@ -37165,6 +37165,18 @@ function round(value, precision) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
 }
+function findTerminalCoordinates(startLat, startLng, distanceNM, bearingDEG) {
+    var metersInNauticalMiles = 1852;
+    var startPoint = { latitude: startLat, longitude: startLng };
+    var distanceMeters = distanceNM * metersInNauticalMiles;
+    var bearing = bearingDEG;
+    const destination = geolib.computeDestinationPoint(
+        startPoint,
+        distanceMeters,
+        bearing 
+    );
+    return destination;
+}
 document.getElementById('fileInput').addEventListener('input', function() {
     // Create the event
     var event = new CustomEvent("loadFile", { "detail": [
@@ -37364,10 +37376,7 @@ document.addEventListener('loadFile', function(event) {
 
                 document.getElementById('radFileName').innerHTML = uploadedFile.name;
 
-                var theFileStation = l3rad.textHeader.id;
-                if (theFileStation == 'KOUN' || theFileStation == 'KVEF') {
-                    theFileStation = 'K' + l3rad.textHeader.id3;
-                }
+                var theFileStation = 'K' + l3rad.textHeader.id3;
                 document.getElementById('radStation').innerHTML = theFileStation;
 
                 var theFileVCP = l3rad.productDescription.vcp;
@@ -37386,7 +37395,67 @@ document.addEventListener('loadFile', function(event) {
 
                 document.getElementById('radDate').innerHTML = finalRadarDateTime;
 
-                const level3Plot = plotAndData(l3rad);
+                if (l3rad.textHeader.type == "NST") {
+                var stormTracksLayerArr = [];
+                // load storm tracking information
+                    var geojsonLineTemplate = {
+                        'type': 'Feature',
+                        'properties': {},
+                        'geometry': {
+                            'type': 'LineString',
+                            'coordinates': []
+                        }
+                    }
+
+                    $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
+                        var staLat = data[theFileStation][1];
+                        var staLng = data[theFileStation][2];
+
+                        var stormTracks = l3rad.formatted.storms;
+                        console.log(stormTracks)
+                        var stormTracksList = Object.keys(stormTracks);
+
+                        function loadStormTrack(identifier) {
+                            stormTracksLayerArr.push(identifier)
+                            geojsonLineTemplate.geometry.coordinates = [];
+                            geojsonLineTemplate.geometry.type = 'LineString';
+
+                            var curST = stormTracks[identifier].current;
+                            var curSTCoords = findTerminalCoordinates(staLat, staLng, curST.nm, curST.deg);
+                            geojsonLineTemplate.geometry.coordinates.push([curSTCoords.longitude, curSTCoords.latitude])
+
+                            var futureST = stormTracks[identifier].forecast;
+                            var isLine;
+                            if (futureST[0] == null) {
+                                isLine = false;
+                            } else if (futureST[0] != null) {
+                                isLine = true;
+                            }
+                            if (isLine) {
+                                for (key in futureST) {
+                                    var indexedFutureST = futureST[key];
+                                    if (indexedFutureST != null) {
+                                        var indexedFutureSTCoords = findTerminalCoordinates(staLat, staLng, indexedFutureST.nm, indexedFutureST.deg);
+                                        geojsonLineTemplate.geometry.coordinates.push([indexedFutureSTCoords.longitude, indexedFutureSTCoords.latitude]);
+                                    }
+                                }
+                                setGeojsonLayer(geojsonLineTemplate, 'line', identifier)
+                            } else if (!isLine) {
+                                geojsonLineTemplate.geometry.coordinates = geojsonLineTemplate.geometry.coordinates[0]
+                                geojsonLineTemplate.geometry.type = 'Point';
+                                setGeojsonLayer(geojsonLineTemplate, 'circle', identifier)
+                            }
+                        }
+                        // Z0 = line, R1 = point
+                        for (key in stormTracksList) {
+                            loadStormTrack(stormTracksList[key])
+                        }
+                        document.getElementById('allStormTracksLayers').innerHTML = JSON.stringify(stormTracksLayerArr);
+                    });
+                } else {
+                    const level3Plot = plotAndData(l3rad);
+                }
+
                 //document.getElementById('settingsDialog').innerHTML = 'No settings for Level 3 files yet.'
                 document.getElementById('elevStuff').style.display = 'none';
                 document.getElementById('extraStuff').style.display = 'none';
@@ -42352,10 +42421,7 @@ const draw = (data, product, _options) => {
     document.body.appendChild(a);
     a.click();*/
 
-	var currentStation = data.textHeader.id;
-	if (currentStation == 'KOUN' || currentStation == 'KVEF') {
-		currentStation = 'K' + data.textHeader.id3;
-	}
+	var currentStation = 'K' + data.textHeader.id3;
 	document.getElementById('fileStation').innerHTML = currentStation;
 	$.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
 		var statLat = data[currentStation][1];

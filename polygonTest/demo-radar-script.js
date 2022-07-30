@@ -450,6 +450,24 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     pageState.colors = colors;
     //console.log(Math.max(...[...new Set(colors)]))
     map.addLayer(layer);
+
+    function addStormTracksLayers() {
+      document.getElementById('productInput').add(new Option('Storm Tracking', 'sti'));
+      $('#productInput').val('sti');
+      $('#productStuff').trigger('change');
+      $("#productInput option[value='sti']").remove();
+    }
+    if (document.getElementById('allStormTracksLayers').innerHTML == '') {
+      addStormTracksLayers();
+    } else {
+      if (document.getElementById('allStormTracksLayers').innerHTML != '[]') {
+        var stLayersText = document.getElementById('allStormTracksLayers').innerHTML;
+        var stLayers = stLayersText.replace(/"/g, '').replace(/\[/g, '').replace(/\]/g, '').split(',');
+        for (key in stLayers) {
+          map.moveLayer(stLayers[key]);
+        }
+      }
+    }
   }
 
   var xhttp = new XMLHttpRequest();

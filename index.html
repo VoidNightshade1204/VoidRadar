@@ -169,6 +169,7 @@
     <div id="fileVersion" style="display: none"></div>
     <div id="level3json" style="display: none"></div>
     <div id="decodedRadarDataURL" style="display: none"></div>
+    <div id="allStormTracksLayers" style="display: none"></div>
     <!-- <a id="fileThatWorks" class="false-anchor">KTLX20130520_200356_V06.gz</a>
     <br>
     <a id="fileThatDoesnt" class="false-anchor">KLWX20220623_014344_V06</a>
@@ -266,6 +267,7 @@
     </script>
     <script src="./polygonTest/demo-radar-script.js"></script> -->
 
+    <script src="https://cdn.jsdelivr.net/npm/geolib@3.3.3/lib/index.min.js"></script>
     <script>
         function logToModal(textContent) {
             console.log(textContent);
@@ -640,7 +642,7 @@
                         // KCRP_SDUS54_N0UCRP_201708252357
                         // KOUN_SDUS54_DVLTLX_201305200301
                         // KOUN_SDUS34_NSTTLX_201305200301
-                        var fileToLoad = 'KOUN_SDUS54_DVLTLX_201305200301';
+                        var fileToLoad = 'KOUN_SDUS34_NSTTLX_201305200301';
                         loadFileObject('data/level3/' + fileToLoad, fileToLoad, 3);
                     } else if ($('#testFile3Thing').hasClass('icon-selected')) {
                         $('#testFile3Thing').removeClass('icon-selected');
@@ -689,7 +691,9 @@
                     loadFileObject(phpProxy + individualFileURL, fileName, 2);
                 });
             } else if (levell == 'l3') {
-                removeMapLayer('baseReflectivity');
+                if ($('#productInput').val() != 'sti') {
+                    removeMapLayer('baseReflectivity');
+                }
                 // https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.165h0/SI.kgld/sn.last
                 // DS.165h0 = product code 165, N0H (h0)
                 var tiltProduct = tiltObject[$('#tiltInput').val()][$('#productInput').val()]
@@ -746,6 +750,7 @@
                 'hyc': '165h0',
                 'srv': '56rm0',
                 'vil': '134il',
+                'sti': '58sti',
             },
             'tilt2': {
                 'ref': 'p94r1',
@@ -754,6 +759,7 @@
                 'hyc': '165h1',
                 'srv': '56rm1',
                 'vil': '134il',
+                'sti': '58sti',
             },
             'tilt3': {
                 'ref': 'p94r2',
@@ -762,6 +768,7 @@
                 'hyc': '165h2',
                 'srv': '56rm2',
                 'vil': '134il',
+                'sti': '58sti',
             },
             'tilt4': {
                 'ref': 'p94r3',
@@ -770,6 +777,7 @@
                 'hyc': '165h3',
                 'srv': '56rm3',
                 'vil': '134il',
+                'sti': '58sti',
             },
         }
 
@@ -798,6 +806,7 @@
                 document.getElementById('productInput').add(new Option('Vertically Integrated Liquid', 'vil'));
                 document.getElementById('productInput').add(new Option('Hybrid Hydrometer Classification', 'hhc'));
                 document.getElementById('productInput').add(new Option('Storm Relative Velocity', 'srv'));
+                //document.getElementById('productInput').add(new Option('Storm Tracking', 'sti'));
             }
         })
         $('#levelInput').val('l3');
@@ -861,6 +870,32 @@
             if (map.hasControl(theCurFileControl)) {
                 map.removeControl(theCurFileControl);
             }
+        }
+
+        function setGeojsonLayer(gj, gjType, identity) {
+            var styling;
+            if (gjType == 'circle') {
+                styling = {
+                    'circle-radius': 4,
+                    'circle-stroke-width': 2,
+                    'circle-color': 'red',
+                    'circle-stroke-color': 'white',
+                }
+            } else if (gjType == 'line') {
+                styling = {
+                    'line-color': '#ffffff',
+                    'line-width': 1.5,
+                }
+            }
+            map.addLayer({
+                'id': identity,
+                'type': gjType,
+                'source': {
+                    'type': 'geojson',
+                    'data': gj,
+                },
+                'paint': styling,
+            })
         }
     </script>
     <script src="utils.js"></script>

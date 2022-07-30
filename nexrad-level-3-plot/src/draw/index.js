@@ -116,10 +116,7 @@ const draw = (data, product, _options) => {
     document.body.appendChild(a);
     a.click();*/
 
-	var currentStation = data.textHeader.id;
-	if (currentStation == 'KOUN' || currentStation == 'KVEF') {
-		currentStation = 'K' + data.textHeader.id3;
-	}
+	var currentStation = 'K' + data.textHeader.id3;
 	document.getElementById('fileStation').innerHTML = currentStation;
 	$.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
 		var statLat = data[currentStation][1];
