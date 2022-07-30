@@ -874,14 +874,25 @@
 
         function setGeojsonLayer(gj, gjType, identity) {
             var styling;
+            var type;
             if (gjType == 'circle') {
+                type = gjType;
                 styling = {
                     'circle-radius': 4,
                     'circle-stroke-width': 2,
                     'circle-color': 'red',
                     'circle-stroke-color': 'white',
                 }
+            } else if (gjType == 'lineCircle') {
+                type = 'circle';
+                styling = {
+                    'circle-radius': 4,
+                    'circle-stroke-width': 2,
+                    'circle-color': 'blue',
+                    'circle-stroke-color': 'white',
+                }
             } else if (gjType == 'line') {
+                type = gjType;
                 styling = {
                     'line-color': '#ffffff',
                     'line-width': 1.5,
@@ -889,7 +900,7 @@
             }
             map.addLayer({
                 'id': identity,
-                'type': gjType,
+                'type': type,
                 'source': {
                     'type': 'geojson',
                     'data': gj,

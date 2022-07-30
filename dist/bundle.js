@@ -37416,16 +37416,22 @@ document.addEventListener('loadFile', function(event) {
                         var stormTracksList = Object.keys(stormTracks);
 
                         function loadStormTrack(identifier) {
+                            // store all map layers being added to be able to manipulate later
                             stormTracksLayerArr.push(identifier)
+                            // reset geojson coordinates
                             geojsonLineTemplate.geometry.coordinates = [];
                             geojsonLineTemplate.geometry.type = 'LineString';
 
+                            // current storm track
                             var curST = stormTracks[identifier].current;
                             var curSTCoords = findTerminalCoordinates(staLat, staLng, curST.nm, curST.deg);
+                            // push the initial coordinate point - we do not know if the current track is a line or a point yet
                             geojsonLineTemplate.geometry.coordinates.push([curSTCoords.longitude, curSTCoords.latitude])
 
+                            // future storm track (forecast)
                             var futureST = stormTracks[identifier].forecast;
                             var isLine;
+                            // if the first forecast value for the current track is null, there is no line track - it is a point
                             if (futureST[0] == null) {
                                 isLine = false;
                             } else if (futureST[0] != null) {
@@ -37433,14 +37439,24 @@ document.addEventListener('loadFile', function(event) {
                             }
                             if (isLine) {
                                 for (key in futureST) {
+                                    // the current index in the futureST variable being looped through
                                     var indexedFutureST = futureST[key];
+                                    // check if the value is null, in which case the storm track is over
                                     if (indexedFutureST != null) {
                                         var indexedFutureSTCoords = findTerminalCoordinates(staLat, staLng, indexedFutureST.nm, indexedFutureST.deg);
+                                        // push the current index point to the line geojson object
                                         geojsonLineTemplate.geometry.coordinates.push([indexedFutureSTCoords.longitude, indexedFutureSTCoords.latitude]);
                                     }
                                 }
+                                // push the finished geojson line object to a function that adds to the map
                                 setGeojsonLayer(geojsonLineTemplate, 'line', identifier)
+                                // adds a blue circle at the start of the storm track
+                                geojsonLineTemplate.geometry.coordinates = geojsonLineTemplate.geometry.coordinates[0]
+                                geojsonLineTemplate.geometry.type = 'Point';
+                                setGeojsonLayer(geojsonLineTemplate, 'lineCircle', identifier + '_Point')
+                                stormTracksLayerArr.push(identifier + '_Point')
                             } else if (!isLine) {
+                                // if the storm track does not have a forecast, display a Point geojson
                                 geojsonLineTemplate.geometry.coordinates = geojsonLineTemplate.geometry.coordinates[0]
                                 geojsonLineTemplate.geometry.type = 'Point';
                                 setGeojsonLayer(geojsonLineTemplate, 'circle', identifier)
