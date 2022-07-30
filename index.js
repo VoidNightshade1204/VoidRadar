@@ -289,6 +289,14 @@ document.addEventListener('loadFile', function(event) {
                             'coordinates': []
                         }
                     }
+                    var geojsonPointTemplate = {
+                        'type': 'Feature',
+                        'properties': {},
+                        'geometry': {
+                            'type': 'Point',
+                            'coordinates': []
+                        }
+                    }
 
                     $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
                         var staLat = data[theFileStation][1];
@@ -329,6 +337,10 @@ document.addEventListener('loadFile', function(event) {
                                         var indexedFutureSTCoords = findTerminalCoordinates(staLat, staLng, indexedFutureST.nm, indexedFutureST.deg);
                                         // push the current index point to the line geojson object
                                         geojsonLineTemplate.geometry.coordinates.push([indexedFutureSTCoords.longitude, indexedFutureSTCoords.latitude]);
+                                        // add a circle for each edge on a storm track line
+                                        geojsonPointTemplate.geometry.coordinates = [indexedFutureSTCoords.longitude, indexedFutureSTCoords.latitude]
+                                        setGeojsonLayer(geojsonLineTemplate, 'lineCircleEdge', identifier + '_pointEdge' + key)
+                                        stormTracksLayerArr.push(identifier + '_pointEdge' + key)
                                     }
                                 }
                                 // push the finished geojson line object to a function that adds to the map
@@ -336,8 +348,8 @@ document.addEventListener('loadFile', function(event) {
                                 // adds a blue circle at the start of the storm track
                                 geojsonLineTemplate.geometry.coordinates = geojsonLineTemplate.geometry.coordinates[0]
                                 geojsonLineTemplate.geometry.type = 'Point';
-                                setGeojsonLayer(geojsonLineTemplate, 'lineCircle', identifier + '_Point')
-                                stormTracksLayerArr.push(identifier + '_Point')
+                                setGeojsonLayer(geojsonLineTemplate, 'lineCircle', identifier + '_point')
+                                stormTracksLayerArr.push(identifier + '_point')
                             } else if (!isLine) {
                                 // if the storm track does not have a forecast, display a Point geojson
                                 geojsonLineTemplate.geometry.coordinates = geojsonLineTemplate.geometry.coordinates[0]
@@ -350,6 +362,19 @@ document.addEventListener('loadFile', function(event) {
                             loadStormTrack(stormTracksList[key])
                         }
                         document.getElementById('allStormTracksLayers').innerHTML = JSON.stringify(stormTracksLayerArr);
+                        var stLayersText = document.getElementById('allStormTracksLayers').innerHTML;
+                        var stLayers = stLayersText.replace(/"/g, '').replace(/\[/g, '').replace(/\]/g, '').split(',');
+                        // setting layer orders
+                        for (key in stLayers) {
+                            if (stLayers[key].includes('_pointEdge')) {
+                                moveMapLayer(stLayers[key])
+                            }
+                        }
+                        for (key in stLayers) {
+                            if (stLayers[key].includes('_point')) {
+                                moveMapLayer(stLayers[key])
+                            }
+                        }
                     });
                 } else {
                     const level3Plot = plotAndData(l3rad);

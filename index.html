@@ -891,6 +891,12 @@
                     'circle-color': 'blue',
                     'circle-stroke-color': 'white',
                 }
+            } else if (gjType == 'lineCircleEdge') {
+                type = 'circle';
+                styling = {
+                    'circle-radius': 4,
+                    'circle-color': '#ffffff',
+                }
             } else if (gjType == 'line') {
                 type = gjType;
                 styling = {
@@ -907,6 +913,11 @@
                 },
                 'paint': styling,
             })
+        }
+        function moveMapLayer(lay) {
+            if (map.getLayer(lay)) {
+                map.moveLayer(lay)
+            }
         }
     </script>
     <script src="utils.js"></script>
