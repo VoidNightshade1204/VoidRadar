@@ -248,7 +248,7 @@ document.addEventListener('loadFile', function(event) {
                 document.getElementById('radFileName').innerHTML = uploadedFile.name;
 
                 var theFileStation = l3rad.textHeader.id;
-                if (theFileStation == 'KOUN') {
+                if (theFileStation == 'KOUN' || theFileStation == 'KVEF') {
                     theFileStation = 'K' + l3rad.textHeader.id3;
                 }
                 document.getElementById('radStation').innerHTML = theFileStation;

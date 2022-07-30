@@ -298,6 +298,7 @@
         }
     </script>
     <script>
+
         function xmlToJson(xml) {
             if (typeof xml == "string") {
                 parser = new DOMParser();
@@ -637,7 +638,9 @@
                         // LWX_N0Q_2022_04_18_15_21_24
                         // KOUN_SDUS54_N0STLX_201305200301
                         // KCRP_SDUS54_N0UCRP_201708252357
-                        var fileToLoad = 'KCRP_SDUS54_N0UCRP_201708252357';
+                        // KOUN_SDUS54_DVLTLX_201305200301
+                        // KOUN_SDUS34_NSTTLX_201305200301
+                        var fileToLoad = 'KOUN_SDUS54_DVLTLX_201305200301';
                         loadFileObject('data/level3/' + fileToLoad, fileToLoad, 3);
                     } else if ($('#testFile3Thing').hasClass('icon-selected')) {
                         $('#testFile3Thing').removeClass('icon-selected');
@@ -742,6 +745,7 @@
                 'hhc': '177hh',
                 'hyc': '165h0',
                 'srv': '56rm0',
+                'vil': '134il',
             },
             'tilt2': {
                 'ref': 'p94r1',
@@ -749,6 +753,7 @@
                 'hhc': '177hh',
                 'hyc': '165h1',
                 'srv': '56rm1',
+                'vil': '134il',
             },
             'tilt3': {
                 'ref': 'p94r2',
@@ -756,6 +761,7 @@
                 'hhc': '177hh',
                 'hyc': '165h2',
                 'srv': '56rm2',
+                'vil': '134il',
             },
             'tilt4': {
                 'ref': 'p94r3',
@@ -763,6 +769,7 @@
                 'hhc': '177hh',
                 'hyc': '165h3',
                 'srv': '56rm3',
+                'vil': '134il',
             },
         }
 
@@ -788,6 +795,7 @@
                 document.getElementById('productInput').add(new Option('Base Reflectivity', 'ref', false, true));
                 document.getElementById('productInput').add(new Option('Base Velocity', 'vel'));
                 document.getElementById('productInput').add(new Option('Hydrometer Classification', 'hyc'));
+                document.getElementById('productInput').add(new Option('Vertically Integrated Liquid', 'vil'));
                 document.getElementById('productInput').add(new Option('Hybrid Hydrometer Classification', 'hhc'));
                 document.getElementById('productInput').add(new Option('Storm Relative Velocity', 'srv'));
             }

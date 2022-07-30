@@ -9,6 +9,11 @@ const DEFAULT_OPTIONS = {
 	lineWidth: 2,
 };
 
+const scaleArray = (fromRange, toRange) => {
+	const d = (toRange[1] - toRange[0]) / (fromRange[1] - fromRange[0]);
+  	return from =>  (from - fromRange[0]) * d + toRange[0];
+};
+
 const draw = (data, product, _options) => {
 	// combine options with defaults
 	const options = {
@@ -29,8 +34,9 @@ const draw = (data, product, _options) => {
 		'version': [],
 	};
 	var adder = 0;
+	var divider = 1;
 	if (product[0] == "N0U") {
-		var adder = 65;
+		adder = 65;
 	}
 	// generate a palette
 	//const palette = Palette.generate(product.palette);
@@ -63,8 +69,8 @@ const draw = (data, product, _options) => {
 			//ctx.arc(0, 0, (idx + data.radialPackets[0].firstBin) / scale, startAngle, endAngle);
 
 			arr.push(idx + data.radialPackets[0].firstBin)
-			valArr.push(bin + adder)
-			c.push(bin + adder)
+			valArr.push((bin + adder) / divider)
+			c.push((bin + adder) / divider)
 
 			//ctx.stroke();
 		});
@@ -83,6 +89,14 @@ const draw = (data, product, _options) => {
 	}
 	// sort each azimuth value from lowest to highest
 	json.azimuths.sort(function(a, b){return a - b});
+
+	if (product[0] == "DVL") {
+		var arrMin = Math.min(...[...new Set(c)]);
+		var arrMax = Math.max(...[...new Set(c)]);
+		for (value in json.values) {
+			json.values[value] = json.values[value].map(scaleArray([arrMin, arrMax], [0.1, 75]))
+		}
+	}
 
 	console.log(Math.min(...[...new Set(c)]), Math.max(...[...new Set(c)]))
 	//console.log([...new Set(c)])
@@ -103,7 +117,7 @@ const draw = (data, product, _options) => {
     a.click();*/
 
 	var currentStation = data.textHeader.id;
-	if (currentStation == 'KOUN') {
+	if (currentStation == 'KOUN' || currentStation == 'KVEF') {
 		currentStation = 'K' + data.textHeader.id3;
 	}
 	document.getElementById('fileStation').innerHTML = currentStation;

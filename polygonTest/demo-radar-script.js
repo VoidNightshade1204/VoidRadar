@@ -379,6 +379,28 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
         0,
         30, 60, 90, 150, 190, 220, 250, 260
       )
+    } else if (produc[0] == "DVL") {
+      console.log('digital vil')
+      colors["ref"].push(
+        'rgb(120, 120, 120)',
+        'rgb(0, 236, 236)',
+        'rgb(1, 160, 246)',
+        'rgb(0, 0, 246)',
+        'rgb(0, 255, 0)',
+        'rgb(0, 200, 0)',
+        'rgb(0, 144, 0)',
+        'rgb(255, 255, 0)',
+        'rgb(231, 192, 0)',
+        'rgb(255, 144, 0)',
+        'rgb(214, 0, 0)',
+        'rgb(192, 0, 0)',
+        'rgb(255, 0, 255)',
+        'rgb(153, 85, 201)',
+        'rgb(235, 235, 235)',
+      )
+      values["ref"].push(
+        -50, 0.1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75,
+      )
     }
     var colors=colors["ref"];
     var levs=values["ref"];
@@ -469,6 +491,8 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     divider = '/(70.0)';
   } else if (produc[0] == "N0U") {
     divider = '/(135.0)';
+  } else if (produc[0] == "DVL") {
+    divider = '/(90.0)';
   }
   console.log(divider)
   //compile shaders
