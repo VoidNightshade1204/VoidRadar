@@ -566,6 +566,9 @@
                                     maxHeight: '70vh',
                                     overflow: 'scroll'
                                 });
+                                $('.ui-widget-overlay').bind('click', function() {
+                                    $("#settingsDialog").dialog('close'); 
+                                }); 
                             },
                             close: function () {
                                 $('#settingsThing').removeClass('icon-selected');
