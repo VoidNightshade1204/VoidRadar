@@ -427,6 +427,49 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+    var hycObj = {
+      1: 'ND: Below Threshold',
+      2: 'BI: Biological',
+      3: 'GC: Anomalous Propagation/Ground Clutter',
+      4: 'IC: Ice Crystals',
+      5: 'DS: Dry Snow',
+      6: 'WS: Wet Snow',
+      7: 'RA: Light and/or Moderate Rain',
+      8: 'HR: Heavy Rain',
+      9: 'BD: Big Drops (rain)',
+      10: 'GR: Graupel',
+      11: 'HA: Hail, possibly with rain',
+      12: 'LH: Large Hail',
+      13: 'GH: Giant Hail',
+      14: 'UK: Unknown Classification',
+      15: 'RF: Range Folded',
+    };
+    if (produc == "HHC" || produc[0] == "N0H") {
+      function getCursorPosition(canvas, event) {
+        const rect = canvas.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+        return ({"x": x, "y": y});
+      }
+      colortcanvas.addEventListener('mousemove', function(e) {
+        if (document.getElementById('curProd').innerHTML == 'hyc' || document.getElementById('curProd').innerHTML == 'hhc') {
+          var xPos = getCursorPosition(colortcanvas, e).x;
+          var thearr = [];
+          var numOfColors = 14;
+          for (var e = 0; e < numOfColors; e++) {
+            thearr.push(Math.round((colortcanvas.width / numOfColors) * e))
+          }
+          var thearr2 = thearr;
+          thearr.push(xPos);
+          thearr2.sort(function(a, b){return a - b});
+          var xPosIndex = thearr2.indexOf(xPos);
+          var xPosProduct = hycObj[thearr2.indexOf(xPos)];
+          console.log(xPosProduct)
+        }
+      })
+    }
+    //$('#texturecolorbar').off()
   }
 
   function dataStore() {
@@ -475,17 +518,6 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
       }
     }
     document.getElementById('prevStat').innerHTML = document.getElementById('fileStation').innerHTML;
-    /*if (document.getElementById('allStormTracksLayers').innerHTML == '') {
-      addStormTracksLayers();
-    } else {
-      if (document.getElementById('allStormTracksLayers').innerHTML != '[]') {
-        var stLayersText = document.getElementById('allStormTracksLayers').innerHTML;
-        var stLayers = stLayersText.replace(/"/g, '').replace(/\[/g, '').replace(/\]/g, '').split(',');
-        for (key in stLayers) {
-          map.moveLayer(stLayers[key]);
-        }
-      }
-    }*/
   }
 
   var xhttp = new XMLHttpRequest();
