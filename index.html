@@ -183,7 +183,7 @@
 </head>
 <body>
     <div id="spinnerParent" style="display: none">
-        <div id="spinnerDisplayText">The radar is currently loading. Patience here is key - this should be quick.</div>
+        <!-- <div id="spinnerDisplayText">The radar is currently loading. Patience here is key - this should be quick.</div> -->
         <div class="sk-chase">
             <div class="sk-chase-dot"></div>
             <div class="sk-chase-dot"></div>
@@ -200,6 +200,7 @@
     <div id="allStormTracksLayers" style="display: none"></div>
     <div id="curProd" style="display: none"></div>
     <div id="prevStat" style="display: none"></div>
+    <div id="testEventElem" style="display: none"></div>
     <!-- <a id="fileThatWorks" class="false-anchor">KTLX20130520_200356_V06.gz</a>
     <br>
     <a id="fileThatDoesnt" class="false-anchor">KLWX20220623_014344_V06</a>
@@ -852,6 +853,12 @@
 
         $('#productBtnGroup button').on('click', function() {
             //$('#productInput').val()
+            var initInnerHTML = this.innerHTML;
+            this.innerHTML = `<span class="spinner-border spinner-border-sm text-dark" role="status" aria-hidden="true"></span>&nbsp;&nbsp;` + initInnerHTML;
+            var thisBtn = this;
+            document.getElementById('testEventElem').addEventListener('DOMSubtreeModified', function() {
+                thisBtn.innerHTML = initInnerHTML;
+            }, {once : true})
             $('.btn-outline-success').each(function() {
                 $(this).removeClass('btn-outline-success');
                 $(this).addClass('btn-outline-primary');

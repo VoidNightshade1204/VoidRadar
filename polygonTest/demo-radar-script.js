@@ -524,6 +524,7 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
       }
     }
     document.getElementById('prevStat').innerHTML = document.getElementById('fileStation').innerHTML;
+    document.getElementById('testEventElem').innerHTML = 'changed'
   }
 
   var xhttp = new XMLHttpRequest();
