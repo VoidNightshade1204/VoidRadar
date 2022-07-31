@@ -179,6 +179,17 @@
             border: 1px solid black;
             border-radius: 5px;
         }
+        .customMarker {
+            text-align: center;
+            width: auto;
+            height: auto;
+            padding: 1px 5px;
+            /* line-height: 25px; */
+            background-color: rgb(136, 136, 136);
+            border: 1px solid black;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -854,11 +865,13 @@
         $('#productBtnGroup button').on('click', function() {
             //$('#productInput').val()
             var initInnerHTML = this.innerHTML;
-            this.innerHTML = `<span class="spinner-border spinner-border-sm text-dark" role="status" aria-hidden="true"></span>&nbsp;&nbsp;` + initInnerHTML;
-            var thisBtn = this;
-            document.getElementById('testEventElem').addEventListener('DOMSubtreeModified', function() {
-                thisBtn.innerHTML = initInnerHTML;
-            }, {once : true})
+            if (!initInnerHTML.includes('span')) {
+                this.innerHTML = `<span class="spinner-border spinner-border-sm text-dark" role="status" aria-hidden="true"></span>&nbsp;&nbsp;` + initInnerHTML;
+                var thisBtn = this;
+                document.getElementById('testEventElem').addEventListener('DOMSubtreeModified', function() {
+                    thisBtn.innerHTML = initInnerHTML;
+                }, {once : true})
+            }
             $('.btn-outline-success').each(function() {
                 $(this).removeClass('btn-outline-success');
                 $(this).addClass('btn-outline-primary');
@@ -886,6 +899,71 @@
                 );
             }
         })
+
+        var statMarkerArr = [];
+        function showStations() {
+            $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
+                var allKeys = Object.keys(data);
+                for (key in allKeys) {
+                    var curIter = data[allKeys[key]];
+                    var curStat = allKeys[key];
+
+                    // check if it is an unsupported radar
+                    if (curStat.charAt(0) == 'K') {
+                        // create a HTML element for each feature
+                        var el = document.createElement('div');
+                        el.className = 'customMarker';
+                        el.innerHTML = curStat;
+
+                        // make a marker for each feature and add to the map
+                        var mark = new mapboxgl.Marker(el)
+                            .setLngLat([curIter[2], curIter[1]])
+                            .addTo(map);
+                        statMarkerArr.push(mark)
+                    }
+                }
+            }).then(function() {
+                $('.customMarker').on('click', function() {
+                    $('#stationInp').val(this.innerHTML)
+                })
+            })
+        }
+
+        class stationControl {
+            onAdd(map) {
+                this._map = map;
+                this._container = document.createElement('div');
+                this._container.innerHTML = `
+                    <div class="mapboxgl-control-container" style="margin-top: 100%;">
+                        <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
+                            <button class="mapboxgl-ctrl-fullscreen" type="button" aria-label="Globe Toggle">
+                                <span class="fa fa-satellite-dish icon-black" id="stationThing" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>`
+                this._container.addEventListener('click', function() {
+                    if (!$('#stationThing').hasClass('icon-selected')) {
+                        $('#stationThing').addClass('icon-selected');
+                        $('#stationThing').removeClass('icon-black');
+                        showStations();
+                    } else if ($('#stationThing').hasClass('icon-selected')) {
+                        $('#stationThing').removeClass('icon-selected');
+                        $('#stationThing').addClass('icon-black');
+                        for (key in statMarkerArr) {
+                            statMarkerArr[key].remove();
+                        }
+                    }
+                })
+                return this._container;
+            }
+
+            onRemove() {
+                this._container.parentNode.removeChild(this._container);
+                this._map = undefined;
+            }
+        }
+        var theStationControl = new stationControl;
+        map.addControl(theStationControl, 'top-left');
 
         class showOptionsBoxControl {
             onAdd(map) {
@@ -971,11 +1049,11 @@
             $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
                 var stationLat = data[station][1];
                 var stationLng = data[station][2];
-                map.flyTo({
-                    center: [stationLng, stationLat],
-                    zoom: 8,
-                    duration: 1000,
-                });
+                //map.flyTo({
+                //    center: [stationLng, stationLat],
+                //    zoom: 8,
+                //    duration: 1000,
+                //});
                 var stationBbox = getBoundingBox(stationLat, stationLng, radius);
 
                 var coord1 = stationBbox.minLat;
