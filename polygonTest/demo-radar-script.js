@@ -457,7 +457,25 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
       console.log(fileUrl, $('#stationInp').val().toLowerCase())
       loadFileObject(fileUrl, document.getElementById('radFileName').innerHTML, 3);
     }
-    if (document.getElementById('allStormTracksLayers').innerHTML == '') {
+    var stLayersText = document.getElementById('allStormTracksLayers').innerHTML;
+    var stLayers = stLayersText.replace(/"/g, '').replace(/\[/g, '').replace(/\]/g, '').split(',');
+    if (document.getElementById('prevStat').innerHTML != document.getElementById('fileStation').innerHTML) {
+      for (key in stLayers) {
+        if (map.getLayer(stLayers[key])) {
+          map.removeLayer(stLayers[key]);
+        }
+        if (map.getSource(stLayers[key])) {
+            map.removeSource(stLayers[key]);
+        }
+      }
+      addStormTracksLayers();
+    } else {
+      for (key in stLayers) {
+        map.moveLayer(stLayers[key]);
+      }
+    }
+    document.getElementById('prevStat').innerHTML = document.getElementById('fileStation').innerHTML;
+    /*if (document.getElementById('allStormTracksLayers').innerHTML == '') {
       addStormTracksLayers();
     } else {
       if (document.getElementById('allStormTracksLayers').innerHTML != '[]') {
@@ -467,7 +485,7 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
           map.moveLayer(stLayers[key]);
         }
       }
-    }
+    }*/
   }
 
   var xhttp = new XMLHttpRequest();

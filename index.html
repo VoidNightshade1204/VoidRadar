@@ -193,6 +193,7 @@
     <div id="decodedRadarDataURL" style="display: none"></div>
     <div id="allStormTracksLayers" style="display: none"></div>
     <div id="curProd" style="display: none"></div>
+    <div id="prevStat" style="display: none"></div>
     <!-- <a id="fileThatWorks" class="false-anchor">KTLX20130520_200356_V06.gz</a>
     <br>
     <a id="fileThatDoesnt" class="false-anchor">KLWX20220623_014344_V06</a>
@@ -882,6 +883,7 @@
                             </button>
                         </div>
                     </div>`
+                this._container.classList.add('optionsBoxControl');
                 this._container.addEventListener('click', function() {
                     if (!$('#showOptionsBoxThing').hasClass('icon-selected')) {
                         $('#showOptionsBoxThing').addClass('icon-selected');
@@ -912,7 +914,8 @@
         var theShowOptionsBoxControl = new showOptionsBoxControl;
         map.addControl(theShowOptionsBoxControl, 'bottom-left');
 
-        $('#optionsBox').hide();
+        //$('#optionsBox').hide();
+        $('.optionsBoxControl').trigger('click');
 
         $('#levelInput').on('change', function() {
             if ($('#levelInput').val() == 'l2') {
