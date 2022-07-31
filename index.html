@@ -870,6 +870,50 @@
             }
         })
 
+        class showOptionsBoxControl {
+            onAdd(map) {
+                this._map = map;
+                this._container = document.createElement('div');
+                this._container.innerHTML = `
+                    <div class="mapboxgl-control-container" style='position: absolute; bottom: 10vh'>
+                        <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
+                            <button class="mapboxgl-ctrl-fullscreen" type="button" aria-label="Globe Toggle">
+                                <span class="fa fa-circle-chevron-up icon-black" id="showOptionsBoxThing" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>`
+                this._container.addEventListener('click', function() {
+                    if (!$('#showOptionsBoxThing').hasClass('icon-selected')) {
+                        $('#showOptionsBoxThing').addClass('icon-selected');
+
+                        $('#showOptionsBoxThing').removeClass('fa-circle-chevron-up');
+                        $('#showOptionsBoxThing').addClass('fa-circle-chevron-down');
+
+                        $('#showOptionsBoxThing').removeClass('icon-black');
+                        $('#optionsBox').show("slide", { direction: "down" }, 200);
+                    } else if ($('#showOptionsBoxThing').hasClass('icon-selected')) {
+                        $('#showOptionsBoxThing').removeClass('icon-selected');
+
+                        $('#showOptionsBoxThing').removeClass('fa-circle-chevron-down');
+                        $('#showOptionsBoxThing').addClass('fa-circle-chevron-up');
+
+                        $('#showOptionsBoxThing').addClass('icon-black');
+                        $('#optionsBox').hide("slide", { direction: "down" }, 200);
+                    }
+                })
+                return this._container;
+            }
+
+            onRemove() {
+                this._container.parentNode.removeChild(this._container);
+                this._map = undefined;
+            }
+        }
+        var theShowOptionsBoxControl = new showOptionsBoxControl;
+        map.addControl(theShowOptionsBoxControl, 'bottom-left');
+
+        $('#optionsBox').hide();
+
         $('#levelInput').on('change', function() {
             if ($('#levelInput').val() == 'l2') {
                 document.getElementById('productStuff').style.display = 'none';
