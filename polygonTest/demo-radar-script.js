@@ -429,6 +429,7 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
     var hycObj = {
+      0: 'ND: Below Threshold',
       1: 'ND: Below Threshold',
       2: 'BI: Biological',
       3: 'GC: Anomalous Propagation/Ground Clutter',
@@ -445,6 +446,7 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
       14: 'UK: Unknown Classification',
       15: 'RF: Range Folded',
     };
+    const tooltip = bootstrap.Tooltip.getInstance('#texturecolorbar')
     if (produc == "HHC" || produc[0] == "N0H") {
       function getCursorPosition(canvas, event) {
         const rect = canvas.getBoundingClientRect()
@@ -465,9 +467,13 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
           thearr2.sort(function(a, b){return a - b});
           var xPosIndex = thearr2.indexOf(xPos);
           var xPosProduct = hycObj[thearr2.indexOf(xPos)];
-          console.log(xPosProduct)
+          //console.log(xPosProduct)
+          tooltip.enable();
+          tooltip.setContent({'.tooltip-inner': xPosProduct})
         }
       })
+    } else {
+      tooltip.disable();
     }
     //$('#texturecolorbar').off()
   }
