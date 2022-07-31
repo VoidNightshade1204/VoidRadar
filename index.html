@@ -15,6 +15,10 @@
     <!-- https://cdnjs.com/libraries/font-awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
+    <!-- https://getbootstrap.com/docs/5.2/getting-started/download/ -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+
     <style>
         body {
             margin: 0;
@@ -151,6 +155,24 @@
                 transform: scale(1.0); 
             } 
         }
+
+        #optionsBox {
+            position: absolute;
+            z-index: 100;
+            position: absolute;
+            left: 25%;
+            right: 25%;
+            bottom: 5%;
+            text-align: center;
+            width: auto;
+            height: 200px;
+            overflow: scroll;
+            padding: 5px 10px;
+            /* line-height: 25px; */
+            background-color: white;
+            border: 1px solid black;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -230,6 +252,31 @@
 
     <div id="messageDialog" style="display: none">
         <div id="messageBox"></div>
+    </div>
+
+    <div id='optionsBox'>
+        <label for="stationInp">Station</label>
+        <input type="text" class="form-control" id="stationInp" value="KLWX">
+        <br>
+        <div class="dropdown-center" id="tiltDropdown">
+            <button class="btn btn-secondary btn-sm dropdown-toggle" id="tiltDropdownBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false" value="tilt1">
+                Tilt 1</button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" value="tilt1">Tilt 1</a></li>
+                <li><a class="dropdown-item" href="#" value="tilt2">Tilt 2</a></li>
+                <li><a class="dropdown-item" href="#" value="tilt3">Tilt 3</a></li>
+                <li><a class="dropdown-item" href="#" value="tilt4">Tilt 4</a></li>
+            </ul>
+        </div>
+        <br>
+        <div id="productBtnGroup" class="btn-group-vertical">
+            <button type="button" value="ref" class="btn btn-outline-primary btn-sm">Base Reflectivity</button> <!-- ref -->
+            <button type="button" value="vel"  class="btn btn-outline-primary btn-sm">Base Velocity</button> <!-- vel -->
+            <button type="button" value="hyc"  class="btn btn-outline-primary btn-sm">Hydrometer Classification</button> <!-- hyc -->
+            <button type="button" value="vil"  class="btn btn-outline-primary btn-sm">Vertically Integrated Liquid</button> <!-- vil -->
+            <button type="button" value="hhc"  class="btn btn-outline-primary btn-sm">Hybrid Hydrometer Classification</button> <!-- hhc -->
+            <button type="button" value="srv"  class="btn btn-outline-primary btn-sm">Storm Relative Velocity</button> <!-- srv -->
+        </div>
     </div>
 
     <div id="map"></div>
@@ -441,6 +488,7 @@
                 this._container = document.createElement('div');
                 this._container.innerHTML = `
                     <div id='infoContainer' style='
+                    display: none;
                     text-align: center;
                     width: auto;
                     height: auto;
@@ -498,7 +546,7 @@
             }
         }
         var theInfoControlBottom = new infoControlBottom
-        map.addControl(theInfoControlBottom, 'bottom-center');
+        map.addControl(theInfoControlBottom, 'top-center');
 
         document.getElementById("texturecolorbar").width = 0;
         document.getElementById("texturecolorbar").height = 0;
@@ -589,7 +637,7 @@
             }
         }
         var theSettingsControl = new settingsControl;
-        map.addControl(theSettingsControl, 'top-right');
+        //map.addControl(theSettingsControl, 'top-right');
 
         class testFileControl {
             onAdd(map) {
@@ -693,7 +741,7 @@
             })
         }
 
-        function loadLatestFile(levell) {
+        function loadLatestFile(levell, pr, tilt, stat) {
             if (levell == 'l2') {
                 getLatestFile($('#userStation').val(), function(fileName, y, m, d, s) {
                     var individualFileURL = `https://noaa-nexrad-level2.s3.amazonaws.com/${y}/${m}/${d}/${s}/${fileName}`
@@ -706,10 +754,10 @@
                 }
                 // https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.165h0/SI.kgld/sn.last
                 // DS.165h0 = product code 165, N0H (h0)
-                var tiltProduct = tiltObject[$('#tiltInput').val()][$('#productInput').val()]
-                var level3url = `${phpProxy}https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.${tiltProduct}/SI.${$('#userStation').val().toLowerCase()}/sn.last`
+                var tiltProduct = tiltObject[tilt][pr]
+                var level3url = `${phpProxy}https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.${tiltProduct}/SI.${stat}/sn.last`
                 console.log(level3url)
-                console.log(tiltProduct, $('#userStation').val().toLowerCase())
+                console.log(tiltProduct, stat)
                 loadFileObject(level3url, 'sn.last', 3);
             }
         }
@@ -750,7 +798,7 @@
             }
         }
         var theCurFileControl = new curFileControl;
-        map.addControl(theCurFileControl, 'top-right');
+        //map.addControl(theCurFileControl, 'top-right');
 
         var tiltObject = {
             'tilt1': {
@@ -790,6 +838,20 @@
                 'sti': '58sti',
             },
         }
+
+        $('#productBtnGroup button').on('click', function() {
+            //$('#productInput').val()
+            loadLatestFile(
+                'l3',
+                this.value,
+                $('#tiltDropdownBtn').attr('value'),
+                $('#stationInp').val().toLowerCase()
+            );
+        });
+        $('#tiltDropdown a').on('click', function() {
+            document.getElementById('tiltDropdownBtn').innerHTML = this.innerHTML;
+            $('#tiltDropdownBtn').attr('value', $(this).attr('value'))
+        })
 
         $('#levelInput').on('change', function() {
             if ($('#levelInput').val() == 'l2') {
