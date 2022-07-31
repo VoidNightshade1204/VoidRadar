@@ -192,6 +192,7 @@
     <div id="level3json" style="display: none"></div>
     <div id="decodedRadarDataURL" style="display: none"></div>
     <div id="allStormTracksLayers" style="display: none"></div>
+    <div id="curProd" style="display: none"></div>
     <!-- <a id="fileThatWorks" class="false-anchor">KTLX20130520_200356_V06.gz</a>
     <br>
     <a id="fileThatDoesnt" class="false-anchor">KLWX20220623_014344_V06</a>
@@ -841,6 +842,7 @@
 
         $('#productBtnGroup button').on('click', function() {
             //$('#productInput').val()
+            document.getElementById('curProd').innerHTML = this.value;
             loadLatestFile(
                 'l3',
                 this.value,
@@ -851,6 +853,15 @@
         $('#tiltDropdown a').on('click', function() {
             document.getElementById('tiltDropdownBtn').innerHTML = this.innerHTML;
             $('#tiltDropdownBtn').attr('value', $(this).attr('value'))
+
+            if (document.getElementById('curProd').innerHTML != '') {
+                loadLatestFile(
+                    'l3',
+                    document.getElementById('curProd').innerHTML,
+                    $(this).attr('value'),
+                    $('#stationInp').val().toLowerCase()
+                );
+            }
         })
 
         $('#levelInput').on('change', function() {
