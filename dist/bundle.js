@@ -38973,7 +38973,9 @@ const parseData = (file, options) => {
 
 	// read the file header
 	const header = parseHeader(raf);
-	document.getElementById('fileStation').innerHTML = header.ICAO;
+	if (document.getElementById('fileStation').innerHTML != header.ICAO) {
+		document.getElementById('fileStation').innerHTML = header.ICAO;
+	}
 
 	let messageOffset31 = 0; // the current message 31 offset
 	let recordNumber = 0; // the record number
@@ -42465,7 +42467,9 @@ const draw = (data, product, _options) => {
     a.click();*/
 
 	var currentStation = 'K' + data.textHeader.id3;
-	document.getElementById('fileStation').innerHTML = currentStation;
+	if (document.getElementById('fileStation').innerHTML != currentStation) {
+		document.getElementById('fileStation').innerHTML = currentStation;
+	}
 	$.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
 		var statLat = data[currentStation][1];
 		var statLng = data[currentStation][2];
