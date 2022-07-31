@@ -37498,7 +37498,9 @@ document.addEventListener('loadFile', function(event) {
                 }
 
                 //document.getElementById('settingsDialog').innerHTML = 'No settings for Level 3 files yet.'
-                document.getElementById('elevStuff').style.display = 'none';
+                if (l3rad.textHeader.type != "NST") {
+                    document.getElementById('elevStuff').style.display = 'none';
+                }
                 document.getElementById('extraStuff').style.display = 'none';
                 document.getElementById('spinnerParent').style.display = 'none';
             }

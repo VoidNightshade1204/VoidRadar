@@ -269,6 +269,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/geolib@3.3.3/lib/index.min.js"></script>
     <script>
+        var parser = document.createElement('a');
+        parser.href = window.location.href;
+        console.log(parser.hash);
+
         function logToModal(textContent) {
             console.log(textContent);
             function openMessageModal() {
@@ -534,7 +538,7 @@
             var theReflPlotControl = new reflPlotControl;
             map.addControl(theReflPlotControl, 'top-left');
         }
-        showPlotBtn();
+        //showPlotBtn();
 
         class settingsControl {
             onAdd(map) {
@@ -618,7 +622,6 @@
             }
         }
         var theTestFileControl = new testFileControl;
-        map.addControl(theTestFileControl, 'top-right');
 
         class testFile3Control {
             onAdd(map) {
@@ -658,7 +661,11 @@
             }
         }
         var theTestFile3Control = new testFile3Control;
-        map.addControl(theTestFile3Control, 'top-right');
+
+        if (parser.hash == "#development") {
+            map.addControl(theTestFile3Control, 'top-right');
+            map.addControl(theTestFileControl, 'top-right');
+        }
 
         function getLatestFile(sta, callbck) {
             document.getElementById('spinnerParent').style.display = 'block';

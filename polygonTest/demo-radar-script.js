@@ -452,10 +452,10 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     map.addLayer(layer);
 
     function addStormTracksLayers() {
-      document.getElementById('productInput').add(new Option('Storm Tracking', 'sti'));
-      $('#productInput').val('sti');
-      $('#productStuff').trigger('change');
-      $("#productInput option[value='sti']").remove();
+      var phpProxy = 'https://php-cors-proxy.herokuapp.com/?';
+      var fileUrl = `${phpProxy}https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.58sti/SI.${$('#userStation').val().toLowerCase()}/sn.last`
+      console.log(fileUrl, $('#userStation').val().toLowerCase())
+      loadFileObject(fileUrl, document.getElementById('radFileName').innerHTML, 3);
     }
     if (document.getElementById('allStormTracksLayers').innerHTML == '') {
       addStormTracksLayers();
