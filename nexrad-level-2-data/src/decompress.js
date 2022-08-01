@@ -12,7 +12,7 @@ const { RandomAccessFile, BIG_ENDIAN } = require('./classes/RandomAccessFile');
 // constants
 const { FILE_HEADER_SIZE } = require('./constants');
 
-const decompress = (raf) => {
+const decompress = (raf, opt) => {
 	// detect gzip header
 	const gZipHeader = raf.read(2);
 	raf.seek(0);
@@ -67,16 +67,22 @@ const decompress = (raf) => {
 	// reuse the original header if present
 	const outBuffers = [raf.buffer.slice(0, headerSize)];
 
+	var itersBeforeStop = 1000;
+	if (opt == 'part') {
+		itersBeforeStop = 10;
+	}
 	var iters = 1;
 	// loop through each block and decompress it
 	positions.forEach((block) => {
-		console.log('decompressing block ' + iters);
-		iters++;
-		// extract the block from the buffer
-		const compressed = raf.buffer.slice(block.pos, block.pos + block.size);
-		if (JSON.stringify(compressed) != '{"type":"Buffer","data":[]}') {
-			const output = bzip.decodeBlock(compressed, 32); // skip 32 bits 'BZh9' header
-			outBuffers.push(output);
+		if (iters < itersBeforeStop) {
+			console.log('decompressing block ' + iters);
+			iters++;
+			// extract the block from the buffer
+			const compressed = raf.buffer.slice(block.pos, block.pos + block.size);
+			if (JSON.stringify(compressed) != '{"type":"Buffer","data":[]}') {
+				const output = bzip.decodeBlock(compressed, 32); // skip 32 bits 'BZh9' header
+				outBuffers.push(output);
+			}
 		}
 	});
 

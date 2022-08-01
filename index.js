@@ -90,9 +90,10 @@ document.addEventListener('loadFile', function(event) {
         reader.addEventListener("load", function () {
             console.log('file uploaded, parsing now');
             if (fileLevel == 'level2') {
+                var wholeOrPart = event.detail[2];
                 document.getElementById('elevStuff').style.display = 'block';
                 document.getElementById('extraStuff').style.display = 'block';
-                var l2rad = new Level2Radar(toBuffer(this.result))
+                var l2rad = new Level2Radar(toBuffer(this.result), {wholeOrPart})
                 console.log(l2rad)
                 var theFileVersion = l2rad.header.version;
                 document.getElementById('fileVersion').innerHTML = theFileVersion;

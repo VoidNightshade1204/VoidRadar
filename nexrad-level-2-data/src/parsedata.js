@@ -27,7 +27,7 @@ const parseData = (file, options) => {
 	const data = [];
 
 	// decompress file if necessary, returns original file if no compression exists
-	const raf = decompress(rafCompressed);
+	const raf = decompress(rafCompressed, options.wholeOrPart);
 
 	// read the file header
 	const header = parseHeader(raf);

@@ -37207,9 +37207,10 @@ document.addEventListener('loadFile', function(event) {
         reader.addEventListener("load", function () {
             console.log('file uploaded, parsing now');
             if (fileLevel == 'level2') {
+                var wholeOrPart = event.detail[2];
                 document.getElementById('elevStuff').style.display = 'block';
                 document.getElementById('extraStuff').style.display = 'block';
-                var l2rad = new Level2Radar(toBuffer(this.result))
+                var l2rad = new Level2Radar(toBuffer(this.result), {wholeOrPart})
                 console.log(l2rad)
                 var theFileVersion = l2rad.header.version;
                 document.getElementById('fileVersion').innerHTML = theFileVersion;
@@ -38475,7 +38476,7 @@ const { RandomAccessFile, BIG_ENDIAN } = require('./classes/RandomAccessFile');
 // constants
 const { FILE_HEADER_SIZE } = require('./constants');
 
-const decompress = (raf) => {
+const decompress = (raf, opt) => {
 	// detect gzip header
 	const gZipHeader = raf.read(2);
 	raf.seek(0);
@@ -38530,16 +38531,22 @@ const decompress = (raf) => {
 	// reuse the original header if present
 	const outBuffers = [raf.buffer.slice(0, headerSize)];
 
+	var itersBeforeStop = 1000;
+	if (opt == 'part') {
+		itersBeforeStop = 10;
+	}
 	var iters = 1;
 	// loop through each block and decompress it
 	positions.forEach((block) => {
-		console.log('decompressing block ' + iters);
-		iters++;
-		// extract the block from the buffer
-		const compressed = raf.buffer.slice(block.pos, block.pos + block.size);
-		if (JSON.stringify(compressed) != '{"type":"Buffer","data":[]}') {
-			const output = bzip.decodeBlock(compressed, 32); // skip 32 bits 'BZh9' header
-			outBuffers.push(output);
+		if (iters < itersBeforeStop) {
+			console.log('decompressing block ' + iters);
+			iters++;
+			// extract the block from the buffer
+			const compressed = raf.buffer.slice(block.pos, block.pos + block.size);
+			if (JSON.stringify(compressed) != '{"type":"Buffer","data":[]}') {
+				const output = bzip.decodeBlock(compressed, 32); // skip 32 bits 'BZh9' header
+				outBuffers.push(output);
+			}
 		}
 	});
 
@@ -38969,7 +38976,7 @@ const parseData = (file, options) => {
 	const data = [];
 
 	// decompress file if necessary, returns original file if no compression exists
-	const raf = decompress(rafCompressed);
+	const raf = decompress(rafCompressed, options.wholeOrPart);
 
 	// read the file header
 	const header = parseHeader(raf);
