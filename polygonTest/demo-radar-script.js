@@ -509,6 +509,16 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     var stLayersText = document.getElementById('allStormTracksLayers').innerHTML;
     var stLayers = stLayersText.replace(/"/g, '').replace(/\[/g, '').replace(/\]/g, '').split(',');
     if (document.getElementById('prevStat').innerHTML != document.getElementById('fileStation').innerHTML) {
+      var station = document.getElementById('fileStation').innerHTML;
+      $.getJSON('https://steepatticstairs.github.io/weather/json/radarStations.json', function(data) {
+          var stationLat = data[station][1];
+          var stationLng = data[station][2];
+          map.flyTo({
+              center: [stationLng, stationLat],
+              zoom: 8,
+              duration: 1000,
+          });
+      })
       for (key in stLayers) {
         if (map.getLayer(stLayers[key])) {
           map.removeLayer(stLayers[key]);
