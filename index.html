@@ -289,7 +289,8 @@
             </ul>
         </div>
         <br>
-        <div id="productBtnGroup" class="btn-group-vertical">
+        <div class="btn-group-vertical productBtnGroup">
+            <div>Level 3</div>
             <!-- <button type="button" value="mcy" class="btn btn-outline-primary btn-sm">Mesocyclone</button> -->
             <button type="button" value="ref" class="btn btn-outline-primary btn-sm"><b>HR</b> Base Reflectivity</button>
             <button type="button" value="vel"  class="btn btn-outline-primary btn-sm"><b>HR</b> Base Velocity</button> <!-- vel -->
@@ -297,8 +298,17 @@
             <button type="button" value="hhc"  class="btn btn-outline-primary btn-sm">Hybrid Hydrometer Classification</button> <!-- hhc -->
             <button type="button" value="srv"  class="btn btn-outline-primary btn-sm">Storm Relative Velocity</button> <!-- srv -->
             <button type="button" value="ref" class="btn btn-outline-primary btn-sm">Digital Base Reflectivity</button> <!-- ref -->
-            <button type="button" value="l2-ref" class="btn btn-outline-primary btn-sm"><b>L2</b> Base Reflectivity</button>
-            <button type="button" value="vil"  class="btn btn-outline-primary btn-sm"><b>HR</b> Vertically Integrated Liquid</button> <!-- vil -->
+            <button type="button" value="vil"  class="btn btn-outline-primary btn-sm">Vertically Integrated Liquid</button> <!-- vil -->
+        </div>
+        <div class="btn-group-vertical productBtnGroup">
+            <br>
+            <div>Level 2</div>
+            <button type="button" value="l2-ref" class="btn btn-outline-primary btn-sm">Base Reflectivity</button>
+            <button type="button" value="l2-vel" class="btn btn-outline-primary btn-sm">Base Velocity</button>
+            <button type="button" value="l2-rho" class="btn btn-outline-primary btn-sm">Correlation Coefficient</button>
+            <button type="button" value="l2-phi" class="btn btn-outline-primary btn-sm">Differential Phase Shift</button>
+            <button type="button" value="l2-zdr" class="btn btn-outline-primary btn-sm">Differential Reflectivity</button>
+            <button type="button" value="l2-sw " class="btn btn-outline-primary btn-sm">Spectrum Width</button>
         </div>
     </div>
 
@@ -472,7 +482,7 @@
             });*/
         })
 
-        function loadFileObject(path, name, level, callback) {
+        function loadFileObject(path, name, level, product) {
             var radLevel;
             var wholeOrPart = 'whole';
             if (level == 2) {
@@ -494,7 +504,8 @@
                 var event = new CustomEvent("loadFile", { "detail": [
                     blob,
                     radLevel,
-                    wholeOrPart
+                    wholeOrPart,
+                    product
                 ] });
                 // Dispatch/Trigger/Fire the event
                 document.dispatchEvent(event);
@@ -827,7 +838,7 @@
                 getLatestFile($('#stationInp').val(), function(fileName, y, m, d, s) {
                     var individualFileURL = `https://noaa-nexrad-level2.s3.amazonaws.com/${y}/${m}/${d}/${s}/${fileName}`
                     console.log(phpProxy + individualFileURL)
-                    loadFileObject(phpProxy + individualFileURL, fileName, numLevel);
+                    loadFileObject(phpProxy + individualFileURL, fileName, numLevel, pr);
                 });
             } else if (levell == 'l3') {
                 if ($('#productInput').val() != 'sti') {
@@ -929,7 +940,15 @@
             },
         }
 
-        $('#productBtnGroup button').on('click', function() {
+        var allL2Btns = [
+            'l2-ref',
+            'l2-vel',
+            'l2-rho',
+            'l2-phi',
+            'l2-zdr',
+            'l2-sw '
+        ];
+        $('.productBtnGroup button').on('click', function() {
             //$('#productInput').val()
             var initInnerHTML = this.innerHTML;
             if (!initInnerHTML.includes('span')) {
@@ -946,7 +965,7 @@
             $(this).removeClass('btn-outline-primary');
             $(this).addClass('btn-outline-success');
             document.getElementById('curProd').innerHTML = this.value;
-            if (this.value != 'l2-ref') {
+            if (!allL2Btns.includes(this.value)) {
                 loadLatestFile(
                     'l3',
                     this.value,
@@ -954,7 +973,7 @@
                     $('#stationInp').val().toLowerCase()
                 );
             } else {
-                loadLatestFile('l22');
+                loadLatestFile('l2', this.value);
             }
         });
         $('#tiltDropdown a').on('click', function() {

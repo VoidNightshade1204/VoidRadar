@@ -37294,12 +37294,35 @@ document.addEventListener('loadFile', function(event) {
                         });
                     }
                 })
-                $('.reflPlotButton').trigger('click');
-                console.log('initial reflectivity plot');
-                displayElevations('REF');
-                const level2Plot = plot(l2rad, 'REF', {
-                    elevations: parseInt($('#elevInput').val()),
-                });
+                //$('.reflPlotButton').trigger('click');
+                //console.log('initial reflectivity plot');
+                //displayElevations('REF');
+                if (event.detail[3] == undefined || event.detail[3] == 'l2-ref') {
+                    const level2Plot = plot(l2rad, 'REF', {
+                        elevations: 1,
+                    });
+                } else if (event.detail[3] == 'l2-vel') {
+                    const level2Plot = plot(l2rad, 'VEL', {
+                        elevations: 2,
+                    });
+                } else if (event.detail[3] == 'l2-rho') {
+                    const level2Plot = plot(l2rad, 'RHO', {
+                        elevations: 1,
+                    });
+                } else if (event.detail[3] == 'l2-phi') {
+                    const level2Plot = plot(l2rad, 'PHI', {
+                        elevations: 1,
+                    });
+                } else if (event.detail[3] == 'l2-zdr') {
+                    const level2Plot = plot(l2rad, 'ZDR', {
+                        elevations: 1,
+                    });
+                } else if (event.detail[3] == 'l2-sw ') {
+                    displayElevations('SW ');
+                    const level2Plot = plot(l2rad, 'SW ', {
+                        elevations: parseInt($('#elevInput').val()),
+                    });
+                }
                 $('#productInput').on('change', function() {
                     removeMapLayer('baseReflectivity');
                     if ($('#productInput').val() == 'REF') {
