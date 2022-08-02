@@ -291,12 +291,13 @@
         <br>
         <div id="productBtnGroup" class="btn-group-vertical">
             <!-- <button type="button" value="mcy" class="btn btn-outline-primary btn-sm">Mesocyclone</button> -->
-            <button type="button" value="N0B" class="btn btn-outline-primary btn-sm"><b>HR</b> Base Reflectivity</button>
+            <button type="button" value="ref" class="btn btn-outline-primary btn-sm"><b>HR</b> Base Reflectivity</button>
             <button type="button" value="vel"  class="btn btn-outline-primary btn-sm"><b>HR</b> Base Velocity</button> <!-- vel -->
             <button type="button" value="hyc"  class="btn btn-outline-primary btn-sm">Hydrometer Classification</button> <!-- hyc -->
             <button type="button" value="hhc"  class="btn btn-outline-primary btn-sm">Hybrid Hydrometer Classification</button> <!-- hhc -->
             <button type="button" value="srv"  class="btn btn-outline-primary btn-sm">Storm Relative Velocity</button> <!-- srv -->
             <button type="button" value="ref" class="btn btn-outline-primary btn-sm">Digital Base Reflectivity</button> <!-- ref -->
+            <button type="button" value="l2-ref" class="btn btn-outline-primary btn-sm"><b>L2</b> Base Reflectivity</button>
             <button type="button" value="vil"  class="btn btn-outline-primary btn-sm"><b>HR</b> Vertically Integrated Liquid</button> <!-- vil -->
         </div>
     </div>
@@ -817,19 +818,23 @@
         }
 
         function loadLatestFile(levell, pr, tilt, stat) {
-            if (levell == 'l2') {
+            var numLevel = 2;
+            if (levell == 'l22') {
+                numLevel = 22;
+            }
+            if (levell == 'l2' || levell == 'l22') {
                 removeMapLayer('baseReflectivity');
                 getLatestFile($('#stationInp').val(), function(fileName, y, m, d, s) {
                     var individualFileURL = `https://noaa-nexrad-level2.s3.amazonaws.com/${y}/${m}/${d}/${s}/${fileName}`
                     console.log(phpProxy + individualFileURL)
-                    loadFileObject(phpProxy + individualFileURL, fileName, 22);
+                    loadFileObject(phpProxy + individualFileURL, fileName, numLevel);
                 });
             } else if (levell == 'l3') {
                 if ($('#productInput').val() != 'sti') {
                     removeMapLayer('baseReflectivity');
                 }
                 var tiltProduct = tiltObject[tilt][pr];
-                if (pr != 'N0B') {
+                if (pr != 'ref') {
                     // https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.165h0/SI.kgld/sn.last
                     // DS.165h0 = product code 165, N0H (h0)
                     var level3url = `${phpProxy}https://tgftp.nws.noaa.gov/SL.us008001/DF.of/DC.radar/DS.${tiltProduct}/SI.${stat}/sn.last`
@@ -886,8 +891,7 @@
 
         var tiltObject = {
             'tilt1': {
-                'N0B': 'N0B',
-                'ref': 'p94r0',
+                'ref': 'N0B',
                 'vel': 'p99v0',
                 'hhc': '177hh',
                 'hyc': '165h0',
@@ -897,8 +901,7 @@
                 'mcy': '141md',
             },
             'tilt2': {
-                'N0B': 'N1B',
-                'ref': 'p94r1',
+                'ref': 'N1B',
                 'vel': 'p99v1',
                 'hhc': '177hh',
                 'hyc': '165h1',
@@ -907,8 +910,7 @@
                 'sti': '58sti',
             },
             'tilt3': {
-                'N0B': 'N2B',
-                'ref': 'p94r2',
+                'ref': 'N2B',
                 'vel': 'p99v2',
                 'hhc': '177hh',
                 'hyc': '165h2',
@@ -917,8 +919,7 @@
                 'sti': '58sti',
             },
             'tilt4': {
-                'N0B': 'N3B',
-                'ref': 'p94r3',
+                'ref': 'N3B',
                 'vel': 'p99v3',
                 'hhc': '177hh',
                 'hyc': '165h3',
@@ -945,12 +946,16 @@
             $(this).removeClass('btn-outline-primary');
             $(this).addClass('btn-outline-success');
             document.getElementById('curProd').innerHTML = this.value;
-            loadLatestFile(
-                'l3',
-                this.value,
-                $('#tiltDropdownBtn').attr('value'),
-                $('#stationInp').val().toLowerCase()
-            );
+            if (this.value != 'l2-ref') {
+                loadLatestFile(
+                    'l3',
+                    this.value,
+                    $('#tiltDropdownBtn').attr('value'),
+                    $('#stationInp').val().toLowerCase()
+                );
+            } else {
+                loadLatestFile('l22');
+            }
         });
         $('#tiltDropdown a').on('click', function() {
             document.getElementById('tiltDropdownBtn').innerHTML = this.innerHTML;
