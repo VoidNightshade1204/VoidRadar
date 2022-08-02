@@ -22,7 +22,7 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
     // https://github.com/Unidata/MetPy/blob/main/src/metpy/plots/colortable_files/NWSReflectivityExpanded.tbl
     var colors = {"ref":[]}
     var values = {"ref":[]}
-    if (produc == "REF") {
+    if (produc == "REF" || produc[0] == "N0B") {
       console.log('base reflectivity!?-.,')
       if (!shouldFilter) {
         // if the user doesnt want to filter low values,
@@ -554,7 +554,7 @@ function drawRadarShape(jsonObj, lati, lngi, produc, shouldFilter) {
   xhttp.open("GET", jsonObj, true);
   xhttp.send();
 
-  if (produc == "REF") {
+  if (produc == "REF" || produc[0] == "N0B") {
     divider = '/(70.0)';
   } else if (produc == "VEL") {
     divider = '/(70.0)';
