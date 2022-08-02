@@ -276,7 +276,7 @@
 
     <div id='optionsBox'>
         <label for="stationInp">Station</label>
-        <input type="text" class="form-control" id="stationInp" value="KLWX">
+        <input type="text" class="form-control" id="stationInp" value="KMHX">
         <br>
         <div class="dropdown-center" id="tiltDropdown">
             <button class="btn btn-secondary btn-sm dropdown-toggle" id="tiltDropdownBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false" value="tilt1">
@@ -340,6 +340,21 @@
         var parser = document.createElement('a');
         parser.href = window.location.href;
         console.log(parser.hash);
+
+        var allParserArgs = parser.hash.split('&');
+        console.log(allParserArgs)
+
+        var isDevelopmentMode = false;
+        for (key in allParserArgs) {
+            if (allParserArgs[key].includes('#station=')) {
+                console.log('we got a station URL parameter!');
+                $('#stationInp').val(allParserArgs[key].slice(9, 13));
+            }
+            if (allParserArgs[key].includes('#development')) {
+                console.log('we got a development mode URL parameter!');
+                isDevelopmentMode = true;
+            }
+        }
 
         function logToModal(textContent) {
             console.log(textContent);
@@ -747,7 +762,7 @@
         }
         var theTestFile3Control = new testFile3Control;
 
-        if (parser.hash == "#development") {
+        if (isDevelopmentMode) {
             map.addControl(theTestFile3Control, 'top-right');
             map.addControl(theTestFileControl, 'top-right');
         }
